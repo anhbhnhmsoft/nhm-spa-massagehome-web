@@ -18,6 +18,10 @@ module.exports = {
         },
         "base-color-1": "#001E37",
         "base-color-2": "#FFFFFF",
+        "primary-color-1": "#044984",
+        "primary-color-2": "#2B7BBE",
+        "primary-color-3": "#45556C",
+        "primary-color-4": "#90A1B9",
         card: {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",

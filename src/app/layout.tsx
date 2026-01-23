@@ -1,6 +1,12 @@
 import "./globals.css";
 import Providers from "@/lib/provider/providers";
 
+import { Inter } from "next/font/google";
+const inter = Inter({
+  subsets: ["latin", "vietnamese"], // hỗ trợ tiếng Việt
+  variable: "--font-inter", // gắn vào CSS variable
+  display: "swap",
+});
 export default function RootLayout({
   children,
 }: {
@@ -8,7 +14,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>
+      <body className={`${inter.variable} font-sans`}>
         <Providers>{children}</Providers>
       </body>
     </html>
