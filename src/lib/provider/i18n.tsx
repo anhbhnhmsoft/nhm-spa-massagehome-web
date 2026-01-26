@@ -1,5 +1,4 @@
-"use client";
-
+// src/lib/i18n.ts
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
 
@@ -8,7 +7,6 @@ import en from "@/i18n/en.json";
 import cn from "@/i18n/cn.json";
 
 import { _LanguageCode } from "@/lib/const";
-import useApplicationStore from "@/lib/store";
 import { checkLanguage } from "@/lib/utils";
 
 const resources = {
@@ -17,37 +15,30 @@ const resources = {
   cn: { translation: cn },
 };
 
-const getBrowserLanguage = (): _LanguageCode => {
-  if (typeof window === "undefined") return _LanguageCode.VI;
-
-  const lang = navigator.language.split("-")[0] as _LanguageCode;
-  return checkLanguage(lang) ? lang : _LanguageCode.VI;
-};
-
 export const initI18n = () => {
   if (i18n.isInitialized) return;
 
-  let savedLanguage: _LanguageCode | null = null;
+  let lang: _LanguageCode = _LanguageCode.VI;
 
+  // ❗ CHỈ đọc window ở client
   if (typeof window !== "undefined") {
-    savedLanguage = localStorage.getItem("LANGUAGE") as _LanguageCode | null;
-  }
-
-  if (!savedLanguage || !checkLanguage(savedLanguage)) {
-    savedLanguage = getBrowserLanguage();
+    const saved = localStorage.getItem("LANGUAGE") as _LanguageCode | null;
+    if (saved && checkLanguage(saved)) {
+      lang = saved;
+    } else {
+      const browserLang = navigator.language.split("-")[0] as _LanguageCode;
+      if (checkLanguage(browserLang)) lang = browserLang;
+    }
   }
 
   i18n.use(initReactI18next).init({
     resources,
-    lng: savedLanguage,
+    lng: lang,
     fallbackLng: _LanguageCode.VI,
     interpolation: {
       escapeValue: false,
     },
   });
-
-  // sync vào zustand store
-  useApplicationStore.getState().setLanguage(savedLanguage);
 };
 
 export default i18n;

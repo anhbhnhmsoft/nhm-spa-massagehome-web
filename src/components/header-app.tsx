@@ -1,112 +1,124 @@
 "use client";
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { Moon, User, Menu, X, Leaf } from "lucide-react"; // Sử dụng Lucide React bản Web
-import { useState } from "react";
+import React, { useState } from "react";
+import { MapPin, Bell, Search, X } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useTranslation } from "react-i18next";
+import GradientBackground from "./styles/gradient-background";
 
-export default function Header() {
-  const pathname = usePathname();
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+type HeaderAppProps = {
+  showSearch?: boolean;
+  forSearch?: "service" | "massage";
+  setTextSearch?: (text: string) => void;
+  textSearch?: string;
+};
 
-  // Giả lập trạng thái checkAuth từ code Expo của bạn
-  const isLoggedIn = false;
+export default function Header({
+  showSearch = true,
+  forSearch = "service",
+  setTextSearch,
+  textSearch,
+}: HeaderAppProps) {
+  const router = useRouter();
+  const { t } = useTranslation();
+  const [showLocationModal, setShowLocationModal] = useState(false);
 
-  const navigation = [
-    { name: "Trang chủ", href: "/" },
-    { name: "Dịch vụ", href: "/services" },
-    { name: "Kỹ thuật viên", href: "/masseurs" },
-    { name: "Về chúng tôi", href: "/about" },
-  ];
+  const locationUser = { address: "123 Đường ABC, Hà Nội" };
+  const checkAuth = true;
+
+  const handleNotificationClick = () => {
+    if (!checkAuth) {
+      router.push("/auth");
+      return;
+    }
+    router.push("/notification");
+  };
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container mx-auto flex h-20 items-center justify-between px-4 lg:px-8">
-        {/* Logo Section */}
-        <Link href="/" className="flex items-center gap-2 group">
-          <div className="bg-primary p-2 rounded-xl text-primary-foreground group-hover:scale-105 transition-transform">
-            <Leaf size={24} />
-          </div>
-          <div className="flex flex-col">
-            <span className="text-xl font-bold leading-none text-[#001E37] dark:text-white tracking-tight">
-              MASSA HOME
-            </span>
-            <span className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground font-medium">
-              Wellness Studio
-            </span>
-          </div>
-        </Link>
-
-        {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center gap-8">
-          {navigation.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={`text-sm font-medium transition-colors hover:text-primary ${
-                pathname === item.href ? "text-primary" : "text-foreground/70"
-              }`}
-            >
-              {item.name}
-            </Link>
-          ))}
-        </nav>
-
-        {/* Right Side Actions */}
-        <div className="flex items-center gap-4">
-          <button className="p-2 hover:bg-accent rounded-full transition-colors">
-            <Moon size={20} className="text-foreground" />
-          </button>
-
-          <div className="hidden md:block h-6 w-[1px] bg-border mx-2" />
-
-          {isLoggedIn ? (
-            <Link href="/profile">
-              <button>
-                <User size={20} />
-              </button>
-            </Link>
-          ) : (
-            <Link href="/auth">
-              <button className="hidden md:block bg-primary text-primary-foreground px-6 py-2.5 rounded-full text-sm font-semibold hover:opacity-90 transition-opacity">
-                Đăng nhập / Đăng ký
-              </button>
-            </Link>
-          )}
-
-          {/* Mobile Menu Toggle */}
-          <button
-            className="md:hidden p-2"
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-          >
-            {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
-        </div>
-      </div>
-
-      {/* Mobile Menu Overlay */}
-      {isMenuOpen && (
-        <div className="md:hidden absolute top-20 left-0 w-full bg-background border-b border-border p-4 animate-in slide-in-from-top duration-300">
-          <nav className="flex flex-col gap-4">
-            {navigation.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                onClick={() => setIsMenuOpen(false)}
-                className="text-lg font-medium p-2"
+    <>
+      <header className="sticky top-0 z-50 w-full">
+        {/* ✅ Gradient wrapper */}
+        <GradientBackground className="mx-auto px-4 py-3 md:px-8 max-w-[1024px]">
+          <div className="mx-auto max-w-[1024px]">
+            {/* Top Bar */}
+            <div className="flex items-center justify-between gap-4 mb-3">
+              {/* Location */}
+              <button
+                onClick={() => setShowLocationModal(true)}
+                className="flex flex-col items-start flex-1 min-w-0 transition-opacity hover:opacity-80"
               >
-                {item.name}
-              </Link>
-            ))}
-            <Link
-              href="/auth"
-              className="mt-4 bg-primary text-white text-center py-3 rounded-lg"
+                <span className="text-[10px] md:text-xs font-medium text-blue-200 uppercase tracking-wider">
+                  {t("header_app.location") || "VỊ TRÍ CỦA BẠN"}
+                </span>
+                <div className="flex items-center gap-1 w-full">
+                  <MapPin size={16} className="text-white shrink-0" />
+                  <span className="text-sm md:text-base font-bold text-white truncate">
+                    {locationUser?.address ||
+                      t("header_app.need_location") ||
+                      "Chọn địa chỉ..."}
+                  </span>
+                </div>
+              </button>
+
+              {/* Notification */}
+              <button
+                onClick={handleNotificationClick}
+                className="relative p-2 rounded-full hover:bg-white/10 transition"
+              >
+                <Bell size={24} className="text-white" />
+                <span className="absolute top-2 right-2 flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75" />
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500" />
+                </span>
+              </button>
+            </div>
+
+            {/* Search */}
+            {showSearch && (
+              <div className="w-full max-w-2xl mx-auto">
+                <div className="relative h-11 flex items-center rounded-xl bg-white px-3 shadow-md focus-within:ring-2 focus-within:ring-blue-400">
+                  <Search size={20} className="text-slate-400" />
+                  <input
+                    className="ml-2 flex-1 bg-transparent text-sm outline-none"
+                    placeholder={
+                      forSearch === "service"
+                        ? t("header_app.search_placeholder_service") ||
+                          "Tìm kiếm dịch vụ..."
+                        : t("header_app.search_placeholder_massage") ||
+                          "Tìm kiếm massage..."
+                    }
+                    value={textSearch}
+                    onChange={(e) => setTextSearch?.(e.target.value)}
+                  />
+                  {textSearch && (
+                    <button
+                      onClick={() => setTextSearch?.("")}
+                      className="p-1 rounded-full hover:bg-slate-100"
+                    >
+                      <X size={18} className="text-slate-400" />
+                    </button>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+        </GradientBackground>
+      </header>
+
+      {/* Modal */}
+      {showLocationModal && (
+        <div className="fixed inset-0 z-[100] bg-black/50 flex items-center justify-center p-4">
+          <div className="bg-white p-6 rounded-2xl w-full max-w-md">
+            <h2 className="text-lg font-bold mb-4">Chọn vị trí</h2>
+            <button
+              onClick={() => setShowLocationModal(false)}
+              className="text-blue-600 font-medium"
             >
-              Đăng nhập / Đăng ký
-            </Link>
-          </nav>
+              Đóng
+            </button>
+          </div>
         </div>
       )}
-    </header>
+    </>
   );
 }
