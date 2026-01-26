@@ -10,3 +10,18 @@ export const checkLanguage = (lang: string) => {
     lang as _LanguageCode,
   );
 };
+
+// nhân bản list ở home page
+export  function normalizeListToLength<T>(list: T[], targetLength: number): T[]{
+  if (list.length === 0) return [];
+
+  const result: T[] = [];
+  let index = 0;
+
+  while (result.length < targetLength) {
+    result.push(list[index % list.length]);
+    index++;
+  }
+
+  return result;
+}
