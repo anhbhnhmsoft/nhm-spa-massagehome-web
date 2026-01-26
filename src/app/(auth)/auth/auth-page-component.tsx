@@ -1,105 +1,88 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import { useTranslation } from "react-i18next";
 import { Controller } from "react-hook-form";
-import { useHandleLogin } from "@/features/auth/hooks";
-import { Eye, EyeOff, Loader2 } from "lucide-react";
+import { useHandleAuthenticate } from "@/features/auth/hooks";
 import { cn } from "@/lib/utils";
 
-export default function LoginPage() {
+export default function AuthPageComponent() {
   const { t } = useTranslation();
-  const { form, onSubmit, loading } = useHandleLogin();
-  const [passwordVisible, setPasswordVisible] = useState<boolean>(false);
+  const { form, onSubmit, loading } = useHandleAuthenticate();
 
   const {
     control,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isValid },
   } = form;
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-slate-50 p-4 font-inter">
-      {/* Container chính: Max-width 1024px, Bo góc 32px */}
+      {/* Container chính: Bo góc lớn, đổ bóng sâu, giới hạn 1024px */}
       <main className="flex w-full max-w-[1024px] overflow-hidden rounded-[32px] border border-gray-100 bg-white shadow-2xl shadow-gray-200/50 md:flex-row">
-        {/* Cột trái: Gradient đồng bộ với Register/Auth */}
+        {/* Cột trái: Gradient & Branding (Ẩn trên mobile) */}
         <div
           className="hidden w-1/2 flex-col justify-center bg-gradient-to-br from-primary-color-2 to-indigo-600 p-12 text-white md:flex"
           style={{ backgroundColor: "var(--primary-color-2, #2563eb)" }}
         >
           <h1 className="mb-4 text-4xl font-extrabold tracking-tight">
-            {t("auth.login_title")}
+            {t("auth.auth_title")}
           </h1>
           <p className="text-lg leading-relaxed text-white/80">
-            {t("auth.login_description")}
+            {t("auth.auth_description")}
           </p>
           <div className="mt-12 h-1 w-20 rounded-full bg-white/30" />
         </div>
 
-        {/* Cột phải: Form nhập Password */}
+        {/* Cột phải: Form nhập liệu */}
         <div className="flex flex-1 flex-col justify-between p-8 py-12 md:p-16">
           <div className="w-full">
-            {/* Header Mobile */}
+            {/* Header chỉ hiện trên Mobile */}
             <div className="mb-10 text-center md:hidden">
               <h1 className="mb-2 text-3xl font-extrabold text-gray-900">
-                {t("auth.login_title")}
+                {t("auth.auth_title")}
               </h1>
-              <p className="text-gray-500">{t("auth.login_description")}</p>
+              <p className="text-gray-500">{t("auth.auth_description")}</p>
             </div>
 
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
               <div className="space-y-2">
                 <label className="text-sm font-semibold text-gray-700 ml-1">
-                  {t("common.password")} *
+                  {t("auth.placeholder_phone")} *
                 </label>
-
                 <Controller
                   control={control}
-                  name="password"
+                  name="phone"
                   render={({ field: { onChange, onBlur, value } }) => (
                     <div className="relative">
                       <input
                         className={cn(
-                          "h-14 w-full rounded-2xl border bg-gray-50 px-5 pr-12 text-lg font-medium outline-none transition-all duration-200",
-                          errors.password
+                          "h-14 w-full rounded-2xl border bg-gray-50 px-5 text-lg font-medium outline-none transition-all duration-200",
+                          errors.phone
                             ? "border-red-500 bg-red-50/30 focus:border-red-500"
                             : "border-gray-200 focus:border-primary-color-2 focus:bg-white focus:ring-4 focus:ring-primary-color-2/10",
                         )}
-                        placeholder="**********"
-                        type={passwordVisible ? "text" : "password"}
+                        placeholder="0xxx xxx xxx"
+                        type="tel"
+                        autoFocus
                         value={value || ""}
                         onChange={onChange}
                         onBlur={onBlur}
-                        autoFocus
                       />
-
-                      {/* Icon Toggle Password */}
-                      <button
-                        type="button"
-                        onClick={() => setPasswordVisible(!passwordVisible)}
-                        className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 transition-colors hover:text-gray-600"
-                      >
-                        {passwordVisible ? (
-                          <EyeOff size={22} />
-                        ) : (
-                          <Eye size={22} />
-                        )}
-                      </button>
                     </div>
                   )}
                 />
-
-                {errors.password && (
+                {errors.phone && (
                   <p className="ml-1 text-sm font-medium text-red-500 animate-in fade-in slide-in-from-top-1">
-                    {errors.password.message as string}
+                    {errors.phone.message as string}
                   </p>
                 )}
               </div>
             </form>
           </div>
 
-          {/* Footer Action Button */}
-          <div className="mt-12">
+          {/* Footer Button Section */}
+          <div className="mt-12 space-y-4">
             <button
               onClick={handleSubmit(onSubmit)}
               disabled={loading}
@@ -117,13 +100,17 @@ export default function LoginPage() {
             >
               {loading ? (
                 <div className="flex items-center gap-3">
-                  <Loader2 className="h-5 w-5 animate-spin" />
+                  <span className="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent" />
                   <span>{t("common.loading")}</span>
                 </div>
               ) : (
                 t("common.continue")
               )}
             </button>
+
+            <p className="text-center text-sm text-gray-400">
+              {t("auth.auth_footer_note") || "Security verified by NHM System"}
+            </p>
           </div>
         </div>
       </main>

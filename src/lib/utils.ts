@@ -1,6 +1,8 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { _LanguageCode } from "./const";
+import ErrorAPIServer from "./types";
+import { TFunction } from "i18next";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -67,4 +69,30 @@ export const formatDistance = (distanceInKm: number) => {
     return `${Math.round(distanceInKm * 1000)} m`;
   }
   return `${distanceInKm.toFixed(1)} km`;
+};
+
+/**
+ * Lấy thông báo lỗi từ server
+ * @param err Đối tượng lỗi
+ * @param t Hàm dịch chuỗi
+ * @returns Thông báo lỗi
+ */
+export const getMessageError = (
+  err: Error | ErrorAPIServer | any,
+  t: TFunction,
+) => {
+  if (err) {
+    if (err instanceof ErrorAPIServer) {
+      if (err.validateError) {
+        const validationErrors = err.validateError;
+        const firstKey = Object.keys(validationErrors)[0];
+        const firstValue = validationErrors[firstKey];
+        return firstValue[0];
+      } else if (err.message) {
+        return err.message;
+      }
+    } else {
+      return t("common_error.unknown_error");
+    }
+  }
 };
