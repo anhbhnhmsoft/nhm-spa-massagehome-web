@@ -5,10 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { Home, Briefcase, Users, User } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { TabIcon } from "./tab-icon";
-
-const useCheckAuth = () => {
-  return true;
-};
+import { useCheckAuth } from "@/features/auth/hooks";
 
 export default function BottomNav() {
   const pathname = usePathname();
@@ -26,7 +23,7 @@ export default function BottomNav() {
   const handlePress = (e: React.MouseEvent, tab: (typeof tabs)[0]) => {
     if (tab.protected && !isAuthenticated) {
       e.preventDefault();
-      router.push("/auth");
+      router.push("/auth/index");
     }
   };
 
