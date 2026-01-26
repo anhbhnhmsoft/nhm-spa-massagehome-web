@@ -1,3 +1,4 @@
+import { ModalToast } from "@/components/toast-manger-modal";
 import "./globals.css";
 import Providers from "@/lib/provider/providers";
 
@@ -15,7 +16,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.variable} font-sans`}>
-        <Providers>{children}</Providers>
+        <Providers>
+          <ModalToast>{children}</ModalToast>
+        </Providers>
       </body>
     </html>
   );

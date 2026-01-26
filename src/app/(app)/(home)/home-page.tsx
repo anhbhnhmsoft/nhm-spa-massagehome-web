@@ -20,7 +20,7 @@ export default function UserDashboard() {
   const queryCategory = useGetCategoryList({ page: 1, per_page: 5 }, true);
 
   return (
-    <div className="min-h-screen bg-slate-50 pb-24 bg-base-color-3 ">
+    <div className="min-h-screen  pb-24 bg-base-color-3 ">
       <main className="mx-auto max-w-[1024px]">
         {/* --- 1. BANNER --- */}
         <section className="relative w-full overflow-hidden md:h-[50vh] lg:rounded-b-[40px]">
