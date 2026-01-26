@@ -23,7 +23,7 @@ export default function BottomNav() {
   const handlePress = (e: React.MouseEvent, tab: (typeof tabs)[0]) => {
     if (tab.protected && !isAuthenticated) {
       e.preventDefault();
-      router.push("/auth/index");
+      router.push("/auth");
     }
   };
 

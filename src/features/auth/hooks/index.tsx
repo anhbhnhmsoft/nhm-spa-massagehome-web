@@ -1,9 +1,12 @@
 "use client";
 
-import { useCallback } from "react";
+import {useCallback, useEffect, useState} from "react";
 import useAuthStore from "../store";
 import { _AuthStatus } from "../const";
 import { useRouter } from "next/navigation";
+import {useProfileMutation} from "@/features/auth/hooks/use-mutation";
+import useToast from "@/features/app/hooks/use-toast";
+import {useTranslation} from "react-i18next";
 
 // /**
 //  * Hàm để xác thực user xem là login hay register
@@ -392,59 +395,63 @@ export const useCheckAuthToRedirect = () => {
 //   }, []);
 // };
 
-// /**
-//  * Hook để hydrate auth state từ local storage
-//  */
-// export const useHydrateAuth = () => {
-//   const _hydrated = useAuthStore((state) => state._hydrated);
-//   const hydrate = useAuthStore((state) => state.hydrate);
-//   const status = useAuthStore((state) => state.status);
-//   const setUser = useAuthStore((state) => state.setUser);
-//   const logout = useAuthStore((state) => state.logout);
+/**
+ * Hook để hydrate auth state từ local storage
+ */
+export const useHydrateAuth = () => {
+  const _hydrated = useAuthStore((state) => state._hydrated);
+  const status = useAuthStore((state) => state.status);
+  const setUser = useAuthStore((state) => state.setUser);
+  const logout = useAuthStore((state) => state.logout);
 
-//   const { mutate } = useProfileMutation();
-//   const { error } = useToast();
-//   const { t } = useTranslation();
+  const { mutate } = useProfileMutation();
+  const { error } = useToast();
+  const { t } = useTranslation();
 
-//   const [complete, setComplete] = useState(false);
+  const [complete, setComplete] = useState(false);
 
-//   useEffect(() => {
-//     // Nếu chưa hydrate xong từ local storage thì chưa làm gì cả
-//     if (!_hydrated) {
-//       hydrate();
-//     }
+  useEffect(() => {
+    useAuthStore.persist.rehydrate();
+    useAuthStore.getState().hydrate(); 
+  }, []);
 
-//     const initAuth = () => {
-//       //  Nếu trạng thái là đã đăng nhập, cần verify token
-//       if (status === _AuthStatus.AUTHORIZED) {
-//         mutate(undefined, {
-//           onSuccess: (res) => {
-//             // Cập nhật thông tin user mới nhất
-//             setUser(res.data.user);
-//           },
-//           onError: () => {
-//             // Token hết hạn hoặc không hợp lệ
-//             error({
-//               message: t('common_error.invalid_or_expired_token'),
-//             });
-//             logout();
-//           },
-//           onSettled: () => {
-//             // Dù thành công hay thất bại đều phải cho app chạy tiếp
-//             setComplete(true);
-//           },
-//         });
-//       } else {
-//         // Nếu chưa đăng nhập (GUEST), cho qua luôn
-//         setComplete(true);
-//       }
-//     };
+  useEffect(() => {
+    // Nếu chưa hydrate xong từ local storage thì chưa làm gì cả
+    if (!_hydrated) {
+      return;
+    }
 
-//     initAuth();
-//   }, [_hydrated]);
+    const initAuth = () => {
+      //  Nếu trạng thái là đã đăng nhập, cần verify token
+      if (status === _AuthStatus.AUTHORIZED) {
+        mutate(undefined, {
+          onSuccess: (res) => {
+            // Cập nhật thông tin user mới nhất
+            setUser(res.data.user);
+          },
+          onError: () => {
+            // Token hết hạn hoặc không hợp lệ
+            error({
+              message: t('common_error.invalid_or_expired_token'),
+            });
+            logout();
+          },
+          onSettled: () => {
+            // Dù thành công hay thất bại đều phải cho app chạy tiếp
+            setComplete(true);
+          },
+        });
+      } else {
+        // Nếu chưa đăng nhập (GUEST), cho qua luôn
+        setComplete(true);
+      }
+    };
 
-//   return complete;
-// };
+    initAuth();
+  }, [_hydrated, t]);
+
+  return complete;
+};
 
 // /**
 //  * Hook để set ngôn ngữ user
