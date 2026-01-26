@@ -62,7 +62,7 @@ export default function ServicesPageComponent() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-base-color-3">
       <Header
         showSearch={true}
         forSearch={"service"}

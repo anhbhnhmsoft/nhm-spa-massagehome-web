@@ -5,6 +5,7 @@ import { MapPin, Bell, Search, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import GradientBackground from "./styles/gradient-background";
+import { useLocationUser } from "@/features/app/hooks/use-get-user-location";
 
 type HeaderAppProps = {
   showSearch?: boolean;
@@ -23,7 +24,7 @@ export default function Header({
   const { t } = useTranslation();
   const [showLocationModal, setShowLocationModal] = useState(false);
 
-  const locationUser = { address: "123 Đường ABC, Hà Nội" };
+  const locationUser = useLocationUser();
   const checkAuth = true;
 
   const handleNotificationClick = () => {
@@ -75,7 +76,7 @@ export default function Header({
 
             {/* Search */}
             {showSearch && (
-              <div className="w-full max-w-2xl mx-auto">
+              <div className="w-full mx-auto">
                 <div className="relative h-11 flex items-center rounded-xl bg-white px-3 shadow-md focus-within:ring-2 focus-within:ring-blue-400">
                   <Search size={20} className="text-slate-400" />
                   <input

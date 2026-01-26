@@ -3,7 +3,10 @@ import {
   useInfiniteListManageKTV,
 } from "@/features/user/hooks/use-query";
 import { useMemo } from "react";
-import { useKTVSearchStore } from "@/features/user/stores";
+import useUserServiceStore, { useKTVSearchStore } from "@/features/user/stores";
+import useApplicationStore from "@/lib/store";
+import { useMutationKtvDetail } from "./use-mutation";
+import { useCheckAuthToRedirect } from "@/features/auth/hooks";
 
 /**
  * Dùng để lấy list KTV theo filter
@@ -84,35 +87,30 @@ export const useGetListKTVManager = () => {
 /**
  * Lưu thông tin massager vào store và chuyển hướng đến màn hình chi tiết massager
  */
-// export const useSetKtv = () => {
-//   const setKtv = useUserServiceStore((s) => s.setKtv);
+export const useSetKtv = () => {
+  const setKtv = useUserServiceStore((s) => s.setKtv);
 
-//   const redirect = useCheckAuthToRedirect();
+  const redirect = useCheckAuthToRedirect();
 
-//   const setLoading = useApplicationStore((s) => s.setLoading);
+  const setLoading = useApplicationStore((s) => s.setLoading);
 
-//   const handleError = useErrorToast();
+  const { mutate } = useMutationKtvDetail();
 
-//   const { mutate } = useMutationKtvDetail();
-
-//   return (id: string) => {
-//     redirect(() => {
-//       setLoading(true);
-//       mutate(id, {
-//         onSuccess: (res) => {
-//           setKtv(res.data);
-//           router.push("/(app)/(service)/masseurs-detail");
-//         },
-//         onError: (error) => {
-//           handleError(error);
-//         },
-//         onSettled: () => {
-//           setLoading(false);
-//         },
-//       });
-//     });
-//   };
-// };
+  return (id: string) => {
+    redirect(() => {
+      setLoading(true);
+      mutate(id, {
+        onSuccess: (res) => {
+          setKtv(res.data);
+        },
+        onError: (error) => {},
+        onSettled: () => {
+          setLoading(false);
+        },
+      });
+    });
+  };
+};
 
 /**
  * Lấy thông tin ktv và danh sách dịch vụ của ktv đó

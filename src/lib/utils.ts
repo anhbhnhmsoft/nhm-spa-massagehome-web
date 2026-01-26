@@ -12,7 +12,7 @@ export const checkLanguage = (lang: string) => {
 };
 
 // nhân bản list ở home page
-export  function normalizeListToLength<T>(list: T[], targetLength: number): T[]{
+export function normalizeListToLength<T>(list: T[], targetLength: number): T[] {
   if (list.length === 0) return [];
 
   const result: T[] = [];
@@ -25,3 +25,46 @@ export  function normalizeListToLength<T>(list: T[], targetLength: number): T[]{
 
   return result;
 }
+
+// Hàm chuyển đổi độ sang radian
+const deg2rad = (deg: number) => {
+  return deg * (Math.PI / 180);
+};
+
+/**
+ * Tính khoảng cách giữa 2 tọa độ theo công thức Haversine
+ * @param lat1 Vĩ độ người dùng
+ * @param lon1 Kinh độ người dùng
+ * @param lat2 Vĩ độ Provider
+ * @param lon2 Kinh độ Provider
+ * @returns Khoảng cách (km)
+ */
+export const getDistanceFromLatLonInKm = (
+  lat1: number,
+  lon1: number,
+  lat2: number,
+  lon2: number,
+) => {
+  const R = 6371; // Bán kính trái đất (km)
+  const dLat = deg2rad(lat2 - lat1);
+  const dLon = deg2rad(lon2 - lon1);
+
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(deg2rad(lat1)) *
+      Math.cos(deg2rad(lat2)) *
+      Math.sin(dLon / 2) *
+      Math.sin(dLon / 2);
+
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  // Khoảng cách theo km
+  return R * c;
+};
+
+// Hàm helper để format hiển thị (VD: 1.5 km, 500 m)
+export const formatDistance = (distanceInKm: number) => {
+  if (distanceInKm < 1) {
+    return `${Math.round(distanceInKm * 1000)} m`;
+  }
+  return `${distanceInKm.toFixed(1)} km`;
+};

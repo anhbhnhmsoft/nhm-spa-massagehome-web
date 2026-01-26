@@ -1,44 +1,9 @@
-// import useAuthStore from '@/features/auth/store';
-// import { _AuthStatus, _Gender } from '@/features/auth/const';
-// import { useHeartbeatQuery } from '@/features/auth/hooks/use-query';
-// import useToast from '@/features/app/hooks/use-toast';
-// import { useCallback, useEffect, useState } from 'react';
-// import { useTranslation } from 'react-i18next';
-// import useApplicationStore from '@/lib/store';
-// import { _LanguageCode } from '@/lib/const';
-// import {
-//   useAuthenticateMutation,
-//   useLockAccountMutation,
-//   useLoginMutation,
-//   useLogoutMutation,
-//   useMutationDeleteAvatar,
-//   useMutationEditAvatar,
-//   useMutationEditProfile,
-//   useProfileMutation,
-//   useRegisterMutation,
-//   useResendRegisterOTPMutation,
-//   useSetLanguageMutation,
-//   useVerifyRegisterOTPMutation,
-// } from '@/features/auth/hooks/use-mutation';
-// import {
-//   AuthenticateRequest,
-//   EditProfileRequest,
-//   LoginRequest,
-//   RegisterRequest,
-//   VerifyRegisterOTPRequest,
-// } from '@/features/auth/types';
-// import { useForm } from 'react-hook-form';
-// import { zodResolver } from '@hookform/resolvers/zod';
-// import { z } from 'zod';
-// import { Href, router } from 'expo-router';
-// import useErrorToast from '@/features/app/hooks/use-error-toast';
-// import { useCameraPermissions } from 'expo-camera';
-// import { Alert } from 'react-native';
-// import * as ImagePicker from 'expo-image-picker';
-// import dayjs from 'dayjs';
-// import * as Updates from 'expo-updates';
-// import { queryClient } from '@/lib/provider/query-provider';
-// import { useReferralStore } from '@/features/affiliate/store';
+"use client";
+
+import { useCallback } from "react";
+import useAuthStore from "../store";
+import { _AuthStatus } from "../const";
+import { useRouter } from "next/navigation";
 
 // /**
 //  * Hàm để xác thực user xem là login hay register
@@ -369,36 +334,38 @@
 //   };
 // };
 
-// /**
-//  * Hook để kiểm tra xem user có đang được xác thực hay không
-//  */
-// export const useCheckAuth = () => {
-//   const status = useAuthStore((state) => state.status);
-//   return status === _AuthStatus.AUTHORIZED;
-// };
+/**
+ * Hook để kiểm tra xem user có đang được xác thực hay không
+ */
+export const useCheckAuth = () => {
+  const status = useAuthStore((state) => state.status);
+  return status === _AuthStatus.AUTHORIZED;
+};
 
 // /**
 //  * Hook để kiểm tra xem user có đang được xác thực hay không, nếu không thì push về màn hình auth
 //  */
-// export const useCheckAuthToRedirect = () => {
-//   const isAuthorized = useCheckAuth();
+type RedirectTarget = string | (() => void);
 
-//   // Kiểu dữ liệu nhận vào: Href (URL) HOẶC một hàm callback
-//   return useCallback(
-//     (redirectTo: Href | (() => void)) => {
-//       if (!isAuthorized) {
-//         router.push('/(auth)');
-//       } else {
-//         if (typeof redirectTo === 'function') {
-//           redirectTo();
-//         } else {
-//           router.push(redirectTo);
-//         }
-//       }
-//     },
-//     [isAuthorized]
-//   );
-// };
+export const useCheckAuthToRedirect = () => {
+  const isAuthorized = useCheckAuth();
+  const router = useRouter();
+
+  return useCallback(
+    (redirectTo: RedirectTarget) => {
+      if (!isAuthorized) {
+        router.replace("/login");
+        return;
+      }
+      if (typeof redirectTo === "function") {
+        redirectTo();
+      } else {
+        router.push(redirectTo);
+      }
+    },
+    [isAuthorized, router],
+  );
+};
 // /**
 //  * Hook để lấy profile user
 //  */
