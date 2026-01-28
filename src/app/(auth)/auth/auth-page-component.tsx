@@ -107,10 +107,6 @@ export default function AuthPageComponent() {
                 t("common.continue")
               )}
             </button>
-
-            <p className="text-center text-sm text-gray-400">
-              {t("auth.auth_footer_note") || "Security verified by NHM System"}
-            </p>
           </div>
         </div>
       </main>

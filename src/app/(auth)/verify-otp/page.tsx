@@ -82,7 +82,7 @@ export default function VerifyOtp() {
             {/* Thông tin số điện thoại */}
             <div className="mb-10 text-center md:text-left">
               <p className="text-gray-500 text-base">
-                {t("auth.otp_sent_to") || "Mã xác thực đã được gửi đến"}
+                {t("auth.auth_verify_description")}
               </p>
               <span className="mt-1 block text-2xl font-bold text-primary-color-2 tracking-tight">
                 {phoneAuthen}
