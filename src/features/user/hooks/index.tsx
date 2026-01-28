@@ -1,12 +1,16 @@
 import {
   useInfiniteListKTV,
   useInfiniteListManageKTV,
+  useQueryDashboardProfile,
 } from "@/features/user/hooks/use-query";
-import { useMemo } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import useUserServiceStore, { useKTVSearchStore } from "@/features/user/stores";
 import useApplicationStore from "@/lib/store";
 import { useMutationKtvDetail } from "./use-mutation";
-import { useCheckAuthToRedirect } from "@/features/auth/hooks";
+import { useCheckAuth, useCheckAuthToRedirect } from "@/features/auth/hooks";
+import useAuthStore from "@/features/auth/store";
+import { useProfileQuery } from "@/features/auth/hooks/use-query";
+import { useRouter } from "next/navigation";
 
 /**
  * Dùng để lấy list KTV theo filter
@@ -170,56 +174,57 @@ export const useSetKtv = () => {
 /**
  * Xử lý màn hình profile
  */
-// export const useProfile = () => {
-//   const user = useAuthStore((state) => state.user);
-//   const setUser = useAuthStore((state) => state.setUser);
-//   const setLoading = useApplicationStore((s) => s.setLoading);
-//   const checkAuth = useCheckAuth();
+export const useProfile = () => {
+  const router = useRouter();
+  const user = useAuthStore((state) => state.user);
+  const setUser = useAuthStore((state) => state.setUser);
+  const setLoading = useApplicationStore((s) => s.setLoading);
+  const checkAuth = useCheckAuth();
 
-//   const queryProfile = useProfileQuery();
-//   const queryDashboard = useQueryDashboardProfile();
+  const queryProfile = useProfileQuery();
+  const queryDashboard = useQueryDashboardProfile();
 
-//   // Cập nhật thông tin user khi có dữ liệu từ query
-//   useEffect(() => {
-//     if (queryProfile.data) {
-//       setUser(queryProfile.data);
-//     }
-//   }, [queryProfile.data]);
+  // Cập nhật thông tin user khi có dữ liệu từ query
+  useEffect(() => {
+    if (queryProfile.data) {
+      setUser(queryProfile.data);
+    }
+  }, [queryProfile.data]);
 
-//   // Chuyển hướng đến màn hình đăng nhập nếu chưa đăng nhập
-//   useEffect(() => {
-//     if (!checkAuth && !user) {
-//       router.push("/(auth)");
-//     }
-//   }, [checkAuth]);
+  // Chuyển hướng đến màn hình đăng nhập nếu chưa đăng nhập
+  useEffect(() => {
+    if (!checkAuth && !user) {
+      router.push("/(auth)");
+    }
+  }, [checkAuth]);
 
-//   const isLoading = useMemo(() => {
-//     return (
-//       queryProfile.isLoading ||
-//       queryDashboard.isLoading ||
-//       queryDashboard.isRefetching ||
-//       queryProfile.isRefetching
-//     );
-//   }, [
-//     queryProfile.isLoading,
-//     queryDashboard.isLoading,
-//     queryDashboard.isRefetching,
-//     queryProfile.isRefetching,
-//   ]);
+  const isLoading = useMemo(() => {
+    return (
+      queryProfile.isLoading ||
+      queryDashboard.isLoading ||
+      queryDashboard.isRefetching ||
+      queryProfile.isRefetching
+    );
+  }, [
+    queryProfile.isLoading,
+    queryDashboard.isLoading,
+    queryDashboard.isRefetching,
+    queryProfile.isRefetching,
+  ]);
 
-//   useEffect(() => {
-//     setLoading(isLoading);
-//   }, [isLoading]);
+  useEffect(() => {
+    setLoading(isLoading);
+  }, [isLoading]);
 
-//   const refreshProfile = useCallback(() => {
-//     queryProfile.refetch();
-//     queryDashboard.refetch();
-//   }, [queryProfile, queryDashboard]);
+  const refreshProfile = useCallback(() => {
+    queryProfile.refetch();
+    queryDashboard.refetch();
+  }, [queryProfile, queryDashboard]);
 
-//   return {
-//     user,
-//     dashboardData: queryDashboard.data,
-//     refreshProfile,
-//     isLoading,
-//   };
-// };
+  return {
+    user,
+    dashboardData: queryDashboard.data,
+    refreshProfile,
+    isLoading,
+  };
+};

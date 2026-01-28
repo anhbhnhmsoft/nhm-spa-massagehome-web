@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import {
   useAuthenticateMutation,
   useLoginMutation,
+  useLogoutMutation,
   useProfileMutation,
   useRegisterMutation,
   useResendRegisterOTPMutation,
@@ -810,28 +811,28 @@ export const useSetLanguageUser = (onClose?: () => void) => {
 //   };
 // };
 
-// export const useLogout = () => {
-//   const mutationLogout = useLogoutMutation();
-//   const logout = useAuthStore((s) => s.logout);
-//   const setLoading = useApplicationStore((s) => s.setLoading);
-//   const handleError = useErrorToast();
+export const useLogout = () => {
+  const mutationLogout = useLogoutMutation();
+  const logout = useAuthStore((s) => s.logout);
+  const setLoading = useApplicationStore((s) => s.setLoading);
+  const handleError = useErrorToast();
 
-//   return () => {
-//     setLoading(true);
-//     mutationLogout.mutate(undefined, {
-//       onSuccess: () => {
-//         logout();
-//       },
-//       onError: (error) => {
-//         // Xử lý khi có lỗi xảy ra
-//         handleError(error);
-//       },
-//       onSettled: () => {
-//         setLoading(false);
-//       },
-//     });
-//   };
-// };
+  return () => {
+    setLoading(true);
+    mutationLogout.mutate(undefined, {
+      onSuccess: () => {
+        logout();
+      },
+      onError: (error) => {
+        // Xử lý khi có lỗi xảy ra
+        handleError(error);
+      },
+      onSettled: () => {
+        setLoading(false);
+      },
+    });
+  };
+};
 
 // /**
 //  * Hook để xóa tài khoản

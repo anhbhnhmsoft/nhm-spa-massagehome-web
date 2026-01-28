@@ -1,10 +1,18 @@
+import useToast from "@/features/app/hooks/use-toast";
 import { useInfiniteCategoryList } from "@/features/service/hooks/use-query";
 import {
   CategoryListFilterPatch,
   CategoryListRequest,
+  SendReviewRequest,
 } from "@/features/service/types";
-import { useCallback, useMemo } from "react";
+import { useCallback, useEffect, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { useImmer } from "use-immer";
+import { useMutationSendReview } from "./use-mutation";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import z from "zod";
+import { getMessageError } from "@/lib/utils";
 
 /**
  * Lấy danh sách danh mục dịch vụ
@@ -307,65 +315,68 @@ export const useGetCategoryList = (
 //   };
 // };
 
-// /**
-//  * hook dùng cho modal đánh giá dịch vụ
-//  * @param serviceBookingId ID của dịch vụ cần đánh giá
-//  * @param onSuccess Callback khi đánh giá thành công
-//  */
-// export const useReviewModal = (serviceBookingId: string, onSuccess: () => void) => {
-//   const { t } = useTranslation();
-//   const { success } = useToast();
+/**
+ * hook dùng cho modal đánh giá dịch vụ
+ * @param serviceBookingId ID của dịch vụ cần đánh giá
+ * @param onSuccess Callback khi đánh giá thành công
+ */
+export const useReviewModal = (
+  serviceBookingId: string,
+  onSuccess: () => void,
+) => {
+  const { t } = useTranslation();
+  const { success } = useToast();
 
-//   const { mutate: sendReview, isPending } = useMutationSendReview();
+  const { mutate: sendReview, isPending } = useMutationSendReview();
 
-//   const form = useForm<SendReviewRequest>({
-//     resolver: zodResolver(
-//       z.object({
-//         service_booking_id: z.string(),
-//         rating: z
-//           .number()
-//           .min(1, { error: t('services.error.rating_invalid') })
-//           .max(5, { error: t('services.error.rating_invalid') }),
-//         comment: z.string().max(1000).optional().or(z.literal('')),
-//         hidden: z.boolean().default(false),
-//       })
-//     ),
-//     defaultValues: {
-//       service_booking_id: serviceBookingId || '',
-//       rating: 5,
-//       comment: '',
-//       hidden: false,
-//     },
-//   });
+  const form = useForm<SendReviewRequest>({
+    resolver: zodResolver(
+      z.object({
+        service_booking_id: z.string(),
+        rating: z
+          .number()
+          .min(1, { error: t("services.error.rating_invalid") })
+          .max(5, { error: t("services.error.rating_invalid") }),
+        comment: z.string().max(1000).optional().or(z.literal("")),
+        hidden: z.boolean().default(false),
+      }),
+    ),
+    defaultValues: {
+      service_booking_id: serviceBookingId || "",
+      rating: 5,
+      comment: "",
+      hidden: false,
+    },
+  });
 
-//   useEffect(() => {
-//     if (serviceBookingId) {
-//       form.setValue('service_booking_id', serviceBookingId);
-//     }
-//   }, [serviceBookingId]);
+  useEffect(() => {
+    if (serviceBookingId) {
+      form.setValue("service_booking_id", serviceBookingId);
+    }
+  }, [serviceBookingId]);
 
-//   const onSubmit = (data: SendReviewRequest) => {
-//     sendReview(data, {
-//       onSuccess: () => {
-//         success({ message: t('services.success.review_success') });
-//         onSuccess();
-//         form.reset();
-//       },
-//       onError: (error) => {
-//         const message = getMessageError(error, t);
-//         if (message) {
-//           form.setError('comment', { message: message });
-//         }
-//       },
-//     });
-//   };
+  const onSubmit = (data: SendReviewRequest) => {
+    sendReview(data, {
+      onSuccess: () => {
+        success({ message: t("services.success.review_success") });
+        onSuccess();
+        form.reset();
+      },
+      onError: (error) => {
+        const message = getMessageError(error, t);
+        if (message) {
+          form.setError("comment", { message: message });
+        }
+      },
+    });
+  };
 
-//   return {
-//     form,
-//     loading: isPending,
-//     onSubmit,
-//   };
-// };
+  return {
+    form,
+    loading: isPending,
+    onSubmit,
+  };
+};
 
 // /**
 //  * Lấy danh sách review của user

@@ -96,3 +96,8 @@ export const getMessageError = (
     }
   }
 };
+
+// Hàm format tiền tệ
+export const formatBalance = (balance: string | number) => {
+  return Number(balance).toLocaleString("vi-VN");
+};
