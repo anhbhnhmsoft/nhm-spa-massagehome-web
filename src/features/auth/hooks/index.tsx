@@ -1,341 +1,405 @@
 "use client";
 
-import {useCallback, useEffect, useState} from "react";
+import { useCallback, useEffect, useState } from "react";
 import useAuthStore from "../store";
-import { _AuthStatus } from "../const";
+import { _AuthStatus, _Gender } from "../const";
 import { useRouter } from "next/navigation";
-import {useProfileMutation} from "@/features/auth/hooks/use-mutation";
+import {
+  useAuthenticateMutation,
+  useLoginMutation,
+  useLogoutMutation,
+  useProfileMutation,
+  useRegisterMutation,
+  useResendRegisterOTPMutation,
+  useSetLanguageMutation,
+  useVerifyRegisterOTPMutation,
+} from "@/features/auth/hooks/use-mutation";
 import useToast from "@/features/app/hooks/use-toast";
-import {useTranslation} from "react-i18next";
+import { useTranslation } from "react-i18next";
+import useApplicationStore from "@/lib/store";
+import { queryClient } from "@/lib/provider/query-provider";
+import { _LanguageCode } from "@/lib/const";
+import useErrorToast from "@/features/app/hooks/use-error-toast";
+import {
+  AuthenticateRequest,
+  LoginRequest,
+  RegisterRequest,
+  VerifyRegisterOTPRequest,
+} from "../types";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { useReferralStore } from "@/features/affiliate/store";
 
-// /**
-//  * Hàm để xác thực user xem là login hay register
-//  */
-// export const useHandleAuthenticate = () => {
-//   const { t } = useTranslation();
-//   // handle error toast khi gọi API thất bại
-//   const handleError = useErrorToast();
-//   // set phone_authen vào auth store khi submit form
-//   const setPhoneAuthen = useAuthStore((state) => state.setPhoneAuthen);
-//   // set expire_minutes vào auth store khi submit form
-//   const setExpireMinutes = useAuthStore((state) => state.setExpireMinutes);
-//   // mutate function để gọi API xác thực user
-//   const { mutate, isPending } = useAuthenticateMutation();
-//   // form hook để validate và submit form
-//   const form = useForm<AuthenticateRequest>({
-//     resolver: zodResolver(
-//       z.object({
-//         phone: z
-//           .string()
-//           .min(1, { error: t('auth.error.phone_required') })
-//           .regex(/^[0-9]+$/, { error: t('auth.error.phone_invalid') })
-//           .min(9, { error: t('auth.error.phone_min') })
-//           .max(12, { error: t('auth.error.phone_max') }),
-//       })
-//     ),
-//     defaultValues: {
-//       phone: '',
-//     },
-//   });
-//   // handle submit form
-//   const onSubmit = useCallback((data: AuthenticateRequest) => {
-//     mutate(data, {
-//       onSuccess: (res) => {
-//         // Nếu cần đăng ký thì redirect đến màn hình xác thực OTP
-//         const needRegister = res.data?.need_register || false;
-//         setPhoneAuthen(data.phone);
-//         if (needRegister) {
-//           // Lưu expire_minutes vào auth store khi submit form
-//           const expireMinutes = res.data?.expire_minutes || null;
-//           setExpireMinutes(expireMinutes);
-//           // Nếu cần đăng ký thì redirect đến màn hình xác thực OTP
-//           router.replace('/(auth)/verify-otp');
-//         } else {
-//           // Nếu không cần đăng ký thì redirect đến màn hình login
-//           router.replace('/(auth)/login');
-//         }
-//       },
-//       onError: (err) => {
-//         handleError(err);
-//       },
-//     });
-//   }, []);
+/**
+ * Hàm để xác thực user xem là login hay register
+ */
+export const useHandleAuthenticate = () => {
+  const { t } = useTranslation();
+  const router = useRouter();
+  // handle error toast khi gọi API thất bại
+  const handleError = useErrorToast();
+  // set phone_authen vào auth store khi submit form
+  const setPhoneAuthen = useAuthStore((state) => state.setPhoneAuthen);
+  // set expire_minutes vào auth store khi submit form
+  const setExpireMinutes = useAuthStore((state) => state.setExpireMinutes);
+  // mutate function để gọi API xác thực user
+  const { mutate, isPending } = useAuthenticateMutation();
+  // form hook để validate và submit form
+  const form = useForm<AuthenticateRequest>({
+    resolver: zodResolver(
+      z.object({
+        phone: z
+          .string()
+          .min(1, { error: t("auth.error.phone_required") })
+          .regex(/^[0-9]+$/, { error: t("auth.error.phone_invalid") })
+          .min(9, { error: t("auth.error.phone_min") })
+          .max(12, { error: t("auth.error.phone_max") }),
+      }),
+    ),
+    defaultValues: {
+      phone: "",
+    },
+  });
+  // handle submit form
+  const onSubmit = useCallback(
+    (data: AuthenticateRequest) => {
+      mutate(data, {
+        onSuccess: (res) => {
+          // Nếu cần đăng ký thì redirect đến màn hình xác thực OTP
+          const needRegister = res.data?.need_register || false;
+          setPhoneAuthen(data.phone);
+          if (needRegister) {
+            // Lưu expire_minutes vào auth store khi submit form
+            const expireMinutes = res.data?.expire_minutes || null;
+            setExpireMinutes(expireMinutes);
+            // Nếu cần đăng ký thì redirect đến màn hình xác thực OTP
+            router.replace("/verify-otp");
+          } else {
+            // Nếu không cần đăng ký thì redirect đến màn hình login
+            router.replace("/login");
+          }
+        },
+        onError: (err) => {
+          handleError(err);
+        },
+      });
+    },
+    [handleError, mutate, setExpireMinutes, setPhoneAuthen, router],
+  );
 
-//   return {
-//     form,
-//     onSubmit,
-//     loading: isPending,
-//   };
-// };
+  return {
+    form,
+    onSubmit,
+    loading: isPending,
+  };
+};
 
-// /**
-//  * Hàm để đăng nhập user
-//  */
-// export const useHandleLogin = () => {
-//   const { t } = useTranslation();
-//   // handle error toast khi gọi API thất bại
-//   const handleError = useErrorToast();
-//   // set phone_authen vào auth store khi submit form
-//   const phone = useAuthStore((state) => state.phone_authen);
-//   // handle success toast khi gọi API thành công
-//   const { success, error } = useToast();
-//   // set login vào auth store khi submit form
-//   const login = useAuthStore((state) => state.login);
-//   // form hook để validate và submit form
-//   const form = useForm<LoginRequest>({
-//     resolver: zodResolver(
-//       z.object({
-//         phone: z
-//           .string()
-//           .min(1, { error: t('auth.error.phone_required') })
-//           .regex(/^[0-9]+$/, { error: t('auth.error.phone_invalid') })
-//           .min(9, { error: t('auth.error.phone_min') })
-//           .max(12, { error: t('auth.error.phone_max') }),
-//         password: z
-//           .string()
-//           .min(1, { message: t('auth.error.password_invalid') })
-//           .min(8, { message: t('auth.error.password_invalid') })
-//           .regex(/[a-z]/, { message: t('auth.error.password_invalid') })
-//           .regex(/[A-Z]/, { message: t('auth.error.password_invalid') })
-//           .regex(/[0-9]/, { message: t('auth.error.password_invalid') }),
-//       })
-//     ),
-//     defaultValues: {
-//       phone: phone || '',
-//       password: '',
-//     },
-//   });
-//   // mutate function để gọi API xác thực user
-//   const { mutate, isPending } = useLoginMutation();
-//   // handle submit form
-//   const onSubmit = useCallback((data: LoginRequest) => {
-//     mutate(data, {
-//       onSuccess: (res) => {
-//         // Sau khi đăng ký thành công thì login user
-//         login(res.data)
-//           .then(() => {
-//             success({
-//               message: t('auth.success.login_success'),
-//             });
-//             // Sau khi login thành công thì redirect về màn hình home
-//             router.push('/(app)/(tab)');
-//           })
-//           .catch((err) => {
-//             error({
-//               message: t('auth.error.register_failed'),
-//             });
-//           });
-//       },
-//       onError: (err) => {
-//         handleError(err);
-//       },
-//     });
-//   }, []);
+/**
+ * Hàm để đăng nhập user
+ */
+export const useHandleLogin = () => {
+  const { t } = useTranslation();
+  const router = useRouter();
+  // handle error toast khi gọi API thất bại
+  const handleError = useErrorToast();
+  // set phone_authen vào auth store khi submit form
+  const phone = useAuthStore((state) => state.phone_authen);
+  // handle success toast khi gọi API thành công
+  const { success, error } = useToast();
+  // set login vào auth store khi submit form
+  const login = useAuthStore((state) => state.login);
+  // form hook để validate và submit form
+  const form = useForm<LoginRequest>({
+    resolver: zodResolver(
+      z.object({
+        phone: z
+          .string()
+          .min(1, { error: t("auth.error.phone_required") })
+          .regex(/^[0-9]+$/, { error: t("auth.error.phone_invalid") })
+          .min(9, { error: t("auth.error.phone_min") })
+          .max(12, { error: t("auth.error.phone_max") }),
+        password: z
+          .string()
+          .min(1, { message: t("auth.error.password_invalid") })
+          .min(8, { message: t("auth.error.password_invalid") })
+          .regex(/[a-z]/, { message: t("auth.error.password_invalid") })
+          .regex(/[A-Z]/, { message: t("auth.error.password_invalid") })
+          .regex(/[0-9]/, { message: t("auth.error.password_invalid") }),
+      }),
+    ),
+    defaultValues: {
+      phone: phone || "",
+      password: "",
+    },
+  });
+  // mutate function để gọi API xác thực user
+  const { mutate, isPending } = useLoginMutation();
+  // handle submit form
+  const onSubmit = useCallback(
+    (data: LoginRequest) => {
+      mutate(data, {
+        onSuccess: async (res) => {
+          try {
+            await login(res.data);
 
-//   return {
-//     form,
-//     onSubmit,
-//     loading: isPending,
-//   };
-// };
+            success({
+              message: t("auth.success.login_success"),
+            });
 
-// /**
-//  * Hàm để xác thực OTP đăng ký
-//  */
-// export const useHandleVerifyRegisterOtp = () => {
-//   const { t } = useTranslation();
-//   // handle error toast khi gọi API thất bại
-//   const handleError = useErrorToast();
-//   // handle success toast khi gọi API thành công
-//   const { success } = useToast();
+            router.push("/");
+          } catch {
+            error({
+              message: t("auth.error.register_failed"),
+            });
+          }
+        },
 
-//   // set phone_authen vào auth store khi submit form
-//   const phoneAuthen = useAuthStore((state) => state.phone_authen);
+        onError: (err) => {
+          handleError(err);
+        },
+      });
+    },
+    [error, handleError, login, mutate, router, success, t],
+  );
 
-//   // set token_register vào auth store khi submit form
-//   const setTokenRegister = useAuthStore((state) => state.setTokenRegister);
+  return {
+    form,
+    onSubmit,
+    loading: isPending,
+  };
+};
 
-//   // mutate function để gọi API xác thực user
-//   const mutationVerifyRegisterOTP = useVerifyRegisterOTPMutation();
+/**
+ * Hàm để xác thực OTP đăng ký
+ */
+export const useHandleVerifyRegisterOtp = () => {
+  const { t } = useTranslation();
+  const router = useRouter();
+  // handle error toast khi gọi API thất bại
+  const handleError = useErrorToast();
+  // handle success toast khi gọi API thành công
+  const { success } = useToast();
 
-//   // form hook để validate và submit form
-//   const form = useForm<VerifyRegisterOTPRequest>({
-//     mode: 'onChange',
-//     resolver: zodResolver(
-//       z.object({
-//         phone: z
-//           .string()
-//           .min(1, { error: t('auth.error.phone_required') })
-//           .regex(/^[0-9]+$/, { error: t('auth.error.phone_invalid') })
-//           .min(9, { error: t('auth.error.phone_min') })
-//           .max(12, { error: t('auth.error.phone_max') }),
-//         otp: z
-//           .string()
-//           .min(1, { error: t('auth.error.otp_required') })
-//           .regex(/^[0-9]+$/, { error: t('auth.error.otp_invalid') })
-//           .min(6, { error: t('auth.error.otp_min') })
-//           .max(6, { error: t('auth.error.otp_max') }),
-//       })
-//     ),
-//     defaultValues: {
-//       phone: '',
-//       otp: '',
-//     },
-//   });
+  // set phone_authen vào auth store khi submit form
+  const phoneAuthen = useAuthStore((state) => state.phone_authen);
 
-//   // set phone_authen vào form khi submit form
-//   useEffect(() => {
-//     if (phoneAuthen) {
-//       form.setValue('phone', phoneAuthen);
-//     }
-//   }, [phoneAuthen]);
+  // set token_register vào auth store khi submit form
+  const setTokenRegister = useAuthStore((state) => state.setTokenRegister);
 
-//   // handle submit form
-//   const onSubmit = useCallback((data: VerifyRegisterOTPRequest) => {
-//     mutationVerifyRegisterOTP.mutate(data, {
-//       onSuccess: (res) => {
-//         setTokenRegister(res.data.token);
-//         success({
-//           message: t('auth.success.verify_register_otp'),
-//         });
-//         router.replace('/(auth)/register');
-//       },
-//       onError: (err) => {
-//         handleError(err);
-//       },
-//     });
-//   }, []);
+  // mutate function để gọi API xác thực user
+  const mutationVerifyRegisterOTP = useVerifyRegisterOTPMutation();
 
-//   /**
-//    * ---------- Resend OTP Logic ----------
-//    */
-//   // mutate function để gọi API resend OTP register
-//   const mutationResendRegisterOTP = useResendRegisterOTPMutation();
-//   // Timer để đếm ngược thời gian resend OTP
-//   const [timer, setTimer] = useState(60);
+  // form hook để validate và submit form
+  const form = useForm<VerifyRegisterOTPRequest>({
+    mode: "onChange",
+    resolver: zodResolver(
+      z.object({
+        phone: z
+          .string()
+          .min(1, { error: t("auth.error.phone_required") })
+          .regex(/^[0-9]+$/, { error: t("auth.error.phone_invalid") })
+          .min(9, { error: t("auth.error.phone_min") })
+          .max(12, { error: t("auth.error.phone_max") }),
+        otp: z
+          .string()
+          .min(1, { error: t("auth.error.otp_required") })
+          .regex(/^[0-9]+$/, { error: t("auth.error.otp_invalid") })
+          .min(6, { error: t("auth.error.otp_min") })
+          .max(6, { error: t("auth.error.otp_max") }),
+      }),
+    ),
+    defaultValues: {
+      phone: "",
+      otp: "",
+    },
+  });
 
-//   useEffect(() => {
-//     let interval: number;
+  // set phone_authen vào form khi submit form
+  useEffect(() => {
+    if (phoneAuthen) {
+      form.setValue("phone", phoneAuthen);
+    }
+  }, [phoneAuthen]);
 
-//     if (timer > 0) {
-//       interval = setInterval(() => setTimer((prev) => prev - 1), 1000);
-//     }
-//     return () => clearInterval(interval);
-//   }, [timer]);
+  // handle submit form
+  const onSubmit = useCallback(
+    (data: VerifyRegisterOTPRequest) => {
+      mutationVerifyRegisterOTP.mutate(data, {
+        onSuccess: (res) => {
+          setTokenRegister(res.data.token);
+          success({
+            message: t("auth.success.verify_register_otp"),
+          });
+          router.replace("/register");
+        },
+        onError: (err) => {
+          handleError(err);
+        },
+      });
+    },
+    [
+      handleError,
+      mutationVerifyRegisterOTP,
+      router,
+      setTokenRegister,
+      success,
+      t,
+    ],
+  );
 
-//   // handle resend OTP
-//   const resendOTP = () => {
-//     if (phoneAuthen && timer === 0) {
-//       mutationResendRegisterOTP.mutate(
-//         {
-//           phone: phoneAuthen,
-//         },
-//         {
-//           onSuccess: () => {
-//             success({
-//               message: t('auth.success.resend_otp'),
-//             });
-//             setTimer(60);
-//           },
-//           onError: (err) => {
-//             handleError(err);
-//           },
-//         }
-//       );
-//     }
-//   };
+  /**
+   * ---------- Resend OTP Logic ----------
+   */
+  // mutate function để gọi API resend OTP register
+  const mutationResendRegisterOTP = useResendRegisterOTPMutation();
+  // Timer để đếm ngược thời gian resend OTP
+  const [timer, setTimer] = useState(60);
 
-//   return {
-//     phoneAuthen,
-//     timer,
-//     form,
-//     onSubmit,
-//     resendOTP,
-//     loading: mutationVerifyRegisterOTP.isPending || mutationResendRegisterOTP.isPending,
-//   };
-// };
+  useEffect(() => {
+    let interval: ReturnType<typeof setInterval> | undefined;
 
-// /**
-//  * Hàm để đăng ký user
-//  */
-// export const useHandleRegister = () => {
-//   const { t } = useTranslation();
-//   // handle error toast khi gọi API thất bại
-//   const handleError = useErrorToast();
-//   const clearUserReferral = useReferralStore((state) => state.clearUserReferral);
-//   // handle success toast khi gọi API thành công
-//   const { success, error } = useToast();
-//   // Lấy token_register từ auth store khi submit form verify OTP
-//   const tokenRegister = useAuthStore((state) => state.token_register);
+    if (timer > 0) {
+      interval = setInterval(() => {
+        setTimer((prev) => prev - 1);
+      }, 1000);
+    }
 
-//   const login = useAuthStore((state) => state.login);
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [timer]);
 
-//   // mutate function để gọi API đăng ký user
-//   const mutationRegister = useRegisterMutation();
+  // handle resend OTP
+  const resendOTP = () => {
+    if (phoneAuthen && timer === 0) {
+      mutationResendRegisterOTP.mutate(
+        {
+          phone: phoneAuthen,
+        },
+        {
+          onSuccess: () => {
+            success({
+              message: t("auth.success.resend_otp"),
+            });
+            setTimer(60);
+          },
+          onError: (err) => {
+            console.log(err);
+            handleError(err);
+          },
+        },
+      );
+    }
+  };
 
-//   // form hook để validate và submit form
-//   const form = useForm<RegisterRequest>({
-//     resolver: zodResolver(
-//       z.object({
-//         token: z.string().min(1),
-//         name: z.string().min(1, { error: t('auth.error.name_required') }),
-//         password: z
-//           .string()
-//           .min(1, { message: t('auth.error.password_invalid') })
-//           .min(8, { message: t('auth.error.password_invalid') })
-//           .regex(/[a-z]/, { message: t('auth.error.password_invalid') })
-//           .regex(/[A-Z]/, { message: t('auth.error.password_invalid') })
-//           .regex(/[0-9]/, { message: t('auth.error.password_invalid') }),
-//         referral_code: z.string().optional().nullable(),
-//         gender: z.enum(_Gender, {
-//           error: t('auth.error.gender_invalid'),
-//         }),
-//         language: z.enum(_LanguageCode, {
-//           error: t('auth.error.language_invalid'),
-//         }),
-//       })
-//     ),
-//     defaultValues: {
-//       token: tokenRegister || '',
-//       name: '',
-//       password: '',
-//       gender: _Gender.MALE,
-//       language: _LanguageCode.VI,
-//     },
-//   });
+  return {
+    phoneAuthen,
+    timer,
+    form,
+    onSubmit,
+    resendOTP,
+    loading:
+      mutationVerifyRegisterOTP.isPending ||
+      mutationResendRegisterOTP.isPending,
+  };
+};
 
-//   // handle submit form
-//   const onSubmit = useCallback((data: RegisterRequest) => {
-//     mutationRegister.mutate(data, {
-//       onSuccess: (res) => {
-//         // Sau khi đăng ký thành công thì login user
-//         login(res.data)
-//           .then(() => {
-//             success({
-//               message: t('auth.success.register_success'),
-//             });
-//             // Sau khi login thành công thì redirect về màn hình home
-//             clearUserReferral();
-//             router.push('/(app)/(tab)');
-//           })
-//           .catch((err) => {
-//             error({
-//               message: t('auth.error.register_failed'),
-//             });
-//           });
-//       },
-//       onError: (err) => {
-//         handleError(err);
-//       },
-//     });
-//   }, []);
+/**
+ * Hàm để đăng ký user
+ */
+export const useHandleRegister = () => {
+  const { t } = useTranslation();
+  const router = useRouter();
+  // handle error toast khi gọi API thất bại
+  const handleError = useErrorToast();
+  const clearUserReferral = useReferralStore(
+    (state) => state.clearUserReferral,
+  );
+  // handle success toast khi gọi API thành công
+  const { success, error } = useToast();
+  // Lấy token_register từ auth store khi submit form verify OTP
+  const tokenRegister = useAuthStore((state) => state.token_register);
 
-//   return {
-//     form,
-//     onSubmit,
-//     loading: mutationRegister.isPending,
-//   };
-// };
+  const login = useAuthStore((state) => state.login);
+
+  // mutate function để gọi API đăng ký user
+  const mutationRegister = useRegisterMutation();
+
+  // form hook để validate và submit form
+  const form = useForm<RegisterRequest>({
+    resolver: zodResolver(
+      z.object({
+        token: z.string().min(1),
+        name: z.string().min(1, { error: t("auth.error.name_required") }),
+        password: z
+          .string()
+          .min(1, { message: t("auth.error.password_invalid") })
+          .min(8, { message: t("auth.error.password_invalid") })
+          .regex(/[a-z]/, { message: t("auth.error.password_invalid") })
+          .regex(/[A-Z]/, { message: t("auth.error.password_invalid") })
+          .regex(/[0-9]/, { message: t("auth.error.password_invalid") }),
+        referral_code: z.string().optional().nullable(),
+        gender: z.enum(_Gender, {
+          error: t("auth.error.gender_invalid"),
+        }),
+        language: z.enum(_LanguageCode, {
+          error: t("auth.error.language_invalid"),
+        }),
+      }),
+    ),
+    defaultValues: {
+      token: tokenRegister || "",
+      name: "",
+      password: "",
+      gender: _Gender.MALE,
+      language: _LanguageCode.VI,
+    },
+  });
+
+  // handle submit form
+  const onSubmit = useCallback(
+    async (data: RegisterRequest) => {
+      mutationRegister.mutate(data, {
+        onSuccess: async (res) => {
+          try {
+            await login(res.data); // ✅ không .then
+
+            success({
+              message: t("auth.success.register_success"),
+            });
+
+            clearUserReferral();
+            router.push("/(app)/(tab)");
+          } catch {
+            error({
+              message: t("auth.error.register_failed"),
+            });
+          }
+        },
+        onError: (err) => {
+          handleError(err);
+        },
+      });
+    },
+    [
+      clearUserReferral,
+      error,
+      handleError,
+      login,
+      mutationRegister,
+      router,
+      success,
+      t,
+    ],
+  );
+
+  return {
+    form,
+    onSubmit,
+    loading: mutationRegister.isPending,
+  };
+};
 
 /**
  * Hook để kiểm tra xem user có đang được xác thực hay không
@@ -412,7 +476,7 @@ export const useHydrateAuth = () => {
 
   useEffect(() => {
     useAuthStore.persist.rehydrate();
-    useAuthStore.getState().hydrate(); 
+    useAuthStore.getState().hydrate();
   }, []);
 
   useEffect(() => {
@@ -432,7 +496,7 @@ export const useHydrateAuth = () => {
           onError: () => {
             // Token hết hạn hoặc không hợp lệ
             error({
-              message: t('common_error.invalid_or_expired_token'),
+              message: t("common_error.invalid_or_expired_token"),
             });
             logout();
           },
@@ -453,78 +517,70 @@ export const useHydrateAuth = () => {
   return complete;
 };
 
-// /**
-//  * Hook để set ngôn ngữ user
-//  */
-// export const useSetLanguageUser = (onClose?: () => void) => {
-//   const { t } = useTranslation();
-//   // Lấy ngôn ngữ hiện tại từ store
-//   const selectedLang = useApplicationStore((state) => state.language);
+/**
+ * Hook để set ngôn ngữ user
+ */
+export const useSetLanguageUser = (onClose?: () => void) => {
+  const { t, i18n } = useTranslation();
 
-//   // Lấy hàm set ngôn ngữ từ store
-//   const setLanguageStore = useApplicationStore((state) => state.setLanguage);
+  const selectedLang = useApplicationStore((s) => s.language);
+  const setLanguageStore = useApplicationStore((s) => s.setLanguage);
 
-//   // Lấy hàm set ngôn ngữ từ API
-//   const { mutate, isPending } = useSetLanguageMutation();
+  const { mutate, isPending } = useSetLanguageMutation();
+  const { error: errorToast } = useToast(!!onClose);
 
-//   const { error: errorToast } = useToast(!!onClose);
+  const isAuthenticated = useCheckAuth();
 
-//   // loading state
+  const syncLanguage = useCallback(
+    async (lang: _LanguageCode) => {
+      setLanguageStore(lang);
 
-//   // Kiểm tra xem user đăng nhập chưa
-//   const isAuthenticated = useCheckAuth();
+      await i18n.changeLanguage(lang);
 
-//   const syncLanguage = useCallback(async (lang: _LanguageCode) => {
-//     try {
-//       // Sau khi set ngôn ngữ thành công thì set ngôn ngữ vào store
-//       await setLanguageStore(lang);
-//       // Sau khi set ngôn ngữ thành công thì clear cache
-//       queryClient.clear();
-//       // Sau khi set ngôn ngữ thành công thì reset lại các query để cập nhật ngôn ngữ mới
-//       await queryClient.resetQueries();
-//       // Sau khi set ngôn ngữ thành công thì reload lại app
-//       await Updates.reloadAsync();
-//     } catch {
-//       // do nothing
-//     }
-//   }, []);
+      queryClient.clear();
+      queryClient.invalidateQueries();
+    },
+    [setLanguageStore, i18n, queryClient],
+  );
 
-//   // Hook để set ngôn ngữ user
-//   const setLanguage = useCallback(
-//     async (lang: _LanguageCode) => {
-//       // Nếu user đã đăng nhập thì gọi API để set ngôn ngữ
-//       if (isAuthenticated) {
-//         // Gọi API để set ngôn ngữ
-//         mutate(
-//           { lang },
-//           {
-//             onSuccess: async () => {
-//               await syncLanguage(lang);
-//             },
-//             onError: () => {
-//               errorToast({
-//                 message: t('common_error.failed_to_set_language'),
-//               });
-//             },
-//           }
-//         );
-//       } else {
-//         await syncLanguage(lang);
-//       }
-//       // Đóng bottom sheet
-//       if (onClose) {
-//         onClose();
-//       }
-//     },
-//     [isAuthenticated, onClose]
-//   );
+  const setLanguage = useCallback(
+    async (lang: _LanguageCode) => {
+      if (isAuthenticated) {
+        mutate(
+          { lang },
+          {
+            onSuccess: async () => {
+              await syncLanguage(lang);
+            },
+            onError: () => {
+              errorToast({
+                message: t("common_error.failed_to_set_language"),
+              });
+            },
+          },
+        );
+      } else {
+        await syncLanguage(lang);
+      }
 
-//   return {
-//     setLanguage,
-//     selectedLang,
-//     isPending,
-//   };
-// };
+      onClose?.();
+    },
+    [
+      isAuthenticated,
+      mutate,
+      syncLanguage,
+      onClose,
+      t,
+      errorToast, // ✅ BẮT BUỘC
+    ],
+  );
+
+  return {
+    setLanguage,
+    selectedLang,
+    isPending,
+  };
+};
 
 // /**
 //  * Hook để kiểm tra xem user có đang hoạt động hay không
@@ -755,28 +811,28 @@ export const useHydrateAuth = () => {
 //   };
 // };
 
-// export const useLogout = () => {
-//   const mutationLogout = useLogoutMutation();
-//   const logout = useAuthStore((s) => s.logout);
-//   const setLoading = useApplicationStore((s) => s.setLoading);
-//   const handleError = useErrorToast();
+export const useLogout = () => {
+  const mutationLogout = useLogoutMutation();
+  const logout = useAuthStore((s) => s.logout);
+  const setLoading = useApplicationStore((s) => s.setLoading);
+  const handleError = useErrorToast();
 
-//   return () => {
-//     setLoading(true);
-//     mutationLogout.mutate(undefined, {
-//       onSuccess: () => {
-//         logout();
-//       },
-//       onError: (error) => {
-//         // Xử lý khi có lỗi xảy ra
-//         handleError(error);
-//       },
-//       onSettled: () => {
-//         setLoading(false);
-//       },
-//     });
-//   };
-// };
+  return () => {
+    setLoading(true);
+    mutationLogout.mutate(undefined, {
+      onSuccess: () => {
+        logout();
+      },
+      onError: (error) => {
+        // Xử lý khi có lỗi xảy ra
+        handleError(error);
+      },
+      onSettled: () => {
+        setLoading(false);
+      },
+    });
+  };
+};
 
 // /**
 //  * Hook để xóa tài khoản
