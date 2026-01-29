@@ -24,16 +24,11 @@ export const KTVHomePageCard = ({ item }: { item: ListKTVItem }) => {
   const [imageError, setImageError] = useState(false);
 
   // Giả định hook setKtv của bạn xử lý logic chọn KTV
-  // const setKtv = useSetKtv();
-
-  const handlePress = () => {
-    console.log("Selected KTV ID:", item.id);
-    // setKtv(item.id);
-  };
+  const setKtv = useSetKtv();
 
   return (
     <button
-      onClick={handlePress}
+      onClick={() => setKtv(item.id)}
       className="group relative flex w-full flex-col rounded-xl border border-slate-100 bg-white p-2 shadow-sm transition-all hover:shadow-md active:scale-[0.98]"
     >
       {/* --- AVATAR --- */}

@@ -421,7 +421,7 @@ export const useCheckAuthToRedirect = () => {
   return useCallback(
     (redirectTo: RedirectTarget) => {
       if (!isAuthorized) {
-        router.replace("/auth/index");
+        router.replace("/welcome");
         return;
       }
       if (typeof redirectTo === "function") {

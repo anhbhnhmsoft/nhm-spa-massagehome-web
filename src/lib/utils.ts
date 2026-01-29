@@ -1,8 +1,9 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
-import { _LanguageCode } from "./const";
+import { _KTVConfigSchedules, _LanguageCode } from "./const";
 import ErrorAPIServer from "./types";
 import { TFunction } from "i18next";
+import dayjs from "dayjs";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -100,4 +101,11 @@ export const getMessageError = (
 // Hàm format tiền tệ
 export const formatBalance = (balance: string | number) => {
   return Number(balance).toLocaleString("vi-VN");
+};
+
+// Lấy khóa ngày hiện tại trong cấu hình KTV
+export const getCurrentDayKey = () => {
+  const day = dayjs().day(); // 0 là Chủ nhật, 1 là Thứ 2
+  if (day === 0) return _KTVConfigSchedules.SUNDAY; // 0 -> 8
+  return day + 1; // 1 -> 2 (Thứ 2), 6 -> 7 (Thứ 7)
 };

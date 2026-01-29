@@ -3,12 +3,11 @@ import {
   IMultiLangField,
   Paginator,
   ResponseDataSuccessType,
-} from '@/lib/types';
-import { _LanguageCode } from '@/lib/const';
-import { _Gender, _UserRole } from '@/features/auth/const';
-import { _BookingStatus } from '@/features/service/const';
-import { _PartnerFileType } from './const';
-import { _KTVConfigSchedules } from '@/features/ktv/consts';
+} from "@/lib/types";
+import { _KTVConfigSchedules, _LanguageCode } from "@/lib/const";
+import { _Gender, _UserRole } from "@/features/auth/const";
+import { _BookingStatus } from "@/features/service/const";
+import { _PartnerFileType } from "./const";
 
 export type KTVWorkSchedule = {
   is_working: boolean;
@@ -84,7 +83,8 @@ export type DashboardProfile = {
   wallet_balance: string;
   coupon_user_count: number;
 };
-export type DashboardProfileResponse = ResponseDataSuccessType<DashboardProfile>;
+export type DashboardProfileResponse =
+  ResponseDataSuccessType<DashboardProfile>;
 
 export type ApplyPartnerRequest = {
   role: _UserRole.KTV | _UserRole.AGENCY;

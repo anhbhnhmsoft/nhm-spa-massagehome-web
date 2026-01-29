@@ -89,3 +89,23 @@ export enum _HTTPStatus {
   NOT_EXTENDED = 510,
   NETWORK_AUTHENTICATION_REQUIRED = 511,
 }
+
+export enum _KTVConfigSchedules {
+  MONDAY = 2,
+  TUESDAY = 3,
+  WEDNESDAY = 4,
+  THURSDAY = 5,
+  FRIDAY = 6,
+  SATURDAY = 7,
+  SUNDAY = 8,
+}
+
+export const _KTVConfigSchedulesLabel = {
+  [_KTVConfigSchedules.MONDAY]: "enum.KTVConfigSchedulesLabel.MONDAY",
+  [_KTVConfigSchedules.TUESDAY]: "enum.KTVConfigSchedulesLabel.TUESDAY",
+  [_KTVConfigSchedules.WEDNESDAY]: "enum.KTVConfigSchedulesLabel.WEDNESDAY",
+  [_KTVConfigSchedules.THURSDAY]: "enum.KTVConfigSchedulesLabel.THURSDAY",
+  [_KTVConfigSchedules.FRIDAY]: "enum.KTVConfigSchedulesLabel.FRIDAY",
+  [_KTVConfigSchedules.SATURDAY]: "enum.KTVConfigSchedulesLabel.SATURDAY",
+  [_KTVConfigSchedules.SUNDAY]: "enum.KTVConfigSchedulesLabel.SUNDAY",
+} as Readonly<{ [key in _KTVConfigSchedules]: string }>;
