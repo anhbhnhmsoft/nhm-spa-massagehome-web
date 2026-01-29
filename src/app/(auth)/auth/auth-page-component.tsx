@@ -13,101 +13,83 @@ export default function AuthPageComponent() {
   const {
     control,
     handleSubmit,
-    formState: { errors, isValid },
+    formState: { errors },
   } = form;
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-slate-50 p-4 font-inter">
-      {/* Container chính: Bo góc lớn, đổ bóng sâu, giới hạn 1024px */}
-      <main className="flex w-full max-w-[1024px] overflow-hidden rounded-[32px] border border-gray-100 bg-white shadow-2xl shadow-gray-200/50 md:flex-row">
-        {/* Cột trái: Gradient & Branding (Ẩn trên mobile) */}
-        <div
-          className="hidden w-1/2 flex-col justify-center bg-gradient-to-br from-primary-color-2 to-indigo-600 p-12 text-white md:flex"
-          style={{ backgroundColor: "var(--primary-color-2, #2563eb)" }}
-        >
-          <h1 className="mb-4 text-4xl font-extrabold tracking-tight">
-            {t("auth.auth_title")}
-          </h1>
-          <p className="text-lg leading-relaxed text-white/80">
-            {t("auth.auth_description")}
-          </p>
-          <div className="mt-12 h-1 w-20 rounded-full bg-white/30" />
+    <div className="flex min-h-screen w-full items-center justify-center bg-gray-50 p-4 font-inter">
+      {/* Container chính: Card layout tương tự mobile view nhưng rộng hơn trên web */}
+      <main className="flex w-full  flex-col overflow-hidden ">
+        {/* --- CONTENT --- */}
+        <div className="flex-1 max-w-md mx-auto w-full h-screen">
+          {/* Title & Description */}
+          <div className="mb-10">
+            <h1 className="mb-2 text-2xl font-bold text-gray-900 md:text-3xl">
+              {t("auth.auth_title")}
+            </h1>
+            <p className="text-base leading-relaxed text-gray-500">
+              {t("auth.auth_description")}
+            </p>
+          </div>
+
+          {/* Form Input */}
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+            <Controller
+              control={control}
+              name="phone"
+              render={({ field: { onChange, onBlur, value } }) => (
+                <div className="flex flex-col gap-2">
+                  <div
+                    className={cn(
+                      "group flex h-14 w-full items-center overflow-hidden rounded-2xl border bg-white transition-all duration-200 focus-within:ring-2",
+                      errors.phone
+                        ? "border-red-500 focus-within:ring-red-100"
+                        : "border-gray-200 focus-within:border-primary-color-2 focus-within:ring-primary-color-2/10",
+                    )}
+                  >
+                    <input
+                      className="h-full w-full bg-transparent px-4 text-lg font-medium text-gray-900 outline-none placeholder:text-gray-400"
+                      placeholder={t("auth.placeholder_phone")}
+                      type="tel"
+                      inputMode="numeric"
+                      autoFocus
+                      value={value || ""}
+                      onChange={onChange}
+                      onBlur={onBlur}
+                    />
+                  </div>
+
+                  {/* Error Message */}
+                  {errors.phone && (
+                    <p className="ml-1 text-sm font-medium text-red-500 animate-in fade-in slide-in-from-top-1">
+                      {errors.phone.message as string}
+                    </p>
+                  )}
+                </div>
+              )}
+            />
+          </form>
         </div>
 
-        {/* Cột phải: Form nhập liệu */}
-        <div className="flex flex-1 flex-col justify-between p-8 py-12 md:p-16">
-          <div className="w-full">
-            {/* Header chỉ hiện trên Mobile */}
-            <div className="mb-10 text-center md:hidden">
-              <h1 className="mb-2 text-3xl font-extrabold text-gray-900">
-                {t("auth.auth_title")}
-              </h1>
-              <p className="text-gray-500">{t("auth.auth_description")}</p>
-            </div>
-
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-              <div className="space-y-2">
-                <label className="text-sm font-semibold text-gray-700 ml-1">
-                  {t("auth.placeholder_phone")} *
-                </label>
-                <Controller
-                  control={control}
-                  name="phone"
-                  render={({ field: { onChange, onBlur, value } }) => (
-                    <div className="relative">
-                      <input
-                        className={cn(
-                          "h-14 w-full rounded-2xl border bg-gray-50 px-5 text-lg font-medium outline-none transition-all duration-200",
-                          errors.phone
-                            ? "border-red-500 bg-red-50/30 focus:border-red-500"
-                            : "border-gray-200 focus:border-primary-color-2 focus:bg-white focus:ring-4 focus:ring-primary-color-2/10",
-                        )}
-                        placeholder="0xxx xxx xxx"
-                        type="tel"
-                        autoFocus
-                        value={value || ""}
-                        onChange={onChange}
-                        onBlur={onBlur}
-                      />
-                    </div>
-                  )}
-                />
-                {errors.phone && (
-                  <p className="ml-1 text-sm font-medium text-red-500 animate-in fade-in slide-in-from-top-1">
-                    {errors.phone.message as string}
-                  </p>
-                )}
+        {/* --- FOOTER BUTTON --- */}
+        <div className="mt-12">
+          <button
+            onClick={handleSubmit(onSubmit)}
+            disabled={loading}
+            className={cn(
+              "flex h-14 max-w-xs w-full m-auto mt-20 items-center justify-center rounded-full text-lg font-bold text-white transition-all duration-300 active:scale-[0.98]",
+              !loading ? "bg-primary-color-2 " : " bg-gray-300",
+            )}
+          >
+            {loading ? (
+              <div className="flex items-center gap-2">
+                <div className="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                <span>{t("common.loading")}</span>
               </div>
-            </form>
-          </div>
-
-          {/* Footer Button Section */}
-          <div className="mt-12 space-y-4">
-            <button
-              onClick={handleSubmit(onSubmit)}
-              disabled={loading}
-              className={cn(
-                "flex h-16 w-full items-center justify-center rounded-[20px] text-lg font-bold text-white transition-all duration-300 active:scale-[0.98]",
-                !loading
-                  ? "bg-primary-color-2 shadow-lg shadow-primary-color-2/25 hover:brightness-110"
-                  : "cursor-not-allowed bg-gray-200",
-              )}
-              style={{
-                backgroundColor: !loading
-                  ? "var(--primary-color-2, #2563eb)"
-                  : undefined,
-              }}
-            >
-              {loading ? (
-                <div className="flex items-center gap-3">
-                  <span className="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent" />
-                  <span>{t("common.loading")}</span>
-                </div>
-              ) : (
-                t("common.continue")
-              )}
-            </button>
-          </div>
+            ) : (
+              t("common.continue")
+            )}
+          </button>
         </div>
       </main>
     </div>

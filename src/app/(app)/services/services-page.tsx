@@ -103,7 +103,7 @@ export default function ServicesPageComponent() {
           </button>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1  gap-4">
           {/* Khi đang Refetch hoặc Load lần đầu, dùng Skeleton */}
           {isLoading || (isRefetching && !isFetchingNextPage) ? (
             Array.from({ length: 6 }).map((_, index) => (

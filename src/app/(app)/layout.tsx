@@ -5,13 +5,9 @@ export default function TabsLayout({
 }: {
   children: React.ReactNode;
 }) {
-
   return (
-    <div className="min-h-screen flex flex-col ">
-      {/* Nội dung trang */}
-      <main className="flex-1 pb-16 ">{children}</main>
-
-      {/* Thanh điều hướng cố định phía dưới */}
+    <div className="min-h-screen flex flex-col">
+      <main className="flex-1 pb-16">{children}</main>
       <BottomNav />
     </div>
   );

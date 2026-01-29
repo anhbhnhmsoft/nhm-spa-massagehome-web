@@ -11,6 +11,9 @@ import { useCheckAuth, useCheckAuthToRedirect } from "@/features/auth/hooks";
 import useAuthStore from "@/features/auth/store";
 import { useProfileQuery } from "@/features/auth/hooks/use-query";
 import { useRouter } from "next/navigation";
+import useErrorToast from "@/features/app/hooks/use-error-toast";
+import { useGetServiceList } from "@/features/service/hooks";
+import { KTVDetail } from "../types";
 
 /**
  * Dùng để lấy list KTV theo filter
@@ -93,7 +96,7 @@ export const useGetListKTVManager = () => {
  */
 export const useSetKtv = () => {
   const setKtv = useUserServiceStore((s) => s.setKtv);
-
+  const router = useRouter();
   const redirect = useCheckAuthToRedirect();
 
   const setLoading = useApplicationStore((s) => s.setLoading);
@@ -106,6 +109,7 @@ export const useSetKtv = () => {
       mutate(id, {
         onSuccess: (res) => {
           setKtv(res.data);
+          router.push("/masseurs-details");
         },
         onError: (error) => {},
         onSettled: () => {
@@ -119,57 +123,57 @@ export const useSetKtv = () => {
 /**
  * Lấy thông tin ktv và danh sách dịch vụ của ktv đó
  */
-// export const useKTVDetail = () => {
-//   const ktv = useUserServiceStore((s) => s.ktv);
-//   const setKtv = useUserServiceStore((s) => s.setKtv);
-//   const { mutate } = useMutationKtvDetail();
-//   const handleError = useErrorToast();
-//   const setLoading = useApplicationStore((s) => s.setLoading);
+export const useKTVDetail = () => {
+  const ktv = useUserServiceStore((s) => s.ktv);
+  const setKtv = useUserServiceStore((s) => s.setKtv);
+  const { mutate } = useMutationKtvDetail();
+  const handleError = useErrorToast();
+  const router = useRouter();
+  const setLoading = useApplicationStore((s) => s.setLoading);
 
-//   useEffect(() => {
-//     // Nếu không có massager, quay lại màn hình trước
-//     if (!ktv) {
-//       router.back();
-//     }
-//   }, [ktv]);
+  useEffect(() => {
+    // Nếu không có massager, quay lại màn hình trước
+    if (!ktv) {
+      router.back();
+    }
+  }, [ktv]);
 
-//   const serviceParams = useMemo(
-//     () => ({
-//       filter: {
-//         user_id: ktv?.id,
-//       },
-//       page: 1,
-//       per_page: 5,
-//     }),
-//     [ktv?.id],
-//   );
+  const serviceParams = useMemo(
+    () => ({
+      filter: {
+        user_id: ktv?.id,
+      },
+      page: 1,
+      per_page: 5,
+    }),
+    [ktv?.id],
+  );
 
-//   const refreshPage = useCallback(() => {
-//     if (ktv) {
-//       setLoading(true);
-//       mutate(ktv.id, {
-//         onSuccess: (res) => {
-//           setKtv(res.data);
-//           queryServices.refetch();
-//         },
-//         onError: (error) => {
-//           handleError(error);
-//         },
-//         onSettled: () => {
-//           setLoading(false);
-//         },
-//       });
-//     }
-//   }, [ktv]);
+  const queryServices = useGetServiceList(serviceParams, !!ktv);
+  const refreshPage = useCallback(() => {
+    if (ktv) {
+      setLoading(true);
+      mutate(ktv.id, {
+        onSuccess: (res) => {
+          setKtv(res.data);
+          queryServices.refetch();
+        },
+        onError: (error) => {
+          handleError(error);
+        },
+        onSettled: () => {
+          setLoading(false);
+        },
+      });
+    }
+  }, [handleError, ktv, mutate, queryServices, setKtv, setLoading]);
 
-//   const queryServices = useGetServiceList(serviceParams, !!ktv);
-
-//   return {
-//     detail: ktv as KTVDetail,
-//     queryServices,
-//     refreshPage,
-//   };
-// };
+  return {
+    detail: ktv as KTVDetail,
+    queryServices,
+    refreshPage,
+  };
+};
 
 /**
  * Xử lý màn hình profile

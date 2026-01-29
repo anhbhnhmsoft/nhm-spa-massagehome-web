@@ -30,7 +30,7 @@ export default function SelectLanguage({
 
       {/* Modal */}
       {/* Modal */}
-      <div className="absolute bottom-0 left-1/2 w-full max-w-[1024px] -translate-x-1/2 animate-slide-up rounded-t-3xl bg-white">
+      <div className="absolute bottom-0 left-1/2 w-full max-w-[750px] -translate-x-1/2 animate-slide-up rounded-t-3xl bg-white">
         {/* HEADER */}
         <div className="relative flex items-center justify-between border-b px-5 py-4">
           <button onClick={onClose} className="p-1">

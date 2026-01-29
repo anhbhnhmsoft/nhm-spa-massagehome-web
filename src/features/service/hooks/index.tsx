@@ -1,18 +1,41 @@
 import useToast from "@/features/app/hooks/use-toast";
-import { useInfiniteCategoryList } from "@/features/service/hooks/use-query";
 import {
+  useInfiniteCategoryList,
+  useInfiniteListReview,
+  useInfiniteServiceList,
+  useQueryListCoupon,
+} from "@/features/service/hooks/use-query";
+import {
+  BookingServiceRequest,
   CategoryListFilterPatch,
   CategoryListRequest,
+  ListReviewRequest,
+  PickBookingItem,
+  PickBookingRequirement,
   SendReviewRequest,
+  ServiceItem,
+  ServiceListRequest,
 } from "@/features/service/types";
-import { useCallback, useEffect, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useImmer } from "use-immer";
-import { useMutationSendReview } from "./use-mutation";
+import {
+  useMutationBookingService,
+  useMutationSendReview,
+  useMutationServiceDetail,
+} from "./use-mutation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import z from "zod";
-import { getMessageError } from "@/lib/utils";
+import { formatBalance, getMessageError } from "@/lib/utils";
+import useServiceStore from "../stores";
+import { useCheckAuthToRedirect } from "@/features/auth/hooks";
+import useApplicationStore from "@/lib/store";
+import useErrorToast from "@/features/app/hooks/use-error-toast";
+import { useRouter } from "next/navigation";
+import useAuthStore from "@/features/auth/store";
+import dayjs from "dayjs";
+import { useLocationAddress } from "@/features/app/hooks/use-location";
 
 /**
  * Lấy danh sách danh mục dịch vụ
@@ -66,231 +89,237 @@ export const useGetCategoryList = (
   };
 };
 
-// /**
-//  * Lấy danh sách dịch vụ
-//  * @param params
-//  * @param enabled
-//  */
-// export const useGetServiceList = (params: ServiceListRequest, enabled?: boolean) => {
-//   const query = useInfiniteServiceList(params, enabled);
+/**
+ * Lấy danh sách dịch vụ
+ * @param params
+ * @param enabled
+ */
+export const useGetServiceList = (
+  params: ServiceListRequest,
+  enabled?: boolean,
+) => {
+  const query = useInfiniteServiceList(params, enabled);
 
-//   const setLoading = useApplicationStore((s) => s.setLoading);
+  const setLoading = useApplicationStore((s) => s.setLoading);
 
-//   const data = useMemo(() => {
-//     return query.data?.pages.flatMap((page) => page.data.data) || [];
-//   }, [query.data]);
+  const data = useMemo(() => {
+    return query.data?.pages.flatMap((page) => page.data.data) || [];
+  }, [query.data]);
 
-//   const pagination = useMemo(() => {
-//     return query.data?.pages[0].data || null;
-//   }, [query.data]);
+  const pagination = useMemo(() => {
+    return query.data?.pages[0].data || null;
+  }, [query.data]);
 
-//   useEffect(() => {
-//     setLoading(query.isLoading);
-//   }, [query.isLoading]);
+  useEffect(() => {
+    setLoading(query.isLoading);
+  }, [query.isLoading]);
 
-//   return {
-//     ...query,
-//     data,
-//     pagination,
-//   };
-// };
+  return {
+    ...query,
+    data,
+    pagination,
+  };
+};
 
-// /**
-//  * Lưu thông tin dịch vụ vào store và chuyển hướng đến màn hình chi tiết dịch vụ
-//  */
-// export const useSetService = () => {
-//   const setService = useServiceStore((s) => s.setService);
-//   const redirect = useCheckAuthToRedirect();
+/**
+ * Lưu thông tin dịch vụ vào store và chuyển hướng đến màn hình chi tiết dịch vụ
+ */
+export const useSetService = () => {
+  const setService = useServiceStore((s) => s.setService);
+  const redirect = useCheckAuthToRedirect();
+  const router = useRouter();
+  const { mutate } = useMutationServiceDetail();
 
-//   const { mutate } = useMutationServiceDetail();
+  const setLoading = useApplicationStore((s) => s.setLoading);
 
-//   const setLoading = useApplicationStore((s) => s.setLoading);
+  const handleError = useErrorToast();
 
-//   const handleError = useErrorToast();
+  return (id: string) => {
+    redirect(() => {
+      setLoading(true);
+      mutate(id, {
+        onSuccess: (res) => {
+          setService(res.data);
+          router.push("/service-detail");
+        },
+        onError: (error) => {
+          handleError(error);
+        },
+        onSettled: () => {
+          setLoading(false);
+        },
+      });
+    });
+  };
+};
 
-//   return (id: string) => {
-//     redirect(() => {
-//       setLoading(true);
-//       mutate(id, {
-//         onSuccess: (res) => {
-//           setService(res.data);
-//           router.push('/(app)/(service)/service-detail');
-//         },
-//         onError: (error) => {
-//           handleError(error);
-//         },
-//         onSettled: () => {
-//           setLoading(false);
-//         },
-//       });
-//     });
-//   };
-// };
+/**
+ * detail service
+ */
+export const useServiceDetail = () => {
+  const service = useServiceStore((s) => s.service);
+  const setPickServiceBooking = useServiceStore((s) => s.setPickServiceBooking);
+  const router = useRouter();
+  // Kiểm tra xem dịch vụ có tồn tại và đang hoạt động hay không
+  useEffect(() => {
+    // Nếu không có service, quay lại màn hình trước
+    if (!service || !service.is_active) {
+      router.back();
+    }
+  }, [service]);
 
-// /**
-//  * detail service
-//  */
-// export const useServiceDetail = () => {
-//   const service = useServiceStore((s) => s.service);
-//   const setPickServiceBooking = useServiceStore((s) => s.setPickServiceBooking);
+  const pickServiceToBooking = (data: PickBookingItem) => {
+    setPickServiceBooking(data);
+    router.push("/service-booking");
+  };
 
-//   // Kiểm tra xem dịch vụ có tồn tại và đang hoạt động hay không
-//   useEffect(() => {
-//     // Nếu không có service, quay lại màn hình trước
-//     if (!service || !service.is_active) {
-//       router.back();
-//     }
-//   }, [service]);
+  return {
+    detail: service as ServiceItem,
+    pickServiceToBooking,
+  };
+};
 
-//   const pickServiceToBooking = (data: PickBookingItem) => {
-//     setPickServiceBooking(data);
-//     router.push('/(app)/(service)/service-booking');
-//   };
+/**
+ * booking service
+ */
+export const useServiceBooking = () => {
+  const router = useRouter();
+  const pickServiceBooking = useServiceStore((s) => s.pick_service_booking);
+  const setPickServiceBooking = useServiceStore((s) => s.setPickServiceBooking);
+  const user = useAuthStore((s) => s.user);
+  const mutationBookingService = useMutationBookingService();
+  const { t } = useTranslation();
+  const setLoading = useApplicationStore((s) => s.setLoading);
+  const { location: storeLocation } = useLocationAddress();
+  const handleError = useErrorToast();
+  const { error: errorToast, warning: warningToast } = useToast();
+  const [showSuccessModal, setShowSuccessModal] = useState<boolean>(false);
+  const [bookingId, setBookingId] = useState<string | null>(null);
+  // Thông tin form booking
+  const form = useForm<PickBookingRequirement>({
+    resolver: zodResolver(
+      z.object({
+        book_time: z.string().refine((val) => dayjs(val).isValid(), {
+          error: t("services.error.invalid_time"),
+        }),
+        note: z.string().optional(), // Cho phép rỗng
+        note_address: z.string().optional(), // Cho phép rỗng
+        address: z
+          .string()
+          .min(1, { error: t("services.error.invalid_address") }),
+        latitude: z.number(),
+        longitude: z.number(),
+        coupon_id: z.string().optional(),
+      }),
+    ),
+    defaultValues: {
+      book_time: dayjs().toISOString(),
+      address: "",
+      latitude: 0,
+      longitude: 0,
+    },
+  });
 
-//   return {
-//     detail: service as ServiceItem,
-//     pickServiceToBooking,
-//   };
-// };
+  // Lấy danh sách coupon (tất cả) cho dịch vụ đang chọn
+  const queryCoupon = useQueryListCoupon(
+    {
+      filter: {
+        for_service_id: pickServiceBooking?.service_id,
+      },
+    },
+    true,
+  );
 
-// /**
-//  * booking service
-//  */
-// export const useServiceBooking = () => {
-//   const pickServiceBooking = useServiceStore((s) => s.pick_service_booking);
-//   const setPickServiceBooking = useServiceStore((s) => s.setPickServiceBooking);
-//   const user = useAuthStore((s) => s.user);
-//   const mutationBookingService = useMutationBookingService();
-//   const { t } = useTranslation();
-//   const setLoading = useApplicationStore((s) => s.setLoading);
-//   const { location: storeLocation } = useLocationAddress();
-//   const handleError = useErrorToast();
-//   const { error: errorToast, warning: warningToast } = useToast();
-//   const [showSuccessModal, setShowSuccessModal] = useState<boolean>(false);
-//   const [bookingId, setBookingId] = useState<string | null>(null);
-//   // Thông tin form booking
-//   const form = useForm<PickBookingRequirement>({
-//     resolver: zodResolver(
-//       z.object({
-//         book_time: z.string().refine((val) => dayjs(val).isValid(), {
-//           error: t('services.error.invalid_time'),
-//         }),
-//         note: z.string().optional(), // Cho phép rỗng
-//         note_address: z.string().optional(), // Cho phép rỗng
-//         address: z.string().min(1, { error: t('services.error.invalid_address') }),
-//         latitude: z.number(),
-//         longitude: z.number(),
-//         coupon_id: z.string().optional(),
-//       })
-//     ),
-//     defaultValues: {
-//       book_time: dayjs().toISOString(),
-//       address: '',
-//       latitude: 0,
-//       longitude: 0,
-//     },
-//   });
+  // Auto-fill location
+  useEffect(() => {
+    // Nếu có primary_location, tự động điền thông tin vào form
+    if (user && user.primary_location) {
+      form.setValue("address", user.primary_location.address);
+      form.setValue("latitude", Number(user.primary_location.latitude));
+      form.setValue("longitude", Number(user.primary_location.longitude));
+      form.setValue("note_address", user.primary_location.desc || "");
+    } else if (storeLocation) {
+      form.setValue("address", storeLocation.address);
+      form.setValue("latitude", storeLocation.location.latitude);
+      form.setValue("longitude", storeLocation.location.longitude);
+    }
+  }, [storeLocation, user]);
 
-//   // Lấy danh sách coupon (tất cả) cho dịch vụ đang chọn
-//   const queryCoupon = useQueryListCoupon(
-//     {
-//       filter: {
-//         for_service_id: pickServiceBooking?.service_id,
-//       },
-//     },
-//     true
-//   );
+  // Kiểm tra xem booking có tồn tại hay không
+  useEffect(() => {
+    // Nếu không có booking, quay lại màn hình trước
+    if (!pickServiceBooking) {
+      router.back();
+    }
+    // Nếu có, reset form khi quay lại màn hình
+    return () => {
+      form.reset();
+    };
+  }, [pickServiceBooking]);
 
-//   // Auto-fill location
-//   useEffect(() => {
-//     // Nếu có primary_location, tự động điền thông tin vào form
-//     if (user && user.primary_location) {
-//       form.setValue('address', user.primary_location.address);
-//       form.setValue('latitude', Number(user.primary_location.latitude));
-//       form.setValue('longitude', Number(user.primary_location.longitude));
-//       form.setValue('note_address', user.primary_location.desc || '');
-//     } else if (storeLocation) {
-//       form.setValue('address', storeLocation.address);
-//       form.setValue('latitude', storeLocation.location.coords.latitude);
-//       form.setValue('longitude', storeLocation.location.coords.longitude);
-//     }
-//   }, [storeLocation, user]);
+  // Xử lý khi nhấn nút "Đặt lịch"
+  const handleBooking = (data: PickBookingRequirement) => {
+    if (pickServiceBooking) {
+      const request: BookingServiceRequest = {
+        ...data,
+        ...pickServiceBooking,
+        book_time: dayjs(data.book_time).format("YYYY-MM-DD HH:mm:ss"),
+      };
 
-//   // Kiểm tra xem booking có tồn tại hay không
-//   useEffect(() => {
-//     // Nếu không có booking, quay lại màn hình trước
-//     if (!pickServiceBooking) {
-//       router.back();
-//     }
-//     // Nếu có, reset form khi quay lại màn hình
-//     return () => {
-//       form.reset();
-//     };
-//   }, [pickServiceBooking]);
+      setLoading(true);
+      mutationBookingService.mutate(request, {
+        onSuccess: (res) => {
+          const data = res.data;
+          // Xử lý khi đặt lịch thành công
+          if (data.status && data.success) {
+            setShowSuccessModal(true);
+            setBookingId(data.success.booking_id);
+          }
+          // Xử lý khi đặt lịch thất bại
+          else {
+            if (data.failed) {
+              // Trường hợp không đủ tiền
+              if (data.failed.not_enough_money) {
+                const finalPrice = formatBalance(data.failed.final_price);
+                const balance = formatBalance(data.failed.balance_customer);
+                warningToast({
+                  message: t("services.error.not_enough_money", {
+                    total_price: finalPrice,
+                    balance: balance,
+                    currency: t("common.currency"),
+                  }),
+                });
+                // Chuyển hướng đến màn hình wallet để nạp tiền
+                router.push("/wallet");
+              }
+            } else {
+              // trường hợp không có lỗi cụ thể
+              errorToast({ message: t("common_error.unknown_error") });
+            }
+          }
+        },
+        onError: (error) => {
+          // Xử lý khi có lỗi xảy ra
+          handleError(error);
+        },
+        onSettled: () => {
+          setLoading(false);
+        },
+      });
+    }
+  };
 
-//   // Xử lý khi nhấn nút "Đặt lịch"
-//   const handleBooking = (data: PickBookingRequirement) => {
-//     if (pickServiceBooking) {
-//       const request: BookingServiceRequest = {
-//         ...data,
-//         ...pickServiceBooking,
-//         book_time: dayjs(data.book_time).format('YYYY-MM-DD HH:mm:ss'),
-//       };
-
-//       setLoading(true);
-//       mutationBookingService.mutate(request, {
-//         onSuccess: (res) => {
-//           const data = res.data;
-//           // Xử lý khi đặt lịch thành công
-//           if (data.status && data.success) {
-//             setShowSuccessModal(true);
-//             setBookingId(data.success.booking_id);
-//           }
-//           // Xử lý khi đặt lịch thất bại
-//           else {
-//             if (data.failed) {
-//               // Trường hợp không đủ tiền
-//               if (data.failed.not_enough_money) {
-//                 const finalPrice = formatBalance(data.failed.final_price);
-//                 const balance = formatBalance(data.failed.balance_customer);
-//                 warningToast({
-//                   message: t('services.error.not_enough_money', {
-//                     total_price: finalPrice,
-//                     balance: balance,
-//                     currency: t('common.currency'),
-//                   }),
-//                 });
-//                 // Chuyển hướng đến màn hình wallet để nạp tiền
-//                 router.push('/(app)/(profile)/wallet');
-//               }
-//             } else {
-//               // trường hợp không có lỗi cụ thể
-//               errorToast({ message: t('common_error.unknown_error') });
-//             }
-//           }
-//         },
-//         onError: (error) => {
-//           // Xử lý khi có lỗi xảy ra
-//           handleError(error);
-//         },
-//         onSettled: () => {
-//           setLoading(false);
-//         },
-//       });
-//     }
-//   };
-
-//   return {
-//     detail: pickServiceBooking as PickBookingItem,
-//     form,
-//     queryCoupon,
-//     handleBooking,
-//     showSuccessModal,
-//     bookingId,
-//     setShowSuccessModal,
-//     setPickServiceBooking,
-//   };
-// };
+  return {
+    detail: pickServiceBooking as PickBookingItem,
+    form,
+    queryCoupon,
+    handleBooking,
+    showSuccessModal,
+    bookingId,
+    setShowSuccessModal,
+    setPickServiceBooking,
+  };
+};
 
 // /**
 //  * Lấy danh sách coupon đã sử dụng của user
@@ -378,46 +407,46 @@ export const useReviewModal = (
   };
 };
 
-// /**
-//  * Lấy danh sách review của user
-//  */
-// export const useGetReviewList = (enabled?: boolean) => {
-//   const [params, setParams] = useImmer<ListReviewRequest>({
-//     filter: {},
-//     page: 1,
-//     per_page: 10,
-//   });
-//   // Hàm setFilter
-//   const setFilter = useCallback(
-//     (filterPatch: Partial<ListReviewRequest['filter']>) => {
-//       setParams((draft) => {
-//         // 🚨 QUAN TRỌNG: Reset page về 1 khi filter thay đổi
-//         draft.page = 1;
-//         // Merge filter mới vào draft.filter (sử dụng logic Immer)
-//         draft.filter = {
-//           ...draft.filter,
-//           ...filterPatch,
-//         };
-//       });
-//     },
-//     [setParams]
-//   );
+/**
+ * Lấy danh sách review của user
+ */
+export const useGetReviewList = (enabled?: boolean) => {
+  const [params, setParams] = useImmer<ListReviewRequest>({
+    filter: {},
+    page: 1,
+    per_page: 10,
+  });
+  // Hàm setFilter
+  const setFilter = useCallback(
+    (filterPatch: Partial<ListReviewRequest["filter"]>) => {
+      setParams((draft) => {
+        // 🚨 QUAN TRỌNG: Reset page về 1 khi filter thay đổi
+        draft.page = 1;
+        // Merge filter mới vào draft.filter (sử dụng logic Immer)
+        draft.filter = {
+          ...draft.filter,
+          ...filterPatch,
+        };
+      });
+    },
+    [setParams],
+  );
 
-//   const query = useInfiniteListReview(params, enabled);
+  const query = useInfiniteListReview(params, enabled);
 
-//   const data = useMemo(() => {
-//     return query.data?.pages.flatMap((page) => page.data.data) || [];
-//   }, [query.data]);
+  const data = useMemo(() => {
+    return query.data?.pages.flatMap((page) => page.data.data) || [];
+  }, [query.data]);
 
-//   const pagination = useMemo(() => {
-//     return query.data?.pages[0].data || null;
-//   }, [query.data]);
+  const pagination = useMemo(() => {
+    return query.data?.pages[0].data || null;
+  }, [query.data]);
 
-//   return {
-//     ...query,
-//     params,
-//     setFilter,
-//     data,
-//     pagination,
-//   };
-// };
+  return {
+    ...query,
+    params,
+    setFilter,
+    data,
+    pagination,
+  };
+};

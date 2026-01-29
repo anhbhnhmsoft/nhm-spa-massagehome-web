@@ -5,7 +5,6 @@ import { useTranslation } from "react-i18next";
 import { Controller } from "react-hook-form";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import {
   Eye,
   EyeOff,
@@ -24,12 +23,8 @@ import { _LanguagesMap } from "@/lib/const";
 import { cn } from "@/lib/utils";
 import { ContractFileType } from "@/features/file/const";
 
-// Giả định bạn có SelectLanguageModal phiên bản Web,
-// nếu chưa có mình sẽ render một dropdown đơn giản.
-
 export default function RegisterComponent() {
   const { t } = useTranslation();
-  const router = useRouter();
   const user_referral = useReferralStore((state) => state.user_referral);
   const { form, onSubmit, loading } = useHandleRegister();
 
@@ -51,33 +46,26 @@ export default function RegisterComponent() {
   }, [user_referral, setValue]);
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-slate-50 p-4 font-inter">
-      <main className="flex w-full max-w-[1024px] overflow-hidden rounded-[32px] border border-gray-100 bg-white shadow-2xl md:flex-row">
-        {/* Cột trái: Hình ảnh/Gradient (Ẩn trên mobile) */}
-        <div className="hidden w-1/2 bg-gradient-to-br from-primary-color-2 to-indigo-600 p-12 md:flex flex-col justify-center items-center text-white">
-          <h2 className="text-4xl font-bold mb-4">
-            {t("auth.register_title")}
-          </h2>
-          <p className="text-white/80 text-center text-lg leading-relaxed">
-            {t("auth.register_description")}
-          </p>
-        </div>
-
-        {/* Cột phải: Form đăng ký */}
-        <div className="flex flex-1 flex-col p-6 md:p-12 max-h-[90vh] overflow-y-auto">
-          <div className="md:hidden text-center mb-8">
-            <h1 className="text-2xl font-bold text-gray-900">
+    // SafeAreaView tương đương trên Web: h-screen và flex-col
+    <div className="relative flex h-screen w-full flex-col bg-white font-inter">
+      {/* ScrollView Area: Chứa nội dung form */}
+      <main className="flex-1 overflow-y-auto px-5 pt-4">
+        <div className="mx-auto w-full max-w-md pb-32">
+          {/* pb-32 để không bị nút đè lên nội dung cuối */}
+          {/* --- HEADER --- */}
+          <div className="mb-8 w-full text-center">
+            <h1 className="mb-3 text-2xl font-bold text-gray-900">
               {t("auth.register_title")}
             </h1>
-            <p className="text-gray-500 mt-2">
+            <p className="px-4 text-base leading-6 text-gray-500">
               {t("auth.register_description")}
             </p>
           </div>
-
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+          {/* --- FORM CONTENT --- */}
+          <form className="flex flex-col gap-4">
             {/* Name Input */}
-            <div className="space-y-2">
-              <label className="text-sm font-semibold text-gray-700">
+            <div className="flex flex-col gap-2">
+              <label className="text-sm font-medium text-gray-700">
                 {t("common.name")} *
               </label>
               <Controller
@@ -88,22 +76,24 @@ export default function RegisterComponent() {
                     {...field}
                     placeholder={t("common.name")}
                     className={cn(
-                      "h-12 w-full rounded-2xl border bg-gray-50 px-4 outline-none transition-all focus:border-primary-color-2 focus:bg-white focus:ring-4 focus:ring-primary-color-2/10",
-                      errors.name ? "border-red-500" : "border-gray-200",
+                      "h-12 w-full rounded-2xl border bg-white px-4 outline-none transition-all",
+                      errors.name
+                        ? "border-red-500"
+                        : "border-gray-200 focus:border-primary-color-2",
                     )}
                   />
                 )}
               />
               {errors.name && (
-                <p className="text-xs text-red-500 ml-1">
+                <p className="text-sm text-red-500">
                   {errors.name.message as string}
                 </p>
               )}
             </div>
 
-            {/* Referral Code */}
-            <div className="space-y-2">
-              <label className="text-sm font-semibold text-gray-700">
+            {/* Referral Input */}
+            <div className="flex flex-col gap-2">
+              <label className="text-sm font-medium text-gray-700">
                 {t("common.referral_code")}
               </label>
               <Controller
@@ -113,25 +103,22 @@ export default function RegisterComponent() {
                   <input
                     {...field}
                     value={field.value || ""}
-                    readOnly={!!user_referral}
+                    disabled={!!user_referral}
                     placeholder={t("common.referral_code")}
                     className={cn(
-                      "h-12 w-full rounded-2xl border bg-gray-50 px-4 outline-none transition-all",
-                      user_referral
-                        ? "opacity-60 cursor-not-allowed"
-                        : "focus:border-primary-color-2 focus:bg-white",
-                      errors.referral_code
-                        ? "border-red-500"
-                        : "border-gray-200",
+                      "h-12 w-full rounded-2xl border bg-white px-4 outline-none",
+                      !!user_referral
+                        ? "bg-gray-50 text-gray-400"
+                        : "border-gray-200 focus:border-primary-color-2",
                     )}
                   />
                 )}
               />
             </div>
 
-            {/* Password */}
-            <div className="space-y-2">
-              <label className="text-sm font-semibold text-gray-700">
+            {/* Password Input */}
+            <div className="flex flex-col gap-2">
+              <label className="text-sm font-medium text-gray-700">
                 {t("common.password")} *
               </label>
               <div className="relative">
@@ -144,8 +131,10 @@ export default function RegisterComponent() {
                       type={passwordVisible ? "text" : "password"}
                       placeholder="**********"
                       className={cn(
-                        "h-12 w-full rounded-2xl border bg-gray-50 px-4 outline-none transition-all focus:border-primary-color-2 focus:bg-white",
-                        errors.password ? "border-red-500" : "border-gray-200",
+                        "h-12 w-full rounded-2xl border bg-white px-4 outline-none transition-all",
+                        errors.password
+                          ? "border-red-500"
+                          : "border-gray-200 focus:border-primary-color-2",
                       )}
                     />
                   )}
@@ -153,37 +142,35 @@ export default function RegisterComponent() {
                 <button
                   type="button"
                   onClick={() => setPasswordVisible(!passwordVisible)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 opacity-60"
                 >
-                  {passwordVisible ? <EyeOff size={20} /> : <Eye size={20} />}
+                  {passwordVisible ? <EyeOff size={24} /> : <Eye size={24} />}
                 </button>
               </div>
               {errors.password && (
-                <p className="text-xs text-red-500 ml-1">
+                <p className="text-sm text-red-500">
                   {errors.password.message as string}
                 </p>
               )}
             </div>
 
-            {/* Gender Selection */}
-            <div className="space-y-2">
-              <label className="text-sm font-semibold text-gray-700">
+            {/* Gender Input */}
+            <div className="flex flex-col gap-2">
+              <label className="text-sm font-medium text-gray-700">
                 {t("common.gender")} *
               </label>
               <Controller
                 control={control}
                 name="gender"
                 render={({ field: { onChange, value } }) => (
-                  <div className="flex gap-4">
+                  <div className="flex flex-row justify-between gap-4">
                     <GenderCard
                       label={t("common.male")}
-                      icon={Mars}
                       isActive={value === _Gender.MALE}
                       onPress={() => onChange(_Gender.MALE)}
                     />
                     <GenderCard
                       label={t("common.female")}
-                      icon={Venus}
                       isActive={value === _Gender.FEMALE}
                       onPress={() => onChange(_Gender.FEMALE)}
                     />
@@ -193,8 +180,8 @@ export default function RegisterComponent() {
             </div>
 
             {/* Language Selection */}
-            <div className="space-y-2">
-              <label className="text-sm font-semibold text-gray-700">
+            <div className="flex flex-col gap-2">
+              <label className="text-sm font-medium text-gray-700">
                 {t("common.language")} *
               </label>
               <Controller
@@ -209,34 +196,27 @@ export default function RegisterComponent() {
                       <button
                         type="button"
                         onClick={() => setModalLangVisible(!modalLangVisible)}
-                        className="flex h-12 w-full items-center justify-between rounded-2xl border border-gray-200 bg-gray-50 px-4 transition-all hover:bg-white focus:border-primary-color-2"
+                        className="flex h-12 w-full items-center justify-between rounded-2xl border border-gray-300 bg-white px-3"
                       >
-                        <div className="flex items-center gap-3">
+                        <div className="flex flex-row items-center gap-2">
                           {langConfig?.icon && (
                             <Image
                               src={langConfig.icon}
                               alt="flag"
                               width={24}
                               height={24}
-                              className="rounded-sm"
+                              className="mr-2"
                             />
                           )}
-                          <span className="font-medium text-gray-700">
+                          <span className="font-medium">
                             {langConfig?.label}
                           </span>
                         </div>
-                        <ChevronDown
-                          className={cn(
-                            "text-gray-400 transition-transform",
-                            modalLangVisible && "rotate-180",
-                          )}
-                          size={20}
-                        />
+                        <ChevronDown size={16} className="text-gray-400" />
                       </button>
 
-                      {/* Simple Web Dropdown (Thay thế SelectLanguageModal nếu cần) */}
                       {modalLangVisible && (
-                        <div className="absolute z-10 mt-2 w-full rounded-2xl border border-gray-100 bg-white p-2 shadow-xl animate-in fade-in slide-in-from-top-2">
+                        <div className="absolute bottom-full z-50 mb-2 w-full rounded-2xl border border-gray-200 bg-white p-2 shadow-xl">
                           {_LanguagesMap.map((lang) => (
                             <button
                               key={lang.code}
@@ -245,7 +225,7 @@ export default function RegisterComponent() {
                                 onChange(lang.code);
                                 setModalLangVisible(false);
                               }}
-                              className="flex w-full items-center gap-3 rounded-xl p-3 hover:bg-slate-50 transition-colors"
+                              className="flex w-full items-center gap-3 rounded-xl p-3 hover:bg-gray-50"
                             >
                               <Image
                                 src={lang.icon}
@@ -253,13 +233,13 @@ export default function RegisterComponent() {
                                 width={24}
                                 height={24}
                               />
-                              <span className="flex-1 text-left font-medium">
+                              <span className="flex-1 text-left text-sm font-medium">
                                 {lang.label}
                               </span>
                               {value === lang.code && (
                                 <Check
                                   className="text-primary-color-2"
-                                  size={18}
+                                  size={16}
                                 />
                               )}
                             </button>
@@ -272,116 +252,112 @@ export default function RegisterComponent() {
               />
             </div>
 
-            {/* Terms and Conditions */}
-            <div className="pt-2">
-              <div className="flex items-start gap-3">
-                <button
-                  type="button"
-                  onClick={() => setIsAgreed(!isAgreed)}
-                  className={cn(
-                    "mt-1 shrink-0 transition-colors",
-                    isAgreed ? "text-primary-color-2" : "text-gray-300",
-                  )}
+            {/* Terms & Conditions */}
+            <div className="mt-4 flex flex-row items-start gap-3 px-1 pb-4">
+              <button
+                type="button"
+                onClick={() => setIsAgreed(!isAgreed)}
+                className={cn(
+                  "mt-0.5 shrink-0",
+                  isAgreed ? "text-primary-color-2" : "text-gray-400",
+                )}
+              >
+                {isAgreed ? <CheckSquare size={22} /> : <Square size={22} />}
+              </button>
+              <div className="flex-1 text-sm leading-5 text-gray-600">
+                {t("auth.i_agree_to")}{" "}
+                <Link
+                  href={`/term-or-use-pdf?type=${ContractFileType.TERM_OF_USE}`}
+                  className="font-bold text-primary-color-2 underline"
                 >
-                  {isAgreed ? (
-                    <CheckSquare
-                      size={22}
-                      fill="currentColor"
-                      className="text-white fill-primary-color-2"
-                    />
-                  ) : (
-                    <Square size={22} />
-                  )}
-                </button>
-                <p className="text-sm leading-6 text-gray-600">
-                  {t("auth.i_agree_to")}{" "}
-                  <Link
-                    href={`/term-or-use-pdf?type=${ContractFileType.TERM_OF_USE}`}
-                    className="font-bold text-primary-color-2 hover:underline"
-                  >
-                    {t("auth.terms_and_conditions")}
-                  </Link>{" "}
-                  {t("common.and")}{" "}
-                  <Link
-                    href={`/term-or-use-pdf?type=${ContractFileType.POLICY_PRIVACY}`}
-                    className="font-bold text-primary-color-2 hover:underline"
-                  >
-                    {t("auth.privacy_policy")}
-                  </Link>
-                </p>
+                  {t("auth.terms_and_conditions")}
+                </Link>{" "}
+                {t("common.and")}{" "}
+                <Link
+                  href={`/term-or-use-pdf?type=${ContractFileType.POLICY_PRIVACY}`}
+                  className="font-bold text-primary-color-2 underline"
+                >
+                  {t("auth.privacy_policy")}
+                </Link>
               </div>
             </div>
-
-            {/* Submit Button */}
-            <button
-              type="submit"
-              disabled={loading || !isAgreed}
-              className={cn(
-                "mt-6 flex h-14 w-full items-center justify-center rounded-full text-lg font-bold text-white transition-all duration-300",
-                !loading && isAgreed
-                  ? "bg-primary-color-2 shadow-lg shadow-primary-color-2/30 hover:brightness-110 active:scale-95"
-                  : "bg-gray-200 cursor-not-allowed text-gray-400",
-              )}
-            >
-              {loading ? (
-                <div className="h-6 w-6 animate-spin rounded-full border-2 border-white border-t-transparent" />
-              ) : (
-                t("common.continue")
-              )}
-            </button>
           </form>
         </div>
       </main>
+
+      {/* --- FIXED/STICKY FOOTER BUTTON --- */}
+      <div className="sticky bottom-0 border-t border-gray-100 bg-white px-5 py-6  pb-[calc(1rem+env(safe-area-inset-bottom))] shadow-[0_-4px_20px_rgba(0,0,0,0.03)]">
+        <div className="mx-auto w-full max-w-md">
+          <button
+            onClick={handleSubmit(onSubmit)}
+            disabled={loading || !isAgreed}
+            className={cn(
+              "flex h-14 w-full items-center justify-center rounded-full text-lg font-bold text-white transition-all active:scale-[0.98]",
+              !loading && isAgreed
+                ? "bg-primary-color-2"
+                : "bg-[#E0E0E0] cursor-not-allowed",
+            )}
+          >
+            {loading ? (
+              <div className="h-6 w-6 animate-spin rounded-full border-2 border-white border-t-transparent" />
+            ) : (
+              t("common.continue")
+            )}
+          </button>
+        </div>
+      </div>
     </div>
   );
 }
 
-// --- SUB COMPONENT: GENDER CARD (Web Version) ---
+// --- SUB COMPONENT (GENDER CARD) ---
 const GenderCard = ({
   label,
   isActive,
   onPress,
-  icon: IconComponent,
 }: {
   label: string;
   isActive: boolean;
   onPress: () => void;
-  icon: any;
-}) => {
-  return (
-    <button
-      type="button"
-      onClick={onPress}
+}) => (
+  <button
+    type="button"
+    onClick={onPress}
+    className={cn(
+      "relative flex aspect-[0.85] flex-1 flex-col items-center justify-center rounded-2xl border transition-all",
+      isActive ? "border-blue-300 bg-blue-100" : "border-gray-200 bg-white",
+    )}
+  >
+    <div
       className={cn(
-        "relative flex flex-1 flex-col items-center justify-center gap-3 rounded-2xl border-2 py-6 transition-all duration-300",
-        isActive
-          ? "border-primary-color-2 bg-blue-50/50 ring-4 ring-primary-color-2/5"
-          : "border-gray-100 bg-white hover:border-gray-200",
+        "mb-3 flex h-16 w-16 items-center justify-center rounded-full sm:h-20 sm:w-20",
+        isActive ? "bg-blue-200" : "bg-gray-100",
       )}
     >
-      <div
-        className={cn(
-          "flex h-16 w-16 items-center justify-center rounded-full transition-colors",
-          isActive
-            ? "bg-primary-color-2/10 text-primary-color-2"
-            : "bg-gray-50 text-gray-400",
-        )}
-      >
-        <IconComponent size={32} />
-      </div>
-      <span
-        className={cn(
-          "font-bold",
-          isActive ? "text-gray-900" : "text-gray-500",
-        )}
-      >
-        {label}
-      </span>
-      {isActive && (
-        <div className="absolute right-2 top-2 rounded-full bg-primary-color-2 p-1">
-          <Check size={12} strokeWidth={4} className="text-white" />
-        </div>
+      {label === "Nam" || label === "Male" ? (
+        <Mars
+          size={40}
+          className={isActive ? "text-blue-400" : "text-[#9CA3AF]"}
+        />
+      ) : (
+        <Venus
+          size={40}
+          className={isActive ? "text-blue-400" : "text-[#9CA3AF]"}
+        />
       )}
-    </button>
-  );
-};
+    </div>
+    <span
+      className={cn(
+        "text-base font-medium sm:text-lg",
+        isActive ? "text-gray-900" : "text-gray-500",
+      )}
+    >
+      {label}
+    </span>
+    {isActive && (
+      <div className="absolute right-3 top-3 rounded-full bg-blue-400 p-1">
+        <Check size={12} className="text-white" strokeWidth={4} />
+      </div>
+    )}
+  </button>
+);

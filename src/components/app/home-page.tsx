@@ -1,10 +1,9 @@
 "use client";
 
 import Image from "next/image";
-import { useState, useEffect, useRef, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 
 import Link from "next/link";
-import { ChevronRight } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
@@ -16,6 +15,7 @@ import { normalizeListToLength } from "@/lib/utils";
 import { useGetCategoryList } from "@/features/service/hooks";
 import { CategoryCard, CategorySkeletonCard } from "../category-card";
 import Empty from "../emty";
+import { useRouter } from "next/navigation";
 
 export function CarouselBanner({
   bannerQuery,
@@ -36,21 +36,20 @@ export function CarouselBanner({
     });
   }, [emblaApi]);
 
-  // Loading Skeleton cũng phải giữ đúng tỷ lệ
+  // Skeleton giữ đúng tỷ lệ width * 0.6
   if (isLoading || isFetching || !banners || banners.length === 0) {
     return (
-      <div className="mx-auto w-full max-w-[1024px]">
-        <Skeleton className="w-full aspect-[1024/617] rounded-2xl bg-gray-200" />
+      <div className="mx-auto w-full max-w-[750px]">
+        <Skeleton className="w-full aspect-[5/3] rounded-2xl bg-gray-200" />
       </div>
     );
   }
 
   return (
-    <div className="mx-auto w-full max-w-[1024px] relative ">
+    <div className="mx-auto w-full max-w-[750px] relative">
       <div
         ref={emblaRef}
-        // Sử dụng aspect-ratio để chiều cao tự động tính theo chiều rộng
-        className="overflow-hidden rounded-2xl aspect-[1024/617] w-full"
+        className="overflow-hidden rounded-2xl aspect-[5/3] w-full"
       >
         <div className="flex h-full">
           {banners.map((item, i) => (
@@ -59,7 +58,7 @@ export function CarouselBanner({
                 src={item.image_url}
                 alt=""
                 fill
-                sizes="(max-width: 1024px) 100vw, 1024px"
+                sizes="(max-width: 750px) 100vw, 750px"
                 className="object-cover"
                 priority={i === 0}
               />
@@ -83,12 +82,17 @@ export function CarouselBanner({
     </div>
   );
 }
+
 export function InviteSection() {
+  const router = useRouter();
   const { t } = useTranslation();
   return (
-    <div className="grid  gap-4 grid-cols-2  ">
+    <div className="grid  gap-4 grid-cols-2  px-4">
       {/* Button 1 */}
-      <button className="flex items-center gap-4 rounded-2xl bg-slate-50 p-3 transition-hover hover:bg-slate-100 text-left">
+      <button
+        className="flex items-center gap-4 rounded-2xl bg-slate-50 p-3 transition-hover hover:bg-slate-100 text-left "
+        onClick={() => router.push("/partner-register-individual")}
+      >
         <div className="relative h-14 w-14 overflow-hidden rounded-full border-2 border-white shadow-sm">
           <Image
             src="/assets/images/image_ktv.png"
@@ -101,14 +105,17 @@ export function InviteSection() {
           <h3 className="text-base font-bold  text-slate-800 md:text-2xl">
             {t("homepage.invite_ktv.title")}
           </h3>
-          <p className="text-sm text-slate-500 md:text-xl ">
+          <p className="text-xs text-slate-500 md:text-xl ">
             {t("homepage.invite_ktv.description")}
           </p>
         </div>
       </button>
 
       {/* Button 2 */}
-      <button className="flex items-center gap-4 rounded-2xl bg-slate-50 p-3 transition-hover hover:bg-slate-100 text-left">
+      <button
+        className="flex items-center gap-4 rounded-2xl bg-slate-50 p-3 transition-hover hover:bg-slate-100 text-left"
+        onClick={() => router.push("/partner-register-agency")}
+      >
         <div className="relative h-14 w-14 overflow-hidden rounded-full border-2 border-white shadow-sm">
           <Image
             src="/assets/images/image_agency.png"
@@ -121,7 +128,7 @@ export function InviteSection() {
           <h3 className="text-base font-bold  text-slate-800 md:text-2xl">
             {t("homepage.invite_partner.title")}
           </h3>
-          <p className="text-sm text-slate-500 md:text-xl">
+          <p className="text-xs text-slate-500 md:text-xl">
             {t("homepage.invite_partner.description")}
           </p>
         </div>
@@ -142,46 +149,31 @@ export function KTVSection({
     {
       align: "start",
       loop: true,
-      dragFree: true,
+      dragFree: false, // QUAN TRỌNG → snap theo page
     },
     [
       Autoplay({
         delay: 3000,
-        stopOnInteraction: false,
+        stopOnInteraction: true,
       }),
     ],
   );
+
   const displayList = useMemo(() => {
     if (!ktvList || ktvList.length === 0) return [];
 
-    return ktvList.length >= 12
-      ? ktvList.slice(0, 12)
-      : normalizeListToLength(ktvList, 12);
+    return ktvList.length >= 8
+      ? ktvList.slice(0, 8)
+      : normalizeListToLength(ktvList, 8);
   }, [ktvList]);
   // Loading
   if (isLoading || !ktvList) {
     return (
-      <div className="space-y-4">
-        {/* Header skeleton */}
-        <div className="flex items-center justify-between">
-          <div className="h-7 w-64 rounded bg-gray-200" />
-          <div className="h-5 w-20 rounded bg-gray-200" />
-        </div>
-
-        {/* Grid skeleton giống item */}
-        <div className="grid grid-cols-3 gap-3 sm:grid-cols-4 lg:grid-cols-6">
-          {/* Item 1 */}
-          <Skeleton className="aspect-[3/4] rounded-2xl" />
-          <Skeleton className="aspect-[3/4] rounded-2xl" />
-          <Skeleton className="aspect-[3/4] rounded-2xl" />
-
-          {/* Tablet trở lên */}
-          <Skeleton className="hidden aspect-[3/4] rounded-2xl sm:block" />
-
-          {/* Desktop */}
-          <Skeleton className="hidden aspect-[3/4] rounded-2xl lg:block" />
-          <Skeleton className="hidden aspect-[3/4] rounded-2xl lg:block" />
-        </div>
+      <div className="grid grid-cols-3 gap-3 sm:grid-cols-4">
+        <Skeleton className="aspect-[3/4] rounded-2xl" />
+        <Skeleton className="aspect-[3/4] rounded-2xl" />
+        <Skeleton className="aspect-[3/4] rounded-2xl" />
+        <Skeleton className="hidden aspect-[3/4] rounded-2xl sm:block" />
       </div>
     );
   }
@@ -212,15 +204,16 @@ export function KTVSection({
 
       {/* Embla Carousel */}
       <div className="overflow-hidden" ref={emblaRef}>
-        <div className="flex gap-3">
+        <div className="flex">
           {displayList.map((ktv, index) => (
             <div
               key={`${ktv.id}-${index}`}
               className="
-                flex-[0_0_140px]
-                sm:flex-[0_0_160px]
-                md:flex-[0_0_180px]
-              "
+          shrink-0
+          w-[33.333%]   /* 3 item trên mobile */
+          sm:w-[25%]    /* 4 item trên màn lớn (≤750px) */
+          px-1
+        "
             >
               <KTVHomePageCard item={ktv} />
             </div>
@@ -255,7 +248,7 @@ export const CategorySection = ({
       </div>
 
       {/* Content */}
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3 lg:gap-5">
+      <div className="grid grid-cols-1 gap-3">
         {/* Loading */}
         {isLoading || isFetching ? (
           Array.from({ length: 6 }).map((_, i) => (

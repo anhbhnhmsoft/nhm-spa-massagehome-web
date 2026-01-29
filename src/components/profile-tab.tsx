@@ -204,10 +204,10 @@ export const OrderBoardProfile = ({
             <Link
               key={item.status}
               href={`/orders?status=${item.status}`}
-              className="relative flex flex-col items-center p-1 rounded-lg hover:bg-slate-50 transition-colors group"
+              className="relative flex flex-col items-center  rounded-lg hover:bg-slate-50 transition-colors group"
             >
               <div className="mb-3 rounded-full bg-slate-50 p-3 group-hover:bg-white transition-colors shadow-sm">
-                <item.icon size={26} className="text-gray-600" />
+                <item.icon size={24} className="text-gray-600" />
               </div>
               <span className="text-center text-xs font-medium text-gray-500 group-hover:text-gray-900">
                 {t(item.label)}

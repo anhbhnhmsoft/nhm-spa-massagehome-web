@@ -3,35 +3,32 @@
 import useApplicationStore, { LocationApp } from "@/lib/store";
 import { useEffect, useState, useCallback } from "react";
 
-// Định nghĩa lại Type chính xác
-export type PermissionState = "granted" | "denied" | "undetermined" | null;
-
 /**
- * Hàm fetch vị trí và format địa chỉ
+ * Hàm fetch vị trí và format địa chỉ qua Nominatim
  */
 export const fetchAndFormatLocation = async (): Promise<LocationApp> => {
-  if (typeof window !== "undefined" && !navigator.geolocation) {
+  if (typeof window === "undefined" || !navigator.geolocation) {
     throw new Error("Trình duyệt không hỗ trợ Geolocation");
   }
 
   const position = await new Promise<GeolocationPosition>((resolve, reject) => {
     navigator.geolocation.getCurrentPosition(resolve, reject, {
-      enableHighAccuracy: false, // Balanced
+      enableHighAccuracy: false,
       timeout: 10000,
     });
   });
 
   const { latitude, longitude, accuracy } = position.coords;
 
-  // Reverse geocode qua Nominatim (OpenStreetMap)
   const res = await fetch(
     `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}`,
     {
       headers: {
-        "Accept-Language": "vi", // Ưu tiên trả về tiếng Việt
+        "Accept-Language": "vi",
       },
     },
   );
+
   if (!res.ok) throw new Error("Không thể lấy địa chỉ từ tọa độ");
 
   const data = await res.json();
@@ -47,16 +44,16 @@ export const fetchAndFormatLocation = async (): Promise<LocationApp> => {
 };
 
 /**
- * Hook sử dụng vị trí
+ * Hook chính: Quản lý quyền và tự động lấy vị trí
  */
 export const useLocation = () => {
   const setLocation = useApplicationStore((s) => s.setLocation);
 
   const [completeCheck, setCompleteCheck] = useState(false);
+  // Sử dụng PermissionState chuẩn (granted | denied | prompt)
   const [locationPermission, setLocationPermission] =
-    useState<PermissionState>(null);
+    useState<PermissionState | null>(null);
 
-  // Hàm thực thi lấy dữ liệu vị trí
   const handleFetch = useCallback(async () => {
     try {
       const locationData = await fetchAndFormatLocation();
@@ -65,11 +62,11 @@ export const useLocation = () => {
       console.error("Location Fetch Error:", error);
     }
   }, [setLocation]);
-  console.log("completeCheck", completeCheck);
+
   useEffect(() => {
     if (typeof window === "undefined") return;
 
-    let permissionStatus: PermissionStatus | null = null;
+    let permissionObj: PermissionStatus | null = null;
 
     const checkAndSubscribe = async () => {
       try {
@@ -78,23 +75,17 @@ export const useLocation = () => {
           return;
         }
 
-        // Truy vấn quyền
-        permissionStatus = await navigator.permissions.query({
+        permissionObj = await navigator.permissions.query({
           name: "geolocation",
         });
 
         const updateState = async () => {
-          const state = permissionStatus?.state;
-          let mapped: PermissionState = null;
+          if (!permissionObj) return;
 
-          if (state === "granted") mapped = "granted";
-          else if (state === "denied") mapped = "denied";
-          else if (state === "prompt") mapped = "undetermined";
+          const currentState = permissionObj.state; // Đây là kiểu PermissionState
+          setLocationPermission(currentState);
 
-          setLocationPermission(mapped);
-
-          // Nếu được cấp quyền, tự động lấy vị trí
-          if (mapped === "granted") {
+          if (currentState === "granted") {
             await handleFetch();
           }
           setCompleteCheck(true);
@@ -103,8 +94,8 @@ export const useLocation = () => {
         // Chạy lần đầu
         await updateState();
 
-        // Lắng nghe sự thay đổi (ví dụ: người dùng đổi từ Block sang Allow trong cài đặt)
-        permissionStatus.onchange = updateState;
+        // Lắng nghe thay đổi
+        permissionObj.onchange = updateState;
       } catch (err) {
         console.error("Permission Check Error:", err);
         setCompleteCheck(true);
@@ -113,17 +104,53 @@ export const useLocation = () => {
 
     checkAndSubscribe();
 
-    // Cleanup listener khi component unmount
     return () => {
-      if (permissionStatus) {
-        permissionStatus.onchange = null;
-      }
+      if (permissionObj) permissionObj.onchange = null;
     };
   }, [handleFetch]);
 
   return {
     locationPermission,
     completeCheck,
-    refresh: handleFetch, // Cho phép gọi lại thủ công nếu cần
+    refresh: handleFetch,
+  };
+};
+
+/**
+ * Hook đơn giản: Chỉ lấy dữ liệu từ store và trạng thái quyền hiện tại
+ */
+export const useLocationAddress = () => {
+  const location = useApplicationStore((s) => s.location);
+  const [permission, setPermission] = useState<PermissionState | null>(null);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const init = async () => {
+      if (!("geolocation" in navigator)) {
+        setPermission("denied");
+        return;
+      }
+
+      try {
+        const result = await navigator.permissions.query({
+          name: "geolocation",
+        });
+        setPermission(result.state);
+
+        result.onchange = () => {
+          setPermission(result.state);
+        };
+      } catch (error) {
+        setPermission(null);
+      }
+    };
+
+    init();
+  }, []);
+
+  return {
+    location,
+    permission,
   };
 };

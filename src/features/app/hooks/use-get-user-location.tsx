@@ -49,7 +49,6 @@ export const useGetUserLocation = () => {
         };
       }
     } catch (err) {
-      console.error("Location Fetch Error:", err);
       return null;
     }
   }, [user]);
