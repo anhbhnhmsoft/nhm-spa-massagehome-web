@@ -21,7 +21,6 @@ export default function MasseursPageComponent() {
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
-    refetch,
     isRefetching,
     isLoading,
     setFilter,
@@ -77,7 +76,7 @@ export default function MasseursPageComponent() {
         {/* --- CONTENT AREA --- */}
         {isLoading || isRefetching ? (
           // Grid Skeleton: 1 cột trên mobile, 2 cột trên tablet/laptop
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2">
+          <div className="grid grid-cols-1 ">
             {Array.from({ length: 6 }).map((_, index) => (
               <KTVServiceCardSkeleton key={`ktv-skeleton-${index}`} />
             ))}
@@ -85,7 +84,7 @@ export default function MasseursPageComponent() {
         ) : data && data.length > 0 ? (
           <>
             {/* Grid thực tế */}
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-2">
+            <div className="grid grid-cols-1">
               {data.map((item: ListKTVItem) => (
                 <KTVServiceCard item={item} key={item.id} />
               ))}

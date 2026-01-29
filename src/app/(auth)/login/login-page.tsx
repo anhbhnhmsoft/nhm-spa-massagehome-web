@@ -10,7 +10,7 @@ import { cn } from "@/lib/utils";
 export default function LoginPage() {
   const { t } = useTranslation();
   const { form, onSubmit, loading } = useHandleLogin();
-  const [passwordVisible, setPasswordVisible] = useState<boolean>(false);
+  const [passwordVisible, setPasswordVisible] = useState(false);
 
   const {
     control,
@@ -19,112 +19,80 @@ export default function LoginPage() {
   } = form;
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-slate-50 p-4 font-inter">
-      {/* Container chính: Max-width 1024px, Bo góc 32px */}
-      <main className="flex w-full max-w-[1024px] overflow-hidden rounded-[32px] border border-gray-100 bg-white shadow-2xl shadow-gray-200/50 md:flex-row">
-        {/* Cột trái: Gradient đồng bộ với Register/Auth */}
-        <div
-          className="hidden w-1/2 flex-col justify-center bg-gradient-to-br from-primary-color-2 to-indigo-600 p-12 text-white md:flex"
-          style={{ backgroundColor: "var(--primary-color-2, #2563eb)" }}
-        >
-          <h1 className="mb-4 text-4xl font-extrabold tracking-tight">
+    <div className="flex min-h-screen w-full bg-white font-inter">
+      <main className="flex w-full flex-col justify-between px-5 pt-6 pb-8 max-w-[750px] mx-auto">
+        {/* ===== CONTENT ===== */}
+        <div>
+          {/* Title */}
+          <h1 className="mb-2 text-2xl font-bold text-gray-900 text-center">
             {t("auth.login_title")}
           </h1>
-          <p className="text-lg leading-relaxed text-white/80">
+
+          <p className="mb-10 text-center text-base leading-6 text-gray-500">
             {t("auth.login_description")}
           </p>
-          <div className="mt-12 h-1 w-20 rounded-full bg-white/30" />
-        </div>
 
-        {/* Cột phải: Form nhập Password */}
-        <div className="flex flex-1 flex-col justify-between p-8 py-12 md:p-16">
-          <div className="w-full">
-            {/* Header Mobile */}
-            <div className="mb-10 text-center md:hidden">
-              <h1 className="mb-2 text-3xl font-extrabold text-gray-900">
-                {t("auth.login_title")}
-              </h1>
-              <p className="text-gray-500">{t("auth.login_description")}</p>
-            </div>
+          {/* Password */}
+          <Controller
+            control={control}
+            name="password"
+            render={({ field: { onChange, onBlur, value } }) => (
+              <div className="space-y-2 max-w-md m-auto">
+                <div className="relative">
+                  <input
+                    type={passwordVisible ? "text" : "password"}
+                    placeholder="**********"
+                    value={value || ""}
+                    onChange={onChange}
+                    onBlur={onBlur}
+                    className={cn(
+                      "h-12 w-full rounded-2xl border bg-white px-4 pr-12 text-base outline-none transition-all",
+                      errors.password
+                        ? "border-red-500"
+                        : "border-gray-200 focus:border-primary-color-2 focus:ring-2 focus:ring-primary-color-2/10",
+                    )}
+                  />
 
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-              <div className="space-y-2">
-                <label className="text-sm font-semibold text-gray-700 ml-1">
-                  {t("common.password")} *
-                </label>
-
-                <Controller
-                  control={control}
-                  name="password"
-                  render={({ field: { onChange, onBlur, value } }) => (
-                    <div className="relative">
-                      <input
-                        className={cn(
-                          "h-14 w-full rounded-2xl border bg-gray-50 px-5 pr-12 text-lg font-medium outline-none transition-all duration-200",
-                          errors.password
-                            ? "border-red-500 bg-red-50/30 focus:border-red-500"
-                            : "border-gray-200 focus:border-primary-color-2 focus:bg-white focus:ring-4 focus:ring-primary-color-2/10",
-                        )}
-                        placeholder="**********"
-                        type={passwordVisible ? "text" : "password"}
-                        value={value || ""}
-                        onChange={onChange}
-                        onBlur={onBlur}
-                        autoFocus
-                      />
-
-                      {/* Icon Toggle Password */}
-                      <button
-                        type="button"
-                        onClick={() => setPasswordVisible(!passwordVisible)}
-                        className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 transition-colors hover:text-gray-600"
-                      >
-                        {passwordVisible ? (
-                          <EyeOff size={22} />
-                        ) : (
-                          <Eye size={22} />
-                        )}
-                      </button>
-                    </div>
-                  )}
-                />
+                  <button
+                    type="button"
+                    onClick={() => setPasswordVisible(!passwordVisible)}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400"
+                  >
+                    {passwordVisible ? <EyeOff size={22} /> : <Eye size={22} />}
+                  </button>
+                </div>
 
                 {errors.password && (
-                  <p className="ml-1 text-sm font-medium text-red-500 animate-in fade-in slide-in-from-top-1">
+                  <p className="text-sm text-red-500">
                     {errors.password.message as string}
                   </p>
                 )}
               </div>
-            </form>
-          </div>
+            )}
+          />
+        </div>
 
-          {/* Footer Action Button */}
-          <div className="mt-12">
-            <button
-              onClick={handleSubmit(onSubmit)}
-              disabled={loading}
-              className={cn(
-                "flex h-16 w-full items-center justify-center rounded-[20px] text-lg font-bold text-white transition-all duration-300 active:scale-[0.98]",
-                !loading
-                  ? "bg-primary-color-2 shadow-lg shadow-primary-color-2/25 hover:brightness-110"
-                  : "cursor-not-allowed bg-gray-200",
-              )}
-              style={{
-                backgroundColor: !loading
-                  ? "var(--primary-color-2, #2563eb)"
-                  : undefined,
-              }}
-            >
-              {loading ? (
-                <div className="flex items-center gap-3">
-                  <Loader2 className="h-5 w-5 animate-spin" />
-                  <span>{t("common.loading")}</span>
-                </div>
-              ) : (
-                t("common.continue")
-              )}
-            </button>
-          </div>
+        {/* ===== FOOTER BUTTON ===== */}
+        <div className="mt-10">
+          <button
+            onClick={handleSubmit(onSubmit)}
+            disabled={loading}
+            className={cn(
+              "flex h-14 max-w-xs w-full m-auto mt-20 items-center justify-center rounded-full text-lg font-bold text-white transition-all active:scale-[0.98]",
+              !loading
+                ? "bg-primary-color-2"
+                : "bg-gray-300 cursor-not-allowed",
+            )}
+          >
+            {loading ? (
+              <div className="flex items-center gap-2">
+                <Loader2 className="h-5 w-5 animate-spin" />
+                <span>{t("common.loading")}</span>
+              </div>
+            ) : (
+              t("common.continue")
+            )}
+          </button>
         </div>
       </main>
     </div>

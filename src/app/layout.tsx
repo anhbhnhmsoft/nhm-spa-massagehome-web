@@ -14,13 +14,14 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-
   return (
     <html lang="en">
-      <body className={`${inter.variable} font-sans`}>
+      <body className={`${inter.variable} font-sans bg-gray-100`}>
         <Providers>
           <AuthHydrator>
-            <ModalToast>{children}</ModalToast>
+            <div className="mx-auto min-h-screen max-w-[750px] bg-base-color-3 relative">
+              <ModalToast>{children}</ModalToast>
+            </div>
           </AuthHydrator>
         </Providers>
       </body>

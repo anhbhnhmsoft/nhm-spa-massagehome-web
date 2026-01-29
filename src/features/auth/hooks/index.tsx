@@ -370,7 +370,7 @@ export const useHandleRegister = () => {
             });
 
             clearUserReferral();
-            router.push("/(app)/(tab)");
+            router.push("/");
           } catch {
             error({
               message: t("auth.error.register_failed"),
