@@ -1,10 +1,9 @@
 "use client";
 
 import Image from "next/image";
-import { useState, useEffect, useRef, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 
 import Link from "next/link";
-import { ChevronRight } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
@@ -16,6 +15,7 @@ import { normalizeListToLength } from "@/lib/utils";
 import { useGetCategoryList } from "@/features/service/hooks";
 import { CategoryCard, CategorySkeletonCard } from "../category-card";
 import Empty from "../emty";
+import { useRouter } from "next/navigation";
 
 export function CarouselBanner({
   bannerQuery,
@@ -84,11 +84,15 @@ export function CarouselBanner({
 }
 
 export function InviteSection() {
+  const router = useRouter();
   const { t } = useTranslation();
   return (
     <div className="grid  gap-4 grid-cols-2  px-4">
       {/* Button 1 */}
-      <button className="flex items-center gap-4 rounded-2xl bg-slate-50 p-3 transition-hover hover:bg-slate-100 text-left ">
+      <button
+        className="flex items-center gap-4 rounded-2xl bg-slate-50 p-3 transition-hover hover:bg-slate-100 text-left "
+        onClick={() => router.push("/partner-register-individual")}
+      >
         <div className="relative h-14 w-14 overflow-hidden rounded-full border-2 border-white shadow-sm">
           <Image
             src="/assets/images/image_ktv.png"
@@ -108,7 +112,10 @@ export function InviteSection() {
       </button>
 
       {/* Button 2 */}
-      <button className="flex items-center gap-4 rounded-2xl bg-slate-50 p-3 transition-hover hover:bg-slate-100 text-left">
+      <button
+        className="flex items-center gap-4 rounded-2xl bg-slate-50 p-3 transition-hover hover:bg-slate-100 text-left"
+        onClick={() => router.push("/partner-register-agency")}
+      >
         <div className="relative h-14 w-14 overflow-hidden rounded-full border-2 border-white shadow-sm">
           <Image
             src="/assets/images/image_agency.png"

@@ -433,31 +433,31 @@ export const useCheckAuthToRedirect = () => {
     [isAuthorized, router],
   );
 };
-// /**
-//  * Hook để lấy profile user
-//  */
-// export const useGetProfile = () => {
-//   const { t } = useTranslation();
-//   const setUser = useAuthStore((state) => state.setUser);
-//   const logout = useAuthStore((state) => state.logout);
-//   const { mutate } = useProfileMutation();
-//   const { error } = useToast();
+/**
+ * Hook để lấy profile user
+ */
+export const useGetProfile = () => {
+  const { t } = useTranslation();
+  const setUser = useAuthStore((state) => state.setUser);
+  const logout = useAuthStore((state) => state.logout);
+  const { mutate } = useProfileMutation();
+  const { error } = useToast();
 
-//   return useCallback(() => {
-//     mutate(undefined, {
-//       onSuccess: (res) => {
-//         setUser(res.data.user);
-//       },
-//       onError: () => {
-//         // Token hết hạn hoặc không hợp lệ
-//         error({
-//           message: t('common_error.invalid_or_expired_token'),
-//         });
-//         logout();
-//       },
-//     });
-//   }, []);
-// };
+  return useCallback(() => {
+    mutate(undefined, {
+      onSuccess: (res) => {
+        setUser(res.data.user);
+      },
+      onError: () => {
+        // Token hết hạn hoặc không hợp lệ
+        error({
+          message: t("common_error.invalid_or_expired_token"),
+        });
+        logout();
+      },
+    });
+  }, [error, logout, mutate, setUser, t]);
+};
 
 /**
  * Hook để hydrate auth state từ local storage
