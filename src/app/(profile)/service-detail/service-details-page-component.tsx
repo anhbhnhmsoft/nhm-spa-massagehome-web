@@ -1,19 +1,16 @@
 "use client";
 
-import React, { useState } from "react";
-import { X, TrendingUp, ImageOff, ChevronLeft } from "lucide-react";
+import { useState } from "react";
+import { TrendingUp, ImageOff, ChevronLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import { useServiceDetail } from "@/features/service/hooks";
 import { formatBalance } from "@/lib/utils";
-// Giả định bạn đã cấu hình Image của Next.js hoặc dùng thẻ img
 import Image from "next/image";
 
 export default function ServiceDetailsPageComponent() {
   const { t } = useTranslation();
   const router = useRouter();
-
-  // Các hooks logic bạn đã có
   const { detail, pickServiceToBooking } = useServiceDetail();
 
   const [imageError, setImageError] = useState(false);

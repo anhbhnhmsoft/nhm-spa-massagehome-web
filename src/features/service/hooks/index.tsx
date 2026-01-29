@@ -3,32 +3,39 @@ import {
   useInfiniteCategoryList,
   useInfiniteListReview,
   useInfiniteServiceList,
+  useQueryListCoupon,
 } from "@/features/service/hooks/use-query";
 import {
+  BookingServiceRequest,
   CategoryListFilterPatch,
   CategoryListRequest,
   ListReviewRequest,
   PickBookingItem,
+  PickBookingRequirement,
   SendReviewRequest,
   ServiceItem,
   ServiceListRequest,
 } from "@/features/service/types";
-import { useCallback, useEffect, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useImmer } from "use-immer";
 import {
+  useMutationBookingService,
   useMutationSendReview,
   useMutationServiceDetail,
 } from "./use-mutation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import z from "zod";
-import { getMessageError } from "@/lib/utils";
+import { formatBalance, getMessageError } from "@/lib/utils";
 import useServiceStore from "../stores";
 import { useCheckAuthToRedirect } from "@/features/auth/hooks";
 import useApplicationStore from "@/lib/store";
 import useErrorToast from "@/features/app/hooks/use-error-toast";
 import { useRouter } from "next/navigation";
+import useAuthStore from "@/features/auth/store";
+import dayjs from "dayjs";
+import { useLocationAddress } from "@/features/app/hooks/use-location";
 
 /**
  * Lấy danh sách danh mục dịch vụ
@@ -163,7 +170,7 @@ export const useServiceDetail = () => {
 
   const pickServiceToBooking = (data: PickBookingItem) => {
     setPickServiceBooking(data);
-    router.push("/(app)/(service)/service-booking");
+    router.push("/service-booking");
   };
 
   return {
@@ -172,144 +179,147 @@ export const useServiceDetail = () => {
   };
 };
 
-// /**
-//  * booking service
-//  */
-// export const useServiceBooking = () => {
-//   const pickServiceBooking = useServiceStore((s) => s.pick_service_booking);
-//   const setPickServiceBooking = useServiceStore((s) => s.setPickServiceBooking);
-//   const user = useAuthStore((s) => s.user);
-//   const mutationBookingService = useMutationBookingService();
-//   const { t } = useTranslation();
-//   const setLoading = useApplicationStore((s) => s.setLoading);
-//   const { location: storeLocation } = useLocationAddress();
-//   const handleError = useErrorToast();
-//   const { error: errorToast, warning: warningToast } = useToast();
-//   const [showSuccessModal, setShowSuccessModal] = useState<boolean>(false);
-//   const [bookingId, setBookingId] = useState<string | null>(null);
-//   // Thông tin form booking
-//   const form = useForm<PickBookingRequirement>({
-//     resolver: zodResolver(
-//       z.object({
-//         book_time: z.string().refine((val) => dayjs(val).isValid(), {
-//           error: t('services.error.invalid_time'),
-//         }),
-//         note: z.string().optional(), // Cho phép rỗng
-//         note_address: z.string().optional(), // Cho phép rỗng
-//         address: z.string().min(1, { error: t('services.error.invalid_address') }),
-//         latitude: z.number(),
-//         longitude: z.number(),
-//         coupon_id: z.string().optional(),
-//       })
-//     ),
-//     defaultValues: {
-//       book_time: dayjs().toISOString(),
-//       address: '',
-//       latitude: 0,
-//       longitude: 0,
-//     },
-//   });
+/**
+ * booking service
+ */
+export const useServiceBooking = () => {
+  const router = useRouter();
+  const pickServiceBooking = useServiceStore((s) => s.pick_service_booking);
+  const setPickServiceBooking = useServiceStore((s) => s.setPickServiceBooking);
+  const user = useAuthStore((s) => s.user);
+  const mutationBookingService = useMutationBookingService();
+  const { t } = useTranslation();
+  const setLoading = useApplicationStore((s) => s.setLoading);
+  const { location: storeLocation } = useLocationAddress();
+  const handleError = useErrorToast();
+  const { error: errorToast, warning: warningToast } = useToast();
+  const [showSuccessModal, setShowSuccessModal] = useState<boolean>(false);
+  const [bookingId, setBookingId] = useState<string | null>(null);
+  // Thông tin form booking
+  const form = useForm<PickBookingRequirement>({
+    resolver: zodResolver(
+      z.object({
+        book_time: z.string().refine((val) => dayjs(val).isValid(), {
+          error: t("services.error.invalid_time"),
+        }),
+        note: z.string().optional(), // Cho phép rỗng
+        note_address: z.string().optional(), // Cho phép rỗng
+        address: z
+          .string()
+          .min(1, { error: t("services.error.invalid_address") }),
+        latitude: z.number(),
+        longitude: z.number(),
+        coupon_id: z.string().optional(),
+      }),
+    ),
+    defaultValues: {
+      book_time: dayjs().toISOString(),
+      address: "",
+      latitude: 0,
+      longitude: 0,
+    },
+  });
 
-//   // Lấy danh sách coupon (tất cả) cho dịch vụ đang chọn
-//   const queryCoupon = useQueryListCoupon(
-//     {
-//       filter: {
-//         for_service_id: pickServiceBooking?.service_id,
-//       },
-//     },
-//     true
-//   );
+  // Lấy danh sách coupon (tất cả) cho dịch vụ đang chọn
+  const queryCoupon = useQueryListCoupon(
+    {
+      filter: {
+        for_service_id: pickServiceBooking?.service_id,
+      },
+    },
+    true,
+  );
 
-//   // Auto-fill location
-//   useEffect(() => {
-//     // Nếu có primary_location, tự động điền thông tin vào form
-//     if (user && user.primary_location) {
-//       form.setValue('address', user.primary_location.address);
-//       form.setValue('latitude', Number(user.primary_location.latitude));
-//       form.setValue('longitude', Number(user.primary_location.longitude));
-//       form.setValue('note_address', user.primary_location.desc || '');
-//     } else if (storeLocation) {
-//       form.setValue('address', storeLocation.address);
-//       form.setValue('latitude', storeLocation.location.coords.latitude);
-//       form.setValue('longitude', storeLocation.location.coords.longitude);
-//     }
-//   }, [storeLocation, user]);
+  // Auto-fill location
+  useEffect(() => {
+    // Nếu có primary_location, tự động điền thông tin vào form
+    if (user && user.primary_location) {
+      form.setValue("address", user.primary_location.address);
+      form.setValue("latitude", Number(user.primary_location.latitude));
+      form.setValue("longitude", Number(user.primary_location.longitude));
+      form.setValue("note_address", user.primary_location.desc || "");
+    } else if (storeLocation) {
+      form.setValue("address", storeLocation.address);
+      form.setValue("latitude", storeLocation.location.latitude);
+      form.setValue("longitude", storeLocation.location.longitude);
+    }
+  }, [storeLocation, user]);
 
-//   // Kiểm tra xem booking có tồn tại hay không
-//   useEffect(() => {
-//     // Nếu không có booking, quay lại màn hình trước
-//     if (!pickServiceBooking) {
-//       router.back();
-//     }
-//     // Nếu có, reset form khi quay lại màn hình
-//     return () => {
-//       form.reset();
-//     };
-//   }, [pickServiceBooking]);
+  // Kiểm tra xem booking có tồn tại hay không
+  useEffect(() => {
+    // Nếu không có booking, quay lại màn hình trước
+    if (!pickServiceBooking) {
+      router.back();
+    }
+    // Nếu có, reset form khi quay lại màn hình
+    return () => {
+      form.reset();
+    };
+  }, [pickServiceBooking]);
 
-//   // Xử lý khi nhấn nút "Đặt lịch"
-//   const handleBooking = (data: PickBookingRequirement) => {
-//     if (pickServiceBooking) {
-//       const request: BookingServiceRequest = {
-//         ...data,
-//         ...pickServiceBooking,
-//         book_time: dayjs(data.book_time).format('YYYY-MM-DD HH:mm:ss'),
-//       };
+  // Xử lý khi nhấn nút "Đặt lịch"
+  const handleBooking = (data: PickBookingRequirement) => {
+    if (pickServiceBooking) {
+      const request: BookingServiceRequest = {
+        ...data,
+        ...pickServiceBooking,
+        book_time: dayjs(data.book_time).format("YYYY-MM-DD HH:mm:ss"),
+      };
 
-//       setLoading(true);
-//       mutationBookingService.mutate(request, {
-//         onSuccess: (res) => {
-//           const data = res.data;
-//           // Xử lý khi đặt lịch thành công
-//           if (data.status && data.success) {
-//             setShowSuccessModal(true);
-//             setBookingId(data.success.booking_id);
-//           }
-//           // Xử lý khi đặt lịch thất bại
-//           else {
-//             if (data.failed) {
-//               // Trường hợp không đủ tiền
-//               if (data.failed.not_enough_money) {
-//                 const finalPrice = formatBalance(data.failed.final_price);
-//                 const balance = formatBalance(data.failed.balance_customer);
-//                 warningToast({
-//                   message: t('services.error.not_enough_money', {
-//                     total_price: finalPrice,
-//                     balance: balance,
-//                     currency: t('common.currency'),
-//                   }),
-//                 });
-//                 // Chuyển hướng đến màn hình wallet để nạp tiền
-//                 router.push('/(app)/(profile)/wallet');
-//               }
-//             } else {
-//               // trường hợp không có lỗi cụ thể
-//               errorToast({ message: t('common_error.unknown_error') });
-//             }
-//           }
-//         },
-//         onError: (error) => {
-//           // Xử lý khi có lỗi xảy ra
-//           handleError(error);
-//         },
-//         onSettled: () => {
-//           setLoading(false);
-//         },
-//       });
-//     }
-//   };
+      setLoading(true);
+      mutationBookingService.mutate(request, {
+        onSuccess: (res) => {
+          const data = res.data;
+          // Xử lý khi đặt lịch thành công
+          if (data.status && data.success) {
+            setShowSuccessModal(true);
+            setBookingId(data.success.booking_id);
+          }
+          // Xử lý khi đặt lịch thất bại
+          else {
+            if (data.failed) {
+              // Trường hợp không đủ tiền
+              if (data.failed.not_enough_money) {
+                const finalPrice = formatBalance(data.failed.final_price);
+                const balance = formatBalance(data.failed.balance_customer);
+                warningToast({
+                  message: t("services.error.not_enough_money", {
+                    total_price: finalPrice,
+                    balance: balance,
+                    currency: t("common.currency"),
+                  }),
+                });
+                // Chuyển hướng đến màn hình wallet để nạp tiền
+                router.push("/wallet");
+              }
+            } else {
+              // trường hợp không có lỗi cụ thể
+              errorToast({ message: t("common_error.unknown_error") });
+            }
+          }
+        },
+        onError: (error) => {
+          // Xử lý khi có lỗi xảy ra
+          handleError(error);
+        },
+        onSettled: () => {
+          setLoading(false);
+        },
+      });
+    }
+  };
 
-//   return {
-//     detail: pickServiceBooking as PickBookingItem,
-//     form,
-//     queryCoupon,
-//     handleBooking,
-//     showSuccessModal,
-//     bookingId,
-//     setShowSuccessModal,
-//     setPickServiceBooking,
-//   };
-// };
+  return {
+    detail: pickServiceBooking as PickBookingItem,
+    form,
+    queryCoupon,
+    handleBooking,
+    showSuccessModal,
+    bookingId,
+    setShowSuccessModal,
+    setPickServiceBooking,
+  };
+};
 
 // /**
 //  * Lấy danh sách coupon đã sử dụng của user
