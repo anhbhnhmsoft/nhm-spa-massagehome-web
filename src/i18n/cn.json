@@ -443,7 +443,10 @@
       "face_with_id": "手持身份证自拍",
       "alert_missing_face_with_card_title": "缺少手持身份证自拍",
       "alert_missing_face_with_card_message": "请添加一张手持身份证的自拍照片。",
-      "register_success": "您的申请已成功发送。我们将尽快与您联系。"
+      "register_success": "您的申请已成功发送。我们将尽快与您联系。",
+      "bio_placeholder_vi": "用越南语描述您自己...",
+      "bio_placeholder_en": "用英语描述您自己...",
+      "bio_placeholder_cn": "用中文描述您自己..."
     },
     "partner_register": {
       "title": "您想注册为什么角色？",

@@ -17,6 +17,7 @@ import ImageSlot from "@/components/app/partner-register/image-slot";
 import { LocationSelector } from "@/components/app/partner-register/location-selector";
 import { useImagePicker } from "@/features/app/hooks/use-image-picker";
 import ProvinceSelector from "@/components/app/partner-register/province-selector";
+import HeaderBack from "@/components/header-back";
 
 const LanguageTextArea = ({
   lang,
@@ -67,19 +68,10 @@ export default function PartnerRegisterAgencyPage() {
   return (
     <div className="min-h-screen bg-white pb-32">
       {/* HEADER */}
-      <div className="sticky top-0 z-30 flex items-center border-b bg-white/80 backdrop-blur-md px-4 py-4">
-        <button
-          onClick={() => router.back()}
-          className="mr-4 p-1 hover:bg-gray-100 rounded-full"
-        >
-          <ChevronLeft size={24} />
-        </button>
-        <h1 className="text-lg font-bold text-slate-900">
-          {t("profile.partner_register.agency_title")}
-        </h1>
-      </div>
 
-      <main className="mx-auto max-w-2xl px-4 pt-6">
+      <HeaderBack title="profile.partner_register.agency_title" />
+
+      <main className="mx-auto max-w-2xl px-4 pt-6 flex-1 pb-32 space-y-8">
         {/* SECTION: CCCD */}
         <section className="mb-8">
           <h2 className="mb-4 flex items-center gap-2 font-bold text-slate-900">
@@ -101,7 +93,7 @@ export default function PartnerRegisterAgencyPage() {
               )[0];
 
               return (
-                <div className="grid grid-cols-2 gap-4">
+                <div className="flex flex-wrap gap-3">
                   <ImageSlot
                     uri={idFrontFile?.file.uri || null}
                     label={t("profile.partner_form.id_front")}
@@ -287,7 +279,7 @@ export default function PartnerRegisterAgencyPage() {
       </main>
 
       {/* FIXED FOOTER */}
-      <footer className="fixed bottom-0 left-0 right-0 border-t bg-white p-4 shadow-[0_-4px_20px_rgba(0,0,0,0.05)]">
+      <footer className="fixed max-w-[750px] m-auto bottom-0 left-0 right-0 border-t bg-white p-4 shadow-[0_-4px_20px_rgba(0,0,0,0.05)]">
         <div className="mx-auto max-w-2xl">
           <div className="mb-4 flex items-start gap-3">
             <button

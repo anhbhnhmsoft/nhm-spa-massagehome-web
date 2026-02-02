@@ -443,7 +443,10 @@
       "face_with_id": "Chụp ảnh khuôn mặt cùng CCCD",
       "alert_missing_face_with_card_title": "Thiếu ảnh khuôn mặt cùng CCCD",
       "alert_missing_face_with_card_message": "Vui lòng thêm ảnh chụp khuôn mặt cùng CCCD.",
-      "register_success": "Đơn đăng ký của bạn đã được gửi thành công. Chúng tôi sẽ liên hệ với bạn trong thời gian sớm nhất."
+      "register_success": "Đơn đăng ký của bạn đã được gửi thành công. Chúng tôi sẽ liên hệ với bạn trong thời gian sớm nhất.",
+      "bio_placeholder_vi": "Mô tả bản thân bằng Tiếng Việt...",
+      "bio_placeholder_en": "Mô tả bản thân bằng Tiếng Anh...",
+      "bio_placeholder_cn": "Mô tả bản thân bằng Tiếng Trung..."
     },
     "partner_register": {
       "title": "Bạn muốn đăng ký làm gì?",

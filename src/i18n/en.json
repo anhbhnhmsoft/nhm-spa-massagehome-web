@@ -443,7 +443,10 @@
       "face_with_id": "Selfie with ID Card",
       "alert_missing_face_with_card_title": "Missing Selfie with ID",
       "alert_missing_face_with_card_message": "Please add a photo of your face with your ID card.",
-      "register_success": "Your application has been sent successfully. We will contact you as soon as possible."
+      "register_success": "Your application has been sent successfully. We will contact you as soon as possible.",
+      "bio_placeholder_vi": "Describe yourself in Vietnamese...",
+      "bio_placeholder_en": "Describe yourself in English...",
+      "bio_placeholder_cn": "Describe yourself in Chinese..."
     },
     "partner_register": {
       "title": "What do you want to register as?",

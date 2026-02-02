@@ -3,6 +3,7 @@
 import useApplicationStore, { LocationApp } from "@/lib/store";
 import { useEffect, useState, useCallback } from "react";
 
+export type WebPermissionState = "granted" | "denied" | "prompt" | null;
 /**
  * Hàm fetch vị trí và format địa chỉ qua Nominatim
  */
@@ -32,7 +33,6 @@ export const fetchAndFormatLocation = async (): Promise<LocationApp> => {
   if (!res.ok) throw new Error("Không thể lấy địa chỉ từ tọa độ");
 
   const data = await res.json();
-
   return {
     location: {
       latitude,
@@ -57,6 +57,7 @@ export const useLocation = () => {
   const handleFetch = useCallback(async () => {
     try {
       const locationData = await fetchAndFormatLocation();
+      console.log("Location Data:", locationData);
       setLocation(locationData);
     } catch (error) {
       console.error("Location Fetch Error:", error);
@@ -86,6 +87,7 @@ export const useLocation = () => {
           setLocationPermission(currentState);
 
           if (currentState === "granted") {
+            console.log("Location permission granted.");
             await handleFetch();
           }
           setCompleteCheck(true);
@@ -116,37 +118,58 @@ export const useLocation = () => {
   };
 };
 
+export const useGetLocation = () => {
+  const setLocation = useApplicationStore((s) => s.setLocation);
+
+  const getPermission = useCallback(async () => {
+    try {
+      if (!navigator.geolocation) return false;
+
+      const locationApp = await fetchAndFormatLocation();
+      setLocation(locationApp);
+
+      return true;
+    } catch (error) {
+      console.error("Get location failed:", error);
+      return false;
+    }
+  }, [setLocation]);
+
+  return {
+    getPermission,
+  };
+};
+
 /**
  * Hook đơn giản: Chỉ lấy dữ liệu từ store và trạng thái quyền hiện tại
  */
 export const useLocationAddress = () => {
   const location = useApplicationStore((s) => s.location);
-  const [permission, setPermission] = useState<PermissionState | null>(null);
+  const [permission, setPermission] = useState<WebPermissionState>(null);
 
   useEffect(() => {
-    if (typeof window === "undefined") return;
+    if (!navigator.permissions) return;
 
-    const init = async () => {
-      if (!("geolocation" in navigator)) {
-        setPermission("denied");
-        return;
-      }
+    let mounted = true;
 
-      try {
-        const result = await navigator.permissions.query({
-          name: "geolocation",
-        });
+    navigator.permissions
+      .query({ name: "geolocation" })
+      .then((result) => {
+        if (!mounted) return;
+
         setPermission(result.state);
 
         result.onchange = () => {
           setPermission(result.state);
         };
-      } catch (error) {
-        setPermission(null);
-      }
-    };
+      })
+      .catch(() => {
+        // optional: giữ null
+      });
 
-    init();
+    return () => {
+      mounted = false;
+    };
   }, []);
 
   return {

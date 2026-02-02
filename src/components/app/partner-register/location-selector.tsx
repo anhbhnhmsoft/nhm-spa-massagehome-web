@@ -8,10 +8,12 @@ import {
 } from "react-hook-form";
 import { MapPin, Loader2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
-
-// Lưu ý: Bạn cần thay thế ListLocationModal bằng phiên bản Web tương ứng
-// hoặc tôi có thể giúp bạn viết một bản đơn giản nếu cần.
-// import { ListLocationModal } from './ListLocationModal';
+import { ListLocationModal } from "@/components/location";
+import { AddressItem } from "@/features/location/types";
+import {
+  useGetLocation,
+  useLocationAddress,
+} from "@/features/app/hooks/use-location";
 
 type LocationSelectorProps<T extends FieldValues> = {
   control: Control<T>;
@@ -27,53 +29,64 @@ export function LocationSelector<T extends FieldValues>({
   error,
 }: LocationSelectorProps<T>) {
   const [showLocationModal, setShowLocationModal] = useState(false);
+  const { getPermission } = useGetLocation();
+  const { location: currentLocation } = useLocationAddress();
   const [isLocating, setIsLocating] = useState(false);
   const { t } = useTranslation();
 
-  const handleGetCurrentLocation = useCallback(async () => {
-    if (!navigator.geolocation) {
-      alert(t("Trình duyệt của bạn không hỗ trợ định vị"));
-      return;
-    }
+  const handleGetCurrentLocation = useCallback(
+    async (e: React.MouseEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
 
-    setIsLocating(true);
+      try {
+        setIsLocating(true);
 
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        const { latitude, longitude } = position.coords;
+        const hasPermission = await getPermission();
+        if (!hasPermission) {
+          alert(t("profile.partner_form.alert_location_permission_message"));
+          return;
+        }
 
-        // Trên Web, để lấy địa chỉ (string) từ tọa độ, bạn thường cần
-        // một dịch vụ Reverse Geocoding (như Google Maps hoặc OpenStreetMap API)
-        const mockAddress = `Tọa độ: ${latitude.toFixed(4)}, ${longitude.toFixed(4)}`;
+        if (!currentLocation?.address) return;
 
-        // Cập nhật field chính
-        setValue(name, mockAddress as any, {
+        // Field chính
+        setValue(name, currentLocation.address as any, {
           shouldDirty: true,
           shouldValidate: true,
         });
 
-        // Cập nhật fields phụ
-        setValue("latitude" as Path<T>, latitude.toString() as any, {
-          shouldDirty: true,
-        });
-        setValue("longitude" as Path<T>, longitude.toString() as any, {
-          shouldDirty: true,
-        });
+        // Fields phụ
+        const coords = currentLocation.location;
 
+        if (coords?.latitude != null) {
+          setValue("latitude" as Path<T>, coords.latitude.toString() as any, {
+            shouldDirty: true,
+            shouldValidate: true,
+          });
+        }
+
+        if (coords?.longitude != null) {
+          setValue("longitude" as Path<T>, coords.longitude.toString() as any, {
+            shouldDirty: true,
+            shouldValidate: true,
+          });
+        }
+      } catch (error) {
+        console.error("Get location error:", error);
+        alert(t("location.error.current_location_failed"));
+      } finally {
         setIsLocating(false);
-      },
-      (err) => {
-        setIsLocating(false);
-        alert(t("Không thể lấy vị trí. Vui lòng kiểm tra quyền truy cập."));
-      },
-    );
-  }, [name, setValue, t]);
+      }
+    },
+    [currentLocation, getPermission, name, setValue, t],
+  );
 
   return (
-    <div className="w-full">
-      {/* ===== LABEL ===== */}
+    <div className="w-full" onClick={(e) => e.stopPropagation()}>
+      {/* Header & Button Lấy vị trí */}
       <div className="mb-2 flex flex-row items-center justify-between">
-        <label className="text-base font-bold text-slate-900">
+        <label className="text-sm font-bold text-slate-900">
           {t("profile.partner_form.field_location_label")}{" "}
           <span className="text-red-500">*</span>
         </label>
@@ -82,30 +95,31 @@ export function LocationSelector<T extends FieldValues>({
           type="button"
           onClick={handleGetCurrentLocation}
           disabled={isLocating}
-          className="flex flex-row items-center rounded-lg bg-blue-50 px-3 py-1.5 transition-colors hover:bg-blue-100 active:scale-95 disabled:opacity-50"
+          className="flex flex-row items-center rounded-lg bg-blue-50 px-3 py-1.5 transition-colors hover:bg-blue-100 disabled:opacity-50"
         >
           {isLocating ? (
-            <Loader2 size={16} className="mr-1 animate-spin text-blue-600" />
+            <Loader2 size={14} className="mr-1 animate-spin text-blue-600" />
           ) : (
-            <MapPin size={16} className="mr-1 text-blue-600" />
+            <MapPin size={14} className="mr-1 text-blue-600" />
           )}
           <span className="text-xs font-medium text-blue-600">
-            {isLocating
-              ? t("Đang lấy vị trí...")
-              : t("profile.partner_form.field_location_button")}
+            {t("profile.partner_form.field_location_button")}
           </span>
         </button>
       </div>
 
-      {/* ===== CONTROLLER: ADDRESS ===== */}
+      {/* Input hiển thị địa chỉ */}
       <Controller
         control={control}
         name={name}
-        render={({ field: { value } }) => (
+        render={({ field: { value, onChange } }) => (
           <>
             <button
               type="button"
-              onClick={() => setShowLocationModal(true)}
+              onClick={(e) => {
+                e.preventDefault();
+                setShowLocationModal(true);
+              }}
               className="flex h-12 w-full flex-row items-center rounded-xl bg-gray-100 px-4 transition-colors hover:bg-gray-200"
             >
               <div className="mr-3 rounded-full bg-blue-100 p-2">
@@ -127,8 +141,30 @@ export function LocationSelector<T extends FieldValues>({
 
             {error && <p className="mt-1 text-xs text-red-500">{error}</p>}
 
-            {/* Logic Modal trên Web thường dùng Portal hoặc Thư viện như Headless UI */}
-            {/* Đây là nơi bạn sẽ render ListLocationModal dành cho bản Web */}
+            <ListLocationModal
+              visible={showLocationModal}
+              onClose={() => setShowLocationModal(false)}
+              onSelect={(location: AddressItem) => {
+                onChange(location.address);
+
+                if (location.latitude) {
+                  setValue(
+                    "latitude" as Path<T>,
+                    location.latitude.toString() as any,
+                    { shouldDirty: true },
+                  );
+                }
+                if (location.longitude) {
+                  setValue(
+                    "longitude" as Path<T>,
+                    location.longitude.toString() as any,
+                    { shouldDirty: true },
+                  );
+                }
+
+                setShowLocationModal(false);
+              }}
+            />
           </>
         )}
       />
