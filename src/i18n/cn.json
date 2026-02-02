@@ -376,6 +376,8 @@
     "delete_account_success": "您的账户已成功从系统中删除。",
     "referral_by": "推荐人",
     "is_leader": "渠道合作商",
+    "delete_avatar_desc": "你确定要删除头像吗？",
+    "edit_avatar": "编辑头像",
     "error": {
       "invalid_name": "姓名必须为 4-255 个字符",
       "invalid_date_of_birth": "出生日期不能在未来",

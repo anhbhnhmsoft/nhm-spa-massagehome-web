@@ -363,6 +363,8 @@
     "take_photo": "Chụp ảnh",
     "choose_from_lib": "Chọn từ thư viện",
     "delete_avatar_title": "Xóa ảnh đại diện",
+    "delete_avatar_desc": "Bạn có chắc muốn xóa ảnh đại diện không?",
+    "edit_avatar": "Chỉnh sửa ảnh đại diện",
     "user_info_title": "Thông tin tài khoản",
     "edit_info": "Sửa thông tin",
     "notification": "Thông báo",

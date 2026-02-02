@@ -365,6 +365,8 @@
     "delete_avatar_title": "Delete Avatar",
     "user_info_title": "Account Info",
     "edit_info": "Edit Info",
+    "delete_avatar_desc": "Are you sure you want to delete your profile picture?",
+    "edit_avatar": "Edit profile picture",
     "notification": "Notifications",
     "affiliate": "Referral Commission",
     "config_schedule": "Schedule Configuration",

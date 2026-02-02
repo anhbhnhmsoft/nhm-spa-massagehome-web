@@ -6,18 +6,16 @@ import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import { Camera, User as UserIcon, ChevronLeft } from "lucide-react";
 import dayjs from "dayjs";
-
-// Giả định hooks và stores của bạn đã sẵn sàng cho Web
 import useAuthStore from "@/features/auth/store";
 import { _Gender, _GenderMap } from "@/features/auth/const";
+import { useChangeAvatar } from "@/features/auth/hooks";
 
 export default function UserProfilePage() {
   const { t } = useTranslation();
   const router = useRouter();
   const user = useAuthStore((state) => state.user);
   const [imageError, setImageError] = useState(false);
-
-  // Đối với bản Web, BottomSheet thường được thay bằng Modal hoặc Dropdown
+  const { chooseImageFormLib, deleteAvatar } = useChangeAvatar();
   const [isAvatarModalOpen, setIsAvatarModalOpen] = useState(false);
 
   return (
@@ -109,7 +107,7 @@ export default function UserProfilePage() {
             {/* Actions */}
             <div className="mt-10 px-6">
               <button
-                onClick={() => router.push("/profile/edit-profile")}
+                onClick={() => router.push("/info/edit-info")}
                 className="w-full rounded-2xl bg-blue-50 py-4 text-center font-bold text-blue-600 hover:bg-blue-100 transition-colors active:scale-[0.99]"
               >
                 {t("profile.edit_info")}
@@ -140,12 +138,25 @@ export default function UserProfilePage() {
             </div>
             {/* Các option edit/delete avatar ở đây */}
             <div className="space-y-3">
-              <button className="w-full py-4 text-left font-medium border-b border-gray-50 hover:text-blue-600">
-                {t("profile.upload_new_photo")}
+              <button
+                className="w-full py-4 text-left font-medium border-b border-gray-50 hover:text-blue-600"
+                onClick={() =>
+                  chooseImageFormLib().finally(() =>
+                    setIsAvatarModalOpen(false),
+                  )
+                }
+              >
+                {t("profile.choose_from_lib")}
               </button>
               {user?.profile.avatar_url && (
-                <button className="w-full py-4 text-left font-medium text-red-500 hover:bg-red-50">
-                  {t("profile.delete_current_photo")}
+                <button
+                  className="w-full py-4 text-left font-medium text-red-500 hover:bg-red-50"
+                  onClick={() => {
+                    deleteAvatar();
+                    setIsAvatarModalOpen(false);
+                  }}
+                >
+                  {t("profile.delete_avatar_title")}
                 </button>
               )}
             </div>

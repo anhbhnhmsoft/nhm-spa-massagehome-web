@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import { MapPin } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import {
@@ -12,13 +12,13 @@ import {
 import { useListBannerQuery } from "@/features/commercial/hooks/use-query";
 import { useGetListKTVHomepage } from "@/features/user/hooks";
 import { useGetCategoryList } from "@/features/service/hooks";
+import { useLocationUser } from "@/features/app/hooks/use-get-user-location";
 export default function UserDashboard() {
   const { t } = useTranslation();
-  const [address] = useState("123 Đường ABC, Quận 1..."); // Giả lập location
   const bannerQuery = useListBannerQuery();
   const queryKTV = useGetListKTVHomepage();
   const queryCategory = useGetCategoryList({ page: 1, per_page: 5 }, true);
-
+  const locationUser = useLocationUser();
   return (
     <div className="min-h-screen  pb-24 ">
       <main className="mx-auto w-full ">
@@ -27,7 +27,7 @@ export default function UserDashboard() {
           <button className="absolute left-4 top-4 z-10 pointer-events-auto flex items-center gap-2 rounded-full border border-white/20 bg-black/40 px-4 py-2 backdrop-blur-md shadow-lg transition-transform active:scale-95">
             <MapPin size={16} className="text-white" />
             <span className="max-w-[180px] truncate text-sm font-medium text-white md:max-w-xs">
-              {address || t("header_app.need_location")}
+              {locationUser?.address || t("header_app.need_location")}
             </span>
           </button>
 

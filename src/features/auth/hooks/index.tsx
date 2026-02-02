@@ -6,8 +6,12 @@ import { _AuthStatus, _Gender } from "../const";
 import { useRouter } from "next/navigation";
 import {
   useAuthenticateMutation,
+  useLockAccountMutation,
   useLoginMutation,
   useLogoutMutation,
+  useMutationDeleteAvatar,
+  useMutationEditAvatar,
+  useMutationEditProfile,
   useProfileMutation,
   useRegisterMutation,
   useResendRegisterOTPMutation,
@@ -22,6 +26,7 @@ import { _LanguageCode } from "@/lib/const";
 import useErrorToast from "@/features/app/hooks/use-error-toast";
 import {
   AuthenticateRequest,
+  EditProfileRequest,
   LoginRequest,
   RegisterRequest,
   VerifyRegisterOTPRequest,
@@ -30,6 +35,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useReferralStore } from "@/features/affiliate/store";
+import dayjs from "dayjs";
 
 /**
  * Hàm để xác thực user xem là login hay register
@@ -590,226 +596,218 @@ export const useSetLanguageUser = (onClose?: () => void) => {
 //   useHeartbeatQuery(status === _AuthStatus.AUTHORIZED);
 // };
 
-// /**
-//  * Xử lý thay đổi avatar
-//  */
-// export const useChangeAvatar = () => {
-//   const { t } = useTranslation();
+/**
+ * Xử lý thay đổi avatar
+ */
+export const useChangeAvatar = () => {
+  const { t } = useTranslation();
+  const editAvatar = useEditAvatar(); // Giả định hook này đã sẵn sàng
 
-//   const [permission, requestPermission] = useCameraPermissions();
+  // 1. Xử lý chọn ảnh (và chụp ảnh trên Mobile Web)
+  const chooseImageFormLib = useCallback(async () => {
+    // Tạo một input file ẩn
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = "image/*"; // Chỉ nhận file ảnh
 
-//   const editAvatar = useEditAvatar();
+    input.onchange = async (e: any) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
 
-//   // Xử lý khi nhấn nút chụp ảnh
-//   const takePictureCamera = useCallback(async () => {
-//     if (!permission?.granted) {
-//       const res = await requestPermission();
-//       if (!res.granted) {
-//         Alert.alert(t('permission.camera.title'), t('permission.camera.message'));
-//         return false;
-//       }
-//     } else {
-//       // Nếu có quyền chụp ảnh thì chuyển sang màn hình chụp ảnh
-//       router.push('/take-picture-avatar');
+      // Kiểm tra dung lượng (Ví dụ: < 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        alert("Ảnh quá lớn, vui lòng chọn ảnh dưới 5MB");
+        return;
+      }
 
-//       return true;
-//     }
-//   }, [permission?.granted, t]);
+      const formData = new FormData();
+      formData.append("file", file); // Web gửi file trực tiếp, không cần đóng gói URI
 
-//   // Xử lý khi nhấn nút chọn ảnh từ thư viện
-//   const chooseImageFormLib = useCallback(async () => {
-//     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-//     if (status !== 'granted') {
-//       Alert.alert(t('permission.picture_lib.title'), t('permission.picture_lib.message'));
-//       return false;
-//     } else {
-//       const result = await ImagePicker.launchImageLibraryAsync({
-//         mediaTypes: ImagePicker.MediaTypeOptions.Images,
-//         quality: 0.5,
-//       });
-//       if (!result.canceled) {
-//         const form = new FormData();
-//         form.append('file', {
-//           uri: result.assets[0].uri,
-//           name: 'avatar.jpg',
-//           type: 'image/jpg',
-//         } as any);
-//         editAvatar(form, false);
-//       }
-//     }
-//   }, [t]);
+      try {
+        await editAvatar(formData, false);
+      } catch (error) {
+        console.error("Lỗi khi upload:", error);
+      }
+    };
 
-//   // Trả về hàm xử lý xoóa avatar và thay đổi avatar
-//   const deleteAvatar = useCallback(() => {
-//     editAvatar(undefined, false, true);
-//   }, [editAvatar]);
+    input.click(); // Kích hoạt trình chọn file
+  }, [editAvatar]);
 
-//   return {
-//     takePictureCamera,
-//     chooseImageFormLib,
-//     deleteAvatar,
-//   };
-// };
+  // 2. Xử lý xóa ảnh
+  const deleteAvatar = useCallback(() => {
+    if (confirm(t("profile.delete_avatar_desc"))) {
+      editAvatar(undefined, false, true);
+    }
+  }, [editAvatar, t]);
 
-// /**
-//  * Hook để chỉnh sửa avatar
-//  */
-// export const useEditAvatar = () => {
-//   const { mutate: editAvatar } = useMutationEditAvatar();
-//   const { mutate: deleteAvatar } = useMutationDeleteAvatar();
-//   const errorHandle = useErrorToast();
-//   const setUser = useAuthStore((state) => state.setUser);
-//   const setLoading = useApplicationStore((state) => state.setLoading);
+  return {
+    chooseImageFormLib,
+    deleteAvatar,
+    // takePictureCamera: Không cần thiết trên Web
+  };
+};
 
-//   return useCallback(
-//     (data: FormData | undefined, routerBack: boolean = true, isDelete: boolean = false) => {
-//       setLoading(true);
-//       // Xử lý khi xóa avatar
-//       if (isDelete) {
-//         deleteAvatar(undefined, {
-//           onSuccess: (res) => {
-//             setUser(res.data.user);
-//             if (routerBack) {
-//               router.back();
-//             }
-//           },
-//           onError: (error) => {
-//             errorHandle(error);
-//           },
-//           onSettled: () => {
-//             setLoading(false);
-//           },
-//         });
-//       } else if (data) {
-//         // Xử lý khi chỉnh sửa avatar
-//         editAvatar(data, {
-//           onSuccess: (res) => {
-//             setUser(res.data.user);
-//             if (routerBack) {
-//               router.back();
-//             }
-//           },
-//           onError: (error) => {
-//             errorHandle(error);
-//           },
-//           onSettled: () => {
-//             setLoading(false);
-//           },
-//         });
-//       }
-//     },
-//     []
-//   );
-// };
+/**
+ * Hook để chỉnh sửa avatar
+ */
+export const useEditAvatar = () => {
+  const { mutate: editAvatar } = useMutationEditAvatar();
+  const { mutate: deleteAvatar } = useMutationDeleteAvatar();
+  const errorHandle = useErrorToast();
+  const setUser = useAuthStore((state) => state.setUser);
+  const setLoading = useApplicationStore((state) => state.setLoading);
 
-// /**
-//  * Hook để chỉnh sửa thông tin profile
-//  */
-// export const useEditProfile = () => {
-//   const { t } = useTranslation();
-//   const errorHandle = useErrorToast();
-//   const setUser = useAuthStore((state) => state.setUser);
-//   const user = useAuthStore((state) => state.user);
-//   const setLoading = useApplicationStore((state) => state.setLoading);
+  return useCallback(
+    (
+      data: FormData | undefined,
+      routerBack: boolean = true,
+      isDelete: boolean = false,
+    ) => {
+      setLoading(true);
+      // Xử lý khi xóa avatar
+      if (isDelete) {
+        deleteAvatar(undefined, {
+          onSuccess: (res) => {
+            setUser(res.data.user);
+          },
+          onError: (error) => {
+            errorHandle(error);
+          },
+          onSettled: () => {
+            setLoading(false);
+          },
+        });
+      } else if (data) {
+        // Xử lý khi chỉnh sửa avatar
+        editAvatar(data, {
+          onSuccess: (res) => {
+            setUser(res.data.user);
+          },
+          onError: (error) => {
+            errorHandle(error);
+          },
+          onSettled: () => {
+            setLoading(false);
+          },
+        });
+      }
+    },
+    [deleteAvatar, editAvatar, errorHandle, setLoading, setUser],
+  );
+};
 
-//   const { mutate: editProfile } = useMutationEditProfile();
+/**
+ * Hook để chỉnh sửa thông tin profile
+ */
+export const useEditProfile = () => {
+  const router = useRouter();
+  const { t } = useTranslation();
+  const errorHandle = useErrorToast();
+  const setUser = useAuthStore((state) => state.setUser);
+  const user = useAuthStore((state) => state.user);
+  const setLoading = useApplicationStore((state) => state.setLoading);
 
-//   const form = useForm<EditProfileRequest>({
-//     defaultValues: {
-//       name: user?.name,
-//       date_of_birth: user?.profile.date_of_birth || undefined,
-//       gender: user?.profile.gender || undefined,
-//       bio: user?.profile.bio || undefined,
-//     },
-//     resolver: zodResolver(
-//       z
-//         .object({
-//           name: z
-//             .string()
-//             .min(4, t('profile.error.invalid_name'))
-//             .max(255)
-//             .optional()
-//             .or(z.literal('')),
+  const { mutate: editProfile } = useMutationEditProfile();
 
-//           // Lưu ý: Form dùng Date object để DatePicker hoạt động
-//           date_of_birth: z
-//             .string()
-//             .optional()
-//             .refine((val) => dayjs(val).isValid(), {
-//               error: t('profile.error.invalid_date_of_birth'),
-//             })
-//             .refine(
-//               (val) => {
-//                 const inputTime = dayjs(val);
-//                 // Ngày sinh phải trước ngày hiện tại
-//                 return inputTime.isBefore(dayjs());
-//               },
-//               {
-//                 error: t('profile.error.invalid_date_of_birth'), // "Ngày sinh phải trước ngày hiện tại"
-//               }
-//             ),
+  const form = useForm<EditProfileRequest>({
+    defaultValues: {
+      name: user?.name,
+      date_of_birth: user?.profile.date_of_birth || undefined,
+      gender: user?.profile.gender || undefined,
+      bio: user?.profile.bio || undefined,
+    },
+    resolver: zodResolver(
+      z
+        .object({
+          name: z
+            .string()
+            .min(4, t("profile.error.invalid_name"))
+            .max(255)
+            .optional()
+            .or(z.literal("")),
 
-//           gender: z.enum(_Gender).optional(),
-//           bio: z.string().optional(),
+          // Lưu ý: Form dùng Date object để DatePicker hoạt động
+          date_of_birth: z
+            .string()
+            .optional()
+            .refine((val) => dayjs(val).isValid(), {
+              error: t("profile.error.invalid_date_of_birth"),
+            })
+            .refine(
+              (val) => {
+                const inputTime = dayjs(val);
+                // Ngày sinh phải trước ngày hiện tại
+                return inputTime.isBefore(dayjs());
+              },
+              {
+                error: t("profile.error.invalid_date_of_birth"), // "Ngày sinh phải trước ngày hiện tại"
+              },
+            ),
 
-//           // Thêm password vào schema
-//           old_password: z
-//             .string()
-//             .min(8, 'Mật khẩu cũ tối thiểu 8 ký tự')
-//             .optional()
-//             .or(z.literal('')),
-//           new_password: z
-//             .string()
-//             .min(8, 'Mật khẩu mới tối thiểu 8 ký tự')
-//             .optional()
-//             .or(z.literal('')),
-//         })
-//         // Validate logic chéo: Nếu nhập mật khẩu mới thì bắt buộc nhập mật khẩu cũ
-//         .refine(
-//           (data) => {
-//             return !(data.new_password && !data.old_password);
-//           },
-//           {
-//             message: t('profile.error.old_password_required'),
-//             path: ['old_password'], // Hiển thị lỗi ở trường old_password
-//           }
-//         )
-//     ),
-//   });
+          gender: z.enum(_Gender).optional(),
+          bio: z.string().optional(),
 
-//   useEffect(() => {
-//     // Cập nhật giá trị mặc định khi user thay đổi
-//     form.reset({
-//       name: user?.name,
-//       date_of_birth: user?.profile.date_of_birth || undefined,
-//       gender: user?.profile.gender || undefined,
-//       bio: user?.profile.bio || undefined,
-//     });
-//   }, [user]);
+          // Thêm password vào schema
+          old_password: z
+            .string()
+            .min(8, "Mật khẩu cũ tối thiểu 8 ký tự")
+            .optional()
+            .or(z.literal("")),
+          new_password: z
+            .string()
+            .min(8, "Mật khẩu mới tối thiểu 8 ký tự")
+            .optional()
+            .or(z.literal("")),
+        })
+        // Validate logic chéo: Nếu nhập mật khẩu mới thì bắt buộc nhập mật khẩu cũ
+        .refine(
+          (data) => {
+            return !(data.new_password && !data.old_password);
+          },
+          {
+            message: t("profile.error.old_password_required"),
+            path: ["old_password"], // Hiển thị lỗi ở trường old_password
+          },
+        ),
+    ),
+  });
 
-//   // handle submit form
-//   const onSubmit = useCallback((data: EditProfileRequest) => {
-//     setLoading(true);
-//     // Xử lý submit form
-//     editProfile(data, {
-//       onSuccess: (res) => {
-//         setUser(res.data.user);
-//         router.back();
-//       },
-//       onError: (error) => {
-//         errorHandle(error);
-//       },
-//       onSettled: () => {
-//         setLoading(false);
-//       },
-//     });
-//   }, []);
+  useEffect(() => {
+    // Cập nhật giá trị mặc định khi user thay đổi
+    form.reset({
+      name: user?.name,
+      date_of_birth: user?.profile.date_of_birth || undefined,
+      gender: user?.profile.gender || undefined,
+      bio: user?.profile.bio || undefined,
+    });
+  }, [user]);
 
-//   return {
-//     form,
-//     onSubmit,
-//   };
-// };
+  // handle submit form
+  const onSubmit = useCallback(
+    (data: EditProfileRequest) => {
+      setLoading(true);
+      // Xử lý submit form
+      editProfile(data, {
+        onSuccess: (res) => {
+          setUser(res.data.user);
+          router.back();
+        },
+        onError: (error) => {
+          errorHandle(error);
+        },
+        onSettled: () => {
+          setLoading(false);
+        },
+      });
+    },
+    [editProfile, errorHandle, setLoading, setUser, router],
+  );
+
+  return {
+    form,
+    onSubmit,
+  };
+};
 
 export const useLogout = () => {
   const mutationLogout = useLogoutMutation();
@@ -834,64 +832,44 @@ export const useLogout = () => {
   };
 };
 
-// /**
-//  * Hook để xóa tài khoản
-//  */
+/**
+ * Hook để xóa tài khoản
+ */
 
-// export const useLockAccount = () => {
-//   const { t } = useTranslation(); // Khởi tạo hàm dịch t
-//   const { mutate, isPending } = useLockAccountMutation();
-//   const logout = useAuthStore((s) => s.logout);
-//   const handleError = useErrorToast();
-//   const setLoading = useApplicationStore((s) => s.setLoading);
+export const useLockAccount = () => {
+  const { t } = useTranslation();
+  const { mutate, isPending } = useLockAccountMutation();
+  const logout = useAuthStore((s) => s.logout);
+  const setLoading = useApplicationStore((s) => s.setLoading);
+  const handleError = useErrorToast();
 
-//   const handleLockAccount = () => {
-//     Alert.alert(
-//       t('profile.delete_account_confirm_title'), // Tiêu đề: Xác nhận xóa tài khoản
-//       t('profile.delete_account_warning'), // Nội dung cảnh báo hành động không thể hoàn tác
-//       [
-//         {
-//           text: t('common.cancel'), // Chữ: Hủy
-//           style: 'cancel',
-//         },
-//         {
-//           text: t('profile.delete_account'), // Chữ: Xóa tài khoản
-//           style: 'destructive',
-//           onPress: () => {
-//             setLoading(true);
+  const handleLockAccount = () => {
+    const confirmed = window.confirm(
+      `${t("profile.delete_account_confirm_title")}\n\n${t(
+        "profile.delete_account_warning",
+      )}`,
+    );
 
-//             mutate(undefined, {
-//               onSuccess: () => {
-//                 setLoading(false);
+    if (!confirmed) return;
 
-//                 // Thông báo sau khi API thành công
-//                 Alert.alert(
-//                   t('header_app.notification'), // Tiêu đề: Thông báo
-//                   t('profile.delete_account_success'), // Nội dung: Tài khoản đã được xóa...
-//                   [
-//                     {
-//                       text: 'Ok', // Chữ: OK
-//                       onPress: () => {
-//                         logout();
-//                       },
-//                     },
-//                   ]
-//                 );
-//               },
-//               onError: (error) => {
-//                 setLoading(false);
-//                 handleError(error);
-//               },
-//             });
-//           },
-//         },
-//       ],
-//       { cancelable: true }
-//     );
-//   };
+    setLoading(true);
 
-//   return {
-//     handleLockAccount,
-//     isPending,
-//   };
-// };
+    mutate(undefined, {
+      onSuccess: () => {
+        setLoading(false);
+
+        window.alert(t("profile.delete_account_success"));
+        logout();
+      },
+      onError: (error) => {
+        setLoading(false);
+        handleError(error);
+      },
+    });
+  };
+
+  return {
+    handleLockAccount,
+    isPending,
+  };
+};

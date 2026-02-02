@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Controller } from "react-hook-form";
 import { useRouter } from "next/navigation";
-import { CheckSquare, Square, ChevronLeft } from "lucide-react";
+import { CheckSquare, Square } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { _PartnerFileType } from "@/features/user/const";
