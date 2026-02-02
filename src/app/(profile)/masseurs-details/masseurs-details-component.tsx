@@ -67,7 +67,7 @@ const MasseurDetailScreen = () => {
   if (!detail) return null;
 
   return (
-    <div className="min-h-screen w-full bg-[#F8F9FA] pb-20">
+    <div className="min-h-screen w-full bg-[#F8F9FA] ">
       <div className="mx-auto w-full bg-white shadow-lg min-h-screen relative">
         {/* --- HEADER CAROUSEL (Web Version) --- */}
         <div className="relative w-full aspect-[1/1.2] bg-gray-200">
