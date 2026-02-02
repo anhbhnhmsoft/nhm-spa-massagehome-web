@@ -31,7 +31,10 @@ import { _LanguagesMap } from "@/lib/const";
 import { useLogout } from "@/features/auth/hooks";
 import SelectLanguage from "./select-language";
 import { useRouter } from "next/navigation";
-import { formatBalance } from "@/lib/utils";
+import { formatBalance, openAboutPage } from "@/lib/utils";
+import { ListLocationModal } from "./location";
+import SupportModal from "./support-modal";
+import LogoutModal from "./dialog-logout";
 
 type UserProfileCardProps = {
   user: ReturnType<typeof useProfile>["user"];
@@ -240,20 +243,44 @@ export const FeatureList = () => {
   const router = useRouter();
 
   const [modalLangVisible, setModalLangVisible] = useState(false);
-  const { openSupportModal } = useGetSupport();
+  const {
+    visible: visibleSupport,
+    openSupportModal,
+    closeSupportModal,
+    supportChanel,
+  } = useGetSupport();
   const selectedLang = useApplicationStore((state) => state.language);
   const langConfig = useMemo(
     () => _LanguagesMap.find((lang) => lang.code === selectedLang),
     [selectedLang],
   );
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
+  // Hỗ trợ
+
+  // Quản lý địa chỉ
+  const [visibleLocation, setVisibleLocation] = useState(false);
+
+  const [showLogout, setShowLogout] = useState(false);
+  const logout = useLogout();
+
+  const handleLogout = async () => {
+    setIsLoggingOut(true);
+    try {
+      // Giả lập gọi API logout
+      await logout();
+    } finally {
+      setIsLoggingOut(false);
+      setShowLogout(false);
+    }
+  };
   const features: FeatureItem[] = [
     {
       id: "location",
       icon: MapPin,
       label: "profile.manage_address",
       color: "text-blue-500",
-      onClick: () => {},
+      onClick: () => setVisibleLocation(true),
     },
     {
       id: "language",
@@ -267,7 +294,7 @@ export const FeatureList = () => {
       icon: Info,
       label: "profile.app_info",
       color: "text-blue-500",
-      onClick: () => {},
+      onClick: () => openAboutPage(),
     },
     {
       id: "support",
@@ -288,7 +315,7 @@ export const FeatureList = () => {
       icon: LogOut,
       label: "profile.log_out",
       color: "text-red-500",
-      onClick: () => {},
+      onClick: () => setShowLogout(true),
     },
   ];
 
@@ -340,6 +367,23 @@ export const FeatureList = () => {
         })}
       </div>
 
+      <ListLocationModal
+        visible={visibleLocation}
+        onClose={() => setVisibleLocation(false)}
+      />
+
+      {/* Hỗ trợ khách hàng */}
+      <SupportModal
+        isVisible={visibleSupport}
+        onClose={closeSupportModal}
+        supportChanel={supportChanel || []}
+      />
+      <LogoutModal
+        isOpen={showLogout}
+        onClose={() => setShowLogout(false)}
+        onConfirm={logout}
+        isLoading={isLoggingOut}
+      />
       {modalLangVisible && (
         <SelectLanguage
           visible={modalLangVisible}

@@ -1,6 +1,6 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
-import { _KTVConfigSchedules, _LanguageCode } from "./const";
+import { _BackendURL, _KTVConfigSchedules, _LanguageCode } from "./const";
 import ErrorAPIServer from "./types";
 import { TFunction } from "i18next";
 import dayjs from "dayjs";
@@ -131,4 +131,8 @@ export const generateQRCodeImageUrl = (config: {
   desc: string;
 }) => {
   return `https://img.vietqr.io/image/${config.bin}-${config.numberCode}-qr_only.png?amount=${config.money}&addInfo=${config.desc}&accountName=${encodeURIComponent(config.name)}`;
+};
+
+export const openAboutPage = () => {
+  window.open(`${_BackendURL}/ve-chung-toi`, "_blank");
 };

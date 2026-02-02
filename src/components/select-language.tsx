@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import Image from "next/image";
 import { X } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { _LanguageCode, _LanguagesMap } from "@/lib/const";
+import { _LanguagesMap } from "@/lib/const";
 import { useSetLanguageUser } from "@/features/auth/hooks";
 
 type SelectLanguageProps = {
@@ -24,7 +24,7 @@ export default function SelectLanguage({
   if (!visible) return null;
 
   return (
-    <div className="fixed inset-0 z-50">
+    <div className="fixed inset-0 z-[2147483647] isolate">
       {/* Overlay */}
       <div className="absolute inset-0 bg-black/50" onClick={onClose} />
 

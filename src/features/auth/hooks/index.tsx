@@ -533,7 +533,7 @@ export const useSetLanguageUser = (onClose?: () => void) => {
   const setLanguageStore = useApplicationStore((s) => s.setLanguage);
 
   const { mutate, isPending } = useSetLanguageMutation();
-  const { error: errorToast } = useToast(!!onClose);
+  const { error: errorToast } = useToast();
 
   const isAuthenticated = useCheckAuth();
 
@@ -546,7 +546,7 @@ export const useSetLanguageUser = (onClose?: () => void) => {
       queryClient.clear();
       queryClient.invalidateQueries();
     },
-    [setLanguageStore, i18n, queryClient],
+    [setLanguageStore, i18n],
   );
 
   const setLanguage = useCallback(
@@ -571,14 +571,7 @@ export const useSetLanguageUser = (onClose?: () => void) => {
 
       onClose?.();
     },
-    [
-      isAuthenticated,
-      mutate,
-      syncLanguage,
-      onClose,
-      t,
-      errorToast, // ✅ BẮT BUỘC
-    ],
+    [isAuthenticated, mutate, syncLanguage, onClose, t, errorToast],
   );
 
   return {
