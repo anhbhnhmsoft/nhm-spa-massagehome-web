@@ -98,7 +98,7 @@ export const UserProfileCard: FC<UserProfileCardProps> = ({
             </button>
 
             <Link
-              href="/profile/settings"
+              href="/info"
               className="rounded-full p-2 transition-colors hover:bg-white/10"
             >
               <Settings size={20} />

@@ -109,3 +109,26 @@ export const getCurrentDayKey = () => {
   if (day === 0) return _KTVConfigSchedules.SUNDAY; // 0 -> 8
   return day + 1; // 1 -> 2 (Thứ 2), 6 -> 7 (Thứ 7)
 };
+
+// Lấy thông tin tiền tệ
+export const formatCurrency = (value: string | number) => {
+  return new Intl.NumberFormat("vi-VN", {
+    style: "currency",
+    currency: "VND",
+  }).format(Number(value));
+};
+
+/**
+ * Tạo URL hình ảnh QR Code cho VietQR
+ * @param config Tham số cấu hình QR Code
+ * @returns URL hình ảnh QR Code
+ */
+export const generateQRCodeImageUrl = (config: {
+  bin: string;
+  numberCode: string;
+  name: string;
+  money: string;
+  desc: string;
+}) => {
+  return `https://img.vietqr.io/image/${config.bin}-${config.numberCode}-qr_only.png?amount=${config.money}&addInfo=${config.desc}&accountName=${encodeURIComponent(config.name)}`;
+};

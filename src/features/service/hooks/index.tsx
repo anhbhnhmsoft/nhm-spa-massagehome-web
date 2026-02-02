@@ -1,14 +1,18 @@
+"use client";
+
 import useToast from "@/features/app/hooks/use-toast";
 import {
   useInfiniteCategoryList,
   useInfiniteListReview,
   useInfiniteServiceList,
   useQueryListCoupon,
+  useQueryListCouponUser,
 } from "@/features/service/hooks/use-query";
 import {
   BookingServiceRequest,
   CategoryListFilterPatch,
   CategoryListRequest,
+  CouponUserListRequest,
   ListReviewRequest,
   PickBookingItem,
   PickBookingRequirement,
@@ -321,28 +325,31 @@ export const useServiceBooking = () => {
   };
 };
 
-// /**
-//  * Lấy danh sách coupon đã sử dụng của user
-//  * @param params
-//  * @param enabled
-//  */
-// export const useGetCouponUserList = (params: CouponUserListRequest, enabled?: boolean) => {
-//   const query = useQueryListCouponUser(params, enabled);
+/**
+ * Lấy danh sách coupon đã sử dụng của user
+ * @param params
+ * @param enabled
+ */
+export const useGetCouponUserList = (
+  params: CouponUserListRequest,
+  enabled?: boolean,
+) => {
+  const query = useQueryListCouponUser(params, enabled);
 
-//   const data = useMemo(() => {
-//     return query.data?.pages.flatMap((page) => page.data.data) || [];
-//   }, [query.data]);
+  const data = useMemo(() => {
+    return query.data?.pages.flatMap((page) => page.data.data) || [];
+  }, [query.data]);
 
-//   const pagination = useMemo(() => {
-//     return query.data?.pages[0].data || null;
-//   }, [query.data]);
+  const pagination = useMemo(() => {
+    return query.data?.pages[0].data || null;
+  }, [query.data]);
 
-//   return {
-//     ...query,
-//     data,
-//     pagination,
-//   };
-// };
+  return {
+    ...query,
+    data,
+    pagination,
+  };
+};
 
 /**
  * hook dùng cho modal đánh giá dịch vụ
