@@ -33,6 +33,7 @@ export const ListLocationModal = ({
   onSelect,
 }: ListLocationModalProps) => {
   const { t } = useTranslation();
+
   const {
     queryList,
     createHandler,

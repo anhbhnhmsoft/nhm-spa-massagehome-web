@@ -267,8 +267,8 @@ export const FeatureList = () => {
   const handleLogout = async () => {
     setIsLoggingOut(true);
     try {
-      // Giả lập gọi API logout
       await logout();
+      router.replace("/");
     } finally {
       setIsLoggingOut(false);
       setShowLogout(false);
@@ -381,7 +381,7 @@ export const FeatureList = () => {
       <LogoutModal
         isOpen={showLogout}
         onClose={() => setShowLogout(false)}
-        onConfirm={logout}
+        onConfirm={handleLogout}
         isLoading={isLoggingOut}
       />
       {modalLangVisible && (

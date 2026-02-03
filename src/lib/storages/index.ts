@@ -21,6 +21,7 @@ export const SecureStorage = {
       Cookies.set(key, JSON.stringify(value), {
         sameSite: "lax",
         secure: true,
+        expires: 30,
       });
       return true;
     } catch {
