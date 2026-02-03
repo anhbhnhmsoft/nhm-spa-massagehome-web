@@ -67,6 +67,7 @@ const ReferralPage = () => {
                   src="/assets/images/affliate.jpg" // Đảm bảo đường dẫn đúng trong thư mục public
                   alt="Affiliate Banner"
                   fill
+                  sizes="100vw"
                   className="object-cover"
                   priority
                 />

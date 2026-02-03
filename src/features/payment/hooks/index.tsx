@@ -314,13 +314,13 @@ export const useCheckPaymentQRCode = (useFor: _UserRole) => {
       refreshWallet(true);
       switch (useFor) {
         case _UserRole.KTV:
-          router.push("/(app)/(service-ktv)/wallet");
+          router.replace("/wallet");
           break;
         case _UserRole.CUSTOMER:
-          router.push("/(app)/(profile)/wallet");
+          router.replace("/wallet");
           break;
         case _UserRole.AGENCY:
-          router.push("/(app)/(tab-agency)/wallet");
+          router.replace("/wallet");
           break;
         default:
           break;

@@ -26,6 +26,7 @@ import useSaveFileImage from "@/features/app/hooks/use-save-image";
 import { useWalletStore } from "@/features/payment/stores";
 import { _UserRole } from "@/features/auth/const";
 import { QRWechatData } from "@/features/payment/types";
+import HeaderBack from "../header-back";
 
 export default function Deposit({ useFor }: { useFor: _UserRole }) {
   const { t } = useTranslation();
@@ -49,14 +50,9 @@ export default function Deposit({ useFor }: { useFor: _UserRole }) {
   const watchedPayment = watch("payment_type");
 
   return (
-    <div className="flex min-h-screen flex-col bg-gray-50 pb-32 md:pb-10">
-      <header className="sticky top-0 z-50 flex items-center bg-white px-4 py-4 shadow-sm">
-        <h1 className="flex-1 text-center font-bold text-lg">
-          {t("payment.deposit_title")}
-        </h1>
-      </header>
-
-      <main className="mx-auto w-full max-w-2xl px-5 pt-6">
+    <div className="flex min-h-screen w-full flex-col bg-gray-50 pb-32 md:pb-10">
+      <HeaderBack title={"payment.deposit_title"} />
+      <main className="mx-auto w-full max-w-[750px] px-5 pt-6">
         {/* --- KHỐI NHẬP TIỀN --- */}
         <section className="mb-6 rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
           <p className="mb-4 font-medium text-gray-500">
@@ -213,7 +209,7 @@ export default function Deposit({ useFor }: { useFor: _UserRole }) {
         />
       </main>
 
-      <footer className="fixed bottom-0 left-0 right-0 border-t border-gray-100 bg-white p-5 shadow-[0_-4px_10px_rgba(0,0,0,0.05)]">
+      <footer className=" mx-auto fixed bottom-0 w-full max-w-[750px] left-0 right-0 border-t border-gray-100 bg-white p-5 shadow-[0_-4px_10px_rgba(0,0,0,0.05)]">
         <div className="mx-auto flex max-w-2xl items-center justify-between gap-4">
           <div className="hidden sm:block">
             <p className="text-sm text-gray-500">
