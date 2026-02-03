@@ -291,7 +291,6 @@ export const useHandleVerifyRegisterOtp = () => {
             setTimer(60);
           },
           onError: (err) => {
-            console.log(err);
             handleError(err);
           },
         },

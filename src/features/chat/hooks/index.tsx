@@ -53,9 +53,9 @@ export const useGetRoomChat = () => {
             onSuccess: () => {
               setLoading(false);
               if (forWho === "customer") {
-                router.push("/(app)/(service)/chat");
+                router.push("/chat");
               } else {
-                router.push("/(app)/(service-ktv)/chat");
+                router.push("/chat");
               }
             },
             onError: (error) => {

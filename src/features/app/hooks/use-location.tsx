@@ -57,7 +57,6 @@ export const useLocation = () => {
   const handleFetch = useCallback(async () => {
     try {
       const locationData = await fetchAndFormatLocation();
-      console.log("Location Data:", locationData);
       setLocation(locationData);
     } catch (error) {
       console.error("Location Fetch Error:", error);
@@ -87,7 +86,6 @@ export const useLocation = () => {
           setLocationPermission(currentState);
 
           if (currentState === "granted") {
-            console.log("Location permission granted.");
             await handleFetch();
           }
           setCompleteCheck(true);
