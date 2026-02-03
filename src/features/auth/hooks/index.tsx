@@ -148,7 +148,7 @@ export const useHandleLogin = () => {
         onSuccess: async (res) => {
           try {
             await login(res.data);
-
+            console.log("Login success:", res.data);
             success({
               message: t("auth.success.login_success"),
             });

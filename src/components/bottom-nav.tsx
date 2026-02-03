@@ -5,12 +5,14 @@ import { usePathname, useRouter } from "next/navigation";
 import { Home, Briefcase, Users, User } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { TabIcon } from "./tab-icon";
-import { useCheckAuth } from "@/features/auth/hooks";
+import { useCheckAuth, useCheckAuthToRedirect } from "@/features/auth/hooks";
+import { useCallback } from "react";
 
 export default function BottomNav() {
   const pathname = usePathname();
   const router = useRouter();
   const { t } = useTranslation();
+  const redirectAuth = useCheckAuthToRedirect();
   const isAuthenticated = useCheckAuth();
 
   const tabs = [
@@ -20,12 +22,15 @@ export default function BottomNav() {
     { name: t("tab.profile"), href: "/profile", icon: User, protected: true },
   ];
 
-  const handlePress = (e: React.MouseEvent, tab: (typeof tabs)[0]) => {
-    if (tab.protected && !isAuthenticated) {
-      e.preventDefault();
-      router.push("/welcome");
-    }
-  };
+  const handlePress = useCallback(
+    (e: React.MouseEvent, tab: (typeof tabs)[0]) => {
+      if (tab.protected && !isAuthenticated) {
+        e.preventDefault();
+        router.push("/welcome");
+      }
+    },
+    [isAuthenticated, router],
+  );
 
   return (
     <div className="fixed bottom-0 left-1/2 -translate-x-1/2 z-50 w-full max-w-[750px] flex justify-center">

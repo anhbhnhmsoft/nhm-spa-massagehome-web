@@ -78,7 +78,7 @@ export default function Deposit({ useFor }: { useFor: _UserRole }) {
               render={({ field: { onChange, value } }) => (
                 <div
                   className={cn(
-                    "flex items-center border-b-2 pb-2 transition-colors",
+                    "flex items-center  border-b-2 pb-2 transition-colors",
                     errors.amount
                       ? "border-red-500"
                       : "border-gray-200 focus-within:border-primary-color-1",
@@ -86,11 +86,12 @@ export default function Deposit({ useFor }: { useFor: _UserRole }) {
                 >
                   <input
                     type="number"
-                    className="flex-1 bg-transparent text-3xl font-bold text-gray-900 outline-none"
+                    className="flex-1 min-w-0 bg-transparent text-2xl sm:text-3xl font-bold text-gray-900 outline-none"
                     placeholder="0"
                     value={value}
                     onChange={(e) => onChange(e.target.value)}
                   />
+
                   <span className="text-xl font-bold text-gray-400">đ</span>
                 </div>
               )}
@@ -228,38 +229,46 @@ export default function Deposit({ useFor }: { useFor: _UserRole }) {
         />
       </main>
 
-      <footer className=" mx-auto fixed bottom-0 w-full max-w-[750px] left-0 right-0 border-t border-gray-100 bg-white p-5 shadow-[0_-4px_10px_rgba(0,0,0,0.05)]">
-        <div className="mx-auto flex max-w-2xl items-center justify-between gap-4">
-          <div className="hidden sm:block">
-            <p className="text-sm text-gray-500">
+      <footer className=" fixed bottom-0 left-0 right-0 z-50 border-t border-gray-100 bg-white px-4 py-3 shadow-[0_-4px_10px_rgba(0,0,0,0.05)] sm:px-5 sm:py-4">
+        <div className="mx-auto flex w-full max-w-[750px]items-center gap-3">
+          {/* Tổng tiền – luôn hiển thị */}
+          <div className="min-w-0">
+            <p className="text-xs sm:text-sm text-gray-500">
               {t("payment.total_payment")}
             </p>
-            <div className="flex flex-row items-baseline gap-2">
+
+            <div className="flex items-baseline gap-1 sm:gap-2">
               {watchedPayment === _PaymentType.WECHAT_PAY && (
-                <span className="mt-2 block text-xs text-gray-500">
+                <span className="text-[11px] sm:text-xs text-gray-500">
                   ({formatBalance(exchangePriceCny)} CNY)
                 </span>
               )}
 
-              <p className="text-xl font-bold text-gray-900">
+              <p className="text-base sm:text-xl font-bold text-gray-900 truncate">
                 {watchedAmount ? formatBalance(watchedAmount) : "0"} đ
               </p>
             </div>
           </div>
+
+          {/* Button */}
           <button
             onClick={handleSubmit(submitDeposit)}
             disabled={
               !watchedAmount || Number(watchedAmount) <= 0 || !watchedPayment
             }
             className={cn(
-              "flex-1 rounded-full py-4 text-center font-bold text-white transition-all active:scale-95",
+              `flex-1 min-w-0 rounded-full py-3 sm:py-4 text-sm sm:text-base font-bold text-white transition-all active:scale-95`,
               watchedAmount && Number(watchedAmount) > 0 && watchedPayment
                 ? "bg-blue-600 hover:bg-blue-700"
                 : "bg-gray-300 cursor-not-allowed",
             )}
           >
-            {t("payment.confirm_payment")}{" "}
-            {watchedAmount && `(${formatBalance(watchedAmount)}đ)`}
+            {t("payment.confirm_payment")}
+            {watchedAmount && (
+              <span className="ml-1 sm:ml-2 font-medium">
+                ({formatBalance(watchedAmount)}đ)
+              </span>
+            )}
           </button>
         </div>
       </footer>

@@ -3,9 +3,7 @@ import type { NextRequest } from "next/server";
 
 export function proxy(req: NextRequest) {
   const token = req.cookies.get("SECURE_AUTH_TOKEN")?.value;
-  const pathname = req.nextUrl.pathname;
-
-  // Nếu đã login thì không cho vào các route thuộc nhóm auth
+  const { pathname } = req.nextUrl;
   const authRoutes = [
     "/login",
     "/register",
@@ -13,17 +11,22 @@ export function proxy(req: NextRequest) {
     "/auth",
     "/welcome",
   ];
-
+  const publicRoutes = ["/", ...authRoutes];
   if (
     token &&
-    authRoutes.some((p) => pathname === p || pathname.startsWith(p + "/"))
+    authRoutes.some(
+      (route) => pathname === route || pathname.startsWith(route + "/"),
+    )
   ) {
     return NextResponse.redirect(new URL("/", req.url));
+  }
+  if (!token && !publicRoutes.includes(pathname)) {
+    return NextResponse.redirect(new URL("/welcome", req.url));
   }
 
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ["/login", "/register", "/verify-otp", "/auth", "/welcome"],
+  matcher: ["/((?!_next|favicon.ico|assets).*)"],
 };
