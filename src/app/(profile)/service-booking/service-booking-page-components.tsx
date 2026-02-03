@@ -11,6 +11,7 @@ import DateTimePickerInput from "@/components/app/date-time-input";
 import { ListLocationModal } from "@/components/location";
 import BookingResultModal from "@/components/app/booking-complete";
 import { CouponCardBooking } from "@/components/app/coupon-card";
+import { CouponItem } from "@/features/service/types";
 
 export default function ServiceBooking() {
   const { t } = useTranslation();
@@ -200,29 +201,38 @@ export default function ServiceBooking() {
               </button>
             </div>
 
-            <div className="flex gap-3 overflow-x-auto pb-2">
-              {queryCoupon.isLoading && !queryCoupon.isRefetching ? (
-                <div className="w-full py-4 text-center text-sm">
-                  Loading...
-                </div>
-              ) : (queryCoupon.data || []).length > 0 ? (
-                queryCoupon.data!.map((cp: any) => (
-                  <CouponCardBooking
-                    key={cp.id}
-                    item={cp}
-                    isSelected={form.getValues("coupon_id") === cp.id}
-                    onPress={() => {
-                      const current = form.getValues("coupon_id");
-                      setValue("coupon_id", current === cp.id ? null : cp.id);
-                    }}
-                  />
-                ))
-              ) : (
-                <div className="w-full rounded-xl border-2 border-dashed py-6 text-center text-sm text-gray-400">
-                  {t("services.no_coupon_available")}
+            <Controller
+              control={control}
+              name="coupon_id"
+              render={({ field: { value, onChange } }) => (
+                <div className="flex gap-3 overflow-x-auto pb-2">
+                  {queryCoupon.isLoading && !queryCoupon.isRefetching ? (
+                    <div className="w-full py-4 text-center text-sm">
+                      Loading...
+                    </div>
+                  ) : (queryCoupon.data || []).length > 0 ? (
+                    queryCoupon.data!.map((cp: CouponItem) => (
+                      <CouponCardBooking
+                        key={cp.id}
+                        item={cp}
+                        isSelected={form.getValues("coupon_id") === cp.id}
+                        onPress={() => {
+                          if (value === cp.id) {
+                            onChange(null);
+                          } else {
+                            onChange(cp.id);
+                          }
+                        }}
+                      />
+                    ))
+                  ) : (
+                    <div className="w-full rounded-xl border-2 border-dashed py-6 text-center text-sm text-gray-400">
+                      {t("services.no_coupon_available")}
+                    </div>
+                  )}
                 </div>
               )}
-            </div>
+            />
           </div>
 
           {/* Submit */}

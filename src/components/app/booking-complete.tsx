@@ -189,7 +189,7 @@ export default function BookingResultModal({
   if (!isVisible) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex flex-col bg-white">
+    <div className="fixed m-auto w-full max-w-[750px] inset-0 z-[100] flex flex-col bg-white">
       {/* Header */}
       <div className="flex h-16 items-center justify-end px-4 shrink-0">
         {status !== "waiting" && (

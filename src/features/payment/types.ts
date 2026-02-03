@@ -1,10 +1,14 @@
-import { BaseSearchRequest, Paginator, ResponseDataSuccessType } from '@/lib/types';
+import {
+  BaseSearchRequest,
+  Paginator,
+  ResponseDataSuccessType,
+} from "@/lib/types";
 import {
   _PaymentType,
   _TransactionStatus,
   _TransactionType,
   _UserWithdrawInfoType,
-} from '@/features/payment/consts';
+} from "@/features/payment/consts";
 
 export type WalletItem = {
   id: string;
@@ -29,10 +33,13 @@ export type ListTransactionItem = {
   created_at: string; // Dạng string vì có thể cần format lại sau khi lấy dữ liệu
 };
 
-export type ListTransactionResponse = ResponseDataSuccessType<Paginator<ListTransactionItem>>;
+export type ListTransactionResponse = ResponseDataSuccessType<
+  Paginator<ListTransactionItem>
+>;
 
 export type ConfigPaymentItem = {
   currency_exchange_rate: string; // Tỷ giá đổi tiền giữa VND và point
+  exchange_rate_vnd_cny: string; // Tỷ giá VND/CNY
   allow_payment: {
     qrcode: boolean; // Cho phép nạp qua QRCode
     zalopay: boolean; // Cho phép nạp qua ZaloPay
@@ -68,6 +75,8 @@ export interface QRWechatData {
   qr_image: string;
   amount: string;
   description: string;
+  amount_cny: string;
+  exchange_rate: string;
 }
 
 export type DepositResponse = ResponseDataSuccessType<DepositItem>;

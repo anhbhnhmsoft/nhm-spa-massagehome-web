@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import { useTranslation } from "react-i18next";
 import { Controller } from "react-hook-form";
@@ -12,6 +12,7 @@ import {
   CheckCircle2,
   Circle,
   Loader2,
+  CircleDollarSign,
 } from "lucide-react";
 
 import { useCheckPaymentQRCode, useDeposit } from "@/features/payment/hooks";
@@ -49,6 +50,17 @@ export default function Deposit({ useFor }: { useFor: _UserRole }) {
   const watchedAmount = watch("amount");
   const watchedPayment = watch("payment_type");
 
+  const exchangePriceCny = useMemo(() => {
+    if (
+      !configPayment?.exchange_rate_vnd_cny ||
+      watchedPayment !== _PaymentType.WECHAT_PAY ||
+      !watchedAmount
+    ) {
+      return 0;
+    }
+
+    return Number(watchedAmount) / Number(configPayment.exchange_rate_vnd_cny);
+  }, [watchedAmount, watchedPayment, configPayment?.exchange_rate_vnd_cny]);
   return (
     <div className="flex min-h-screen w-full flex-col bg-gray-50 pb-32 md:pb-10">
       <HeaderBack title={"payment.deposit_title"} />
@@ -102,6 +114,13 @@ export default function Deposit({ useFor }: { useFor: _UserRole }) {
               </button>
             ))}
           </div>
+          {watchedPayment === _PaymentType.WECHAT_PAY && (
+            <p className="mt-2 text-xs text-gray-500">
+              {t("payment.exchange_rate_wechat_pay", {
+                priceCny: formatBalance(exchangePriceCny),
+              })}
+            </p>
+          )}
         </section>
 
         {/* --- PHƯƠNG THỨC THANH TOÁN --- */}
@@ -215,9 +234,17 @@ export default function Deposit({ useFor }: { useFor: _UserRole }) {
             <p className="text-sm text-gray-500">
               {t("payment.total_payment")}
             </p>
-            <p className="text-xl font-bold text-gray-900">
-              {watchedAmount ? formatBalance(watchedAmount) : "0"} đ
-            </p>
+            <div className="flex flex-row items-baseline gap-2">
+              {watchedPayment === _PaymentType.WECHAT_PAY && (
+                <span className="mt-2 block text-xs text-gray-500">
+                  ({formatBalance(exchangePriceCny)} CNY)
+                </span>
+              )}
+
+              <p className="text-xl font-bold text-gray-900">
+                {watchedAmount ? formatBalance(watchedAmount) : "0"} đ
+              </p>
+            </div>
           </div>
           <button
             onClick={handleSubmit(submitDeposit)}
@@ -363,12 +390,13 @@ const WeChatPaymentModal = ({
   const { saveURLImage } = useSaveFileImage();
 
   if (!visible || !qrWechatData) return null;
-  const { qr_image, amount, description } = qrWechatData as QRWechatData;
+  const { qr_image, amount, description, amount_cny } =
+    qrWechatData as QRWechatData;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-end justify-center bg-black/60 backdrop-blur-sm sm:items-center p-0 sm:p-4">
-      <div className="w-full max-w-lg rounded-t-[32px] bg-white sm:rounded-[32px] shadow-2xl">
-        <div className="flex items-center justify-between border-b p-6">
+    <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm px-0 sm:px-4">
+      <div className="w-full max-w-[750px] bg-white shadow-2xl rounded-t-[32px] sm:rounded-[32px] mx-auto">
+        <div className="flex items-center justify-between border-b p-5 sm:p-6">
           <div className="flex items-center gap-3">
             <div className="relative flex h-10 w-10 items-center justify-center rounded-xl bg-[#07C160]">
               <Image
@@ -413,11 +441,25 @@ const WeChatPaymentModal = ({
           </div>
 
           <div className="mt-8 space-y-4 rounded-2xl bg-gray-50 p-6">
-            <DetailRow
-              label={t("payment.amount")}
-              value={`${formatBalance(amount)} VNĐ`}
-              highlight
-            />
+            <div className="flex items-center justify-between border-b border-gray-200 pb-4">
+              <div>
+                <p className="mb-1 text-xs uppercase tracking-wider text-gray-500">
+                  {t("payment.amount")}
+                </p>
+
+                <p className="mb-2 text-2xl font-bold text-gray-900">
+                  {formatBalance(amount_cny)}
+                  <span className="text-sm font-medium"> CNY</span>
+                </p>
+
+                <p className="text-sm font-bold text-slate-500">
+                  {formatBalance(amount)} {t("common.currency")}
+                </p>
+              </div>
+
+              <CircleDollarSign size={28} color="#07C160" />
+            </div>
+
             <div className="pt-2">
               <p className="text-xs text-gray-500 uppercase tracking-wider mb-2">
                 {t("payment.transfer_note")}

@@ -495,6 +495,7 @@
     "transfer_note": "Nội dung chuyển khoản",
     "note_important": "Vui lòng nhập chính xác nội dung này",
     "processing_transaction": "Hệ thống đang xử lý thanh toán WeChat. Quá trình này có thể mất từ 15–30 phút",
+    "exchange_rate_wechat_pay": "Quy đổi thành {{priceCny}} CNY",
     "withdraw": {
       "title_modal": "Chọn tài khoản rút tiền",
       "add_new_account": "Liên kết tài khoản mới",

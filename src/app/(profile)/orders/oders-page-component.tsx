@@ -18,6 +18,12 @@ export default function OrdersPageComponent() {
   const router = useRouter();
   const status = searchParams?.get("status");
 
+  // Ref cho tính năng kéo chuột
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const isDown = useRef(false);
+  const startX = useRef(0);
+  const scrollLeft = useRef(0);
+
   const {
     data,
     fetchNextPage,
@@ -34,19 +40,40 @@ export default function OrdersPageComponent() {
     isCancelBookingPending,
   } = useGetBookingList();
 
-  // Xử lý filter từ URL
   useEffect(() => {
     if (status) {
       const statusEnum = Number(status) as _BookingStatus;
-      setFilter({
-        status: statusEnum,
-      });
+      setFilter({ status: statusEnum });
     }
   }, [status, setFilter]);
 
-  // Xử lý Infinite Scroll (thay cho onEndReached của FlatList)
-  const observerTarget = useRef(null);
+  // Logic kéo chuột để scroll (Drag to Scroll)
+  const handleMouseDown = (e: React.MouseEvent) => {
+    if (!scrollRef.current) return;
+    isDown.current = true;
+    scrollRef.current.classList.add("active");
+    startX.current = e.pageX - scrollRef.current.offsetLeft;
+    scrollLeft.current = scrollRef.current.scrollLeft;
+  };
 
+  const handleMouseLeave = () => {
+    isDown.current = false;
+  };
+
+  const handleMouseUp = () => {
+    isDown.current = false;
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isDown.current || !scrollRef.current) return;
+    e.preventDefault();
+    const x = e.pageX - scrollRef.current.offsetLeft;
+    const walk = (x - startX.current) * 2; // Tốc độ scroll
+    scrollRef.current.scrollLeft = scrollLeft.current - walk;
+  };
+
+  // Infinite Scroll logic
+  const observerTarget = useRef(null);
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
@@ -56,21 +83,16 @@ export default function OrdersPageComponent() {
       },
       { threshold: 0.5 },
     );
-
-    if (observerTarget.current) {
-      observer.observe(observerTarget.current);
-    }
-
+    if (observerTarget.current) observer.observe(observerTarget.current);
     return () => observer.disconnect();
   }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col items-center">
-      {/* --- CONTAINER GIỚI HẠN 1024PX --- */}
-      <div className="w-full max-w-[1024px] bg-white min-h-screen shadow-sm flex flex-col">
+      <div className="w-full bg-white min-h-screen shadow-sm flex flex-col">
         {/* --- HEADER --- */}
-        <GradientBackground className="relative overflow-hidden bg-gradient-to-br px-4 pt-8 pb-6 md:px-8">
-          <div className="flex items-center justify-between mb-6">
+        <GradientBackground className="relative w-full overflow-hidden bg-gradient-to-br pt-8 pb-6">
+          <div className="flex items-center justify-between mb-6 px-4 md:px-8">
             <div className="space-y-1">
               <h1 className="text-xl md:text-2xl font-bold text-white uppercase tracking-tight">
                 {t("header_app.title_orders")}
@@ -88,27 +110,35 @@ export default function OrdersPageComponent() {
             </button>
           </div>
 
-          {/* --- FILTER BAR (SCROLLABLE) --- */}
-          <div className="flex overflow-x-auto gap-2 pb-2 no-scrollbar">
-            {Object.entries(_BookingStatusMap).map(([key, value]) => {
-              const statusKey = Number(key);
-              const isChecked = params?.filter?.status === statusKey;
+          <div
+            ref={scrollRef}
+            onMouseDown={handleMouseDown}
+            onMouseLeave={handleMouseLeave}
+            onMouseUp={handleMouseUp}
+            onMouseMove={handleMouseMove}
+            className="w-full overflow-x-auto no-scrollbar scroll-smooth cursor-grab active:cursor-grabbing select-none"
+          >
+            <div className="flex gap-2 pb-2 min-w-max px-4 md:px-8">
+              {Object.entries(_BookingStatusMap).map(([key, value]) => {
+                const statusKey = Number(key);
+                const isChecked = params?.filter?.status === statusKey;
 
-              return (
-                <button
-                  key={key}
-                  onClick={() => setFilter({ status: statusKey })}
-                  className={cn(
-                    "whitespace-nowrap rounded-full px-5 py-2 text-xs font-semibold transition-all duration-200 border",
-                    isChecked
-                      ? "bg-white text-blue-700 border-white shadow-md"
-                      : "bg-blue-800/30 text-blue-100 border-blue-400/20 hover:bg-blue-800/40",
-                  )}
-                >
-                  {t(value)}
-                </button>
-              );
-            })}
+                return (
+                  <button
+                    key={key}
+                    onClick={() => setFilter({ status: statusKey })}
+                    className={cn(
+                      "whitespace-nowrap rounded-full px-5 py-2 text-xs font-semibold transition-all duration-200 border flex-shrink-0",
+                      isChecked
+                        ? "bg-white text-blue-700 border-white shadow-md"
+                        : "bg-blue-800/30 text-blue-100 border-blue-400/20 hover:bg-blue-800/40",
+                    )}
+                  >
+                    {t(value)}
+                  </button>
+                );
+              })}
+            </div>
           </div>
         </GradientBackground>
 
@@ -119,7 +149,7 @@ export default function OrdersPageComponent() {
               {t("common.loading")}...
             </div>
           ) : data && data.length > 0 ? (
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-2">
+            <div className="grid grid-cols-1 gap-4">
               {data.map((item, index) => (
                 <BookingCard
                   key={`${item.id}-${index}`}
@@ -135,7 +165,6 @@ export default function OrdersPageComponent() {
             </div>
           )}
 
-          {/* Observer Target for Infinite Scroll */}
           <div
             ref={observerTarget}
             className="h-10 w-full flex justify-center items-center"
@@ -147,7 +176,6 @@ export default function OrdersPageComponent() {
         </main>
       </div>
 
-      {/* --- MODALS --- */}
       <CancellationModal
         isVisible={showModalCancelBooking}
         onClose={() => setShowModalCancelBooking(false)}

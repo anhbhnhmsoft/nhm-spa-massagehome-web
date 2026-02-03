@@ -495,6 +495,7 @@
     "transfer_note": "转账备注",
     "note_important": "请务必填写正确的转账备注",
     "processing_transaction": "微信支付正在处理中，系统确认可能需要 15–30 分钟",
+    "exchange_rate_wechat_pay": "换算为 {{priceCny}} 人民币",  
     "withdraw": {
       "title_modal": "选择提现账户",
       "add_new_account": "关联新账户",

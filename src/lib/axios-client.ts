@@ -43,6 +43,7 @@ client.interceptors.request.use(
 client.interceptors.response.use(
   (response) => response,
   (error) => {
+    console.log("Axios Response Error Interceptor: ", error);
     const errorResponse = error.response;
     const errorData = error.response?.data;
     //Nếu có lỗi trả ra từ server

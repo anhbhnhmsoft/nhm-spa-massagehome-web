@@ -6,17 +6,17 @@ import { Bath, Medal } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import { CategoryItem } from "@/features/service/types";
+import { useKTVSearchStore } from "@/features/user/stores";
 
 export const CategoryCard = ({ item }: { item: CategoryItem }) => {
   const { t } = useTranslation();
   const router = useRouter();
   const [imageError, setImageError] = useState(false);
 
-  // Giả định logic Store của bạn
-  // const setFilter = useKTVSearchStore((state) => state.setFilter);
+  const setFilter = useKTVSearchStore((state) => state.setFilter);
 
   const handlePress = () => {
-    // setFilter({ category_id: item.id, category_name: item.name });
+    setFilter({ category_id: item.id, category_name: item.name });
     router.push("/masseurs");
   };
 
