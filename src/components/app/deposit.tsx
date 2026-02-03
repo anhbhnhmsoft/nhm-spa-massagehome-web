@@ -229,7 +229,7 @@ export default function Deposit({ useFor }: { useFor: _UserRole }) {
         />
       </main>
 
-      <footer className=" fixed bottom-0 left-0 right-0 z-50 border-t border-gray-100 bg-white px-4 py-3 shadow-[0_-4px_10px_rgba(0,0,0,0.05)] sm:px-5 sm:py-4">
+      <footer className="mx-auto fixed max-w-[750px] w-full bottom-0 left-0 right-0 z-50 border-t border-gray-100 bg-white px-4 py-3 shadow-[0_-4px_10px_rgba(0,0,0,0.05)] sm:px-5 sm:py-4">
         <div className="mx-auto flex w-full max-w-[750px]items-center gap-3">
           {/* Tổng tiền – luôn hiển thị */}
           <div className="min-w-0">
