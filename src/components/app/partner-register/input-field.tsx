@@ -1,7 +1,7 @@
 import React from "react";
 import { Controller, Control, FieldPath, FieldValues } from "react-hook-form";
 
-type InputFieldProps<T extends FieldValues = any> = {
+type InputFieldProps<T extends FieldValues> = {
   control: Control<T>;
   name: FieldPath<T>;
   placeholder: string;
@@ -12,7 +12,7 @@ type InputFieldProps<T extends FieldValues = any> = {
   disabled?: boolean;
 };
 
-export const InputField = <T extends FieldValues = any>({
+export const InputField = <T extends FieldValues>({
   control,
   name,
   placeholder,
@@ -48,7 +48,13 @@ export const InputField = <T extends FieldValues = any>({
               }`}
               placeholder={placeholder}
               onBlur={onBlur}
-              onChange={onChange}
+              onChange={(e) => {
+                const val =
+                  type === "number"
+                    ? parseFloat(e.target.value)
+                    : e.target.value;
+                onChange(val);
+              }}
               value={value || ""}
               disabled={disabled}
             />

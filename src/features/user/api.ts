@@ -5,6 +5,7 @@ import {
   ListKTVRequest,
   ListKTVResponse,
   ApplyPartnerResponse,
+  CheckApplyPartnerResponse,
 } from "@/features/user/types";
 
 const defaultUri = "/user";
@@ -39,6 +40,11 @@ const userApi = {
     const response = await client.get(`${defaultUri}/list-manage-ktv`, {
       params,
     });
+    return response.data;
+  },
+  // Kiểm tra thông tin đăng ký đối tác (KTV hoặc Agency)
+  checkApplyPartner: async (): Promise<CheckApplyPartnerResponse> => {
+    const response = await client.get(`${defaultUri}/check-apply-partner`);
     return response.data;
   },
 };

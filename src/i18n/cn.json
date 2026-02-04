@@ -114,7 +114,9 @@
     "offline_service_title": "技师休息中",
     "offline_service_message": "该技师当前正在休息。你想要...？",
     "save_qr_code": "保存二维码",
-    "total": "总计"
+    "total": "总计",
+    "nickname": "昵称"
+
   },
   "common_success": {
     "save_image_success": "图片保存成功",
@@ -418,6 +420,7 @@
       "follow_agency_desc": "输入推荐您的代理的代码。",
       "follow_agency_placeholder": "输入代码",
       "field_experience_placeholder": "输入经验年限",
+      "field_nickname_placeholder": "输入显示名称",
       "button_submit": "提交注册",
       "alert_location_permission_title": "位置权限",
       "alert_location_permission_message": "请允许应用访问您的位置。",
@@ -448,7 +451,15 @@
       "register_success": "您的申请已成功发送。我们将尽快与您联系。",
       "bio_placeholder_vi": "用越南语描述您自己...",
       "bio_placeholder_en": "用英语描述您自己...",
-      "bio_placeholder_cn": "用中文描述您自己..."
+      "bio_placeholder_cn": "用中文描述您自己...",
+      "error_nickname_required": "请输入显示名称。",
+      "error_bio_required": "请输入您的简介（至少 {{ min }} 个字符）。",
+      "error_file_invalid": "请选择一张图片，或上传的图片无效。",
+      "alert_images_display_message": "请添加至少 {{ min }} 张且最多 {{ max }} 张照片以展示给客户。",
+      "error_check_apply_partner": "检查合作伙伴申请时发生错误。请稍后重试。",
+      "info_apply_pending": "您已注册成为合作伙伴，正在等待管理员审核，请耐心等待最新消息。",
+      "info_apply_approved": "您的合作伙伴注册已获得批准。",
+      "info_apply_rejected": "您的合作伙伴申请已被拒绝，无法再次申请。"
     },
     "partner_register": {
       "title": "您想注册为什么角色？",

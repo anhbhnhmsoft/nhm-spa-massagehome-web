@@ -11,7 +11,7 @@ export default function Providers({ children }: { children: React.ReactNode }) {
     <QueryProvider>
       <AuthBootstrap>
         {children}
-        <Toaster />
+        <Toaster position="top-right" />
       </AuthBootstrap>
     </QueryProvider>
   );

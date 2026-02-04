@@ -83,40 +83,39 @@ export default function PartnerRegisterAgencyPage() {
             control={control}
             name="file_uploads"
             render={({ field: { value = [], onChange } }) => {
-              const idFrontFile = getFilesByType(
+              const idFront = getFilesByType(
                 value,
                 _PartnerFileType.IDENTITY_CARD_FRONT,
               )[0];
-              const idBackFile = getFilesByType(
+              const idBack = getFilesByType(
                 value,
                 _PartnerFileType.IDENTITY_CARD_BACK,
               )[0];
 
+              const updateIdImage = (
+                type: _PartnerFileType,
+                preview: string,
+                file: File,
+              ) => {
+                const filtered = value.filter((f) => f.type_upload !== type);
+                onChange([...filtered, { type_upload: type, file, preview }]);
+              };
+
               return (
                 <div className="flex flex-wrap gap-3">
                   <ImageSlot
-                    uri={idFrontFile?.file.uri || null}
+                    uri={idFront?.preview || null} // ✅ Dùng preview
                     label={t("profile.partner_form.id_front")}
                     onAdd={() =>
-                      pickImage((uri, file) => {
-                        const filtered = value.filter(
-                          (f) =>
-                            f.type_upload !==
+                      pickImage(
+                        (preview, file) =>
+                          file &&
+                          updateIdImage(
                             _PartnerFileType.IDENTITY_CARD_FRONT,
-                        );
-                        onChange([
-                          ...filtered,
-                          {
-                            type_upload: _PartnerFileType.IDENTITY_CARD_FRONT,
-                            file: {
-                              uri,
-                              name: file?.name,
-                              type: file?.type,
-                              rawFile: file,
-                            },
-                          },
-                        ]);
-                      })
+                            preview,
+                            file,
+                          ),
+                      )
                     }
                     onRemove={() =>
                       onChange(
@@ -128,30 +127,19 @@ export default function PartnerRegisterAgencyPage() {
                       )
                     }
                   />
-
                   <ImageSlot
-                    uri={idBackFile?.file.uri || null}
+                    uri={idBack?.preview || null} // ✅ Dùng preview
                     label={t("profile.partner_form.id_back")}
                     onAdd={() =>
-                      pickImage((uri, file) => {
-                        const filtered = value.filter(
-                          (f) =>
-                            f.type_upload !==
+                      pickImage(
+                        (preview, file) =>
+                          file &&
+                          updateIdImage(
                             _PartnerFileType.IDENTITY_CARD_BACK,
-                        );
-                        onChange([
-                          ...filtered,
-                          {
-                            type_upload: _PartnerFileType.IDENTITY_CARD_BACK,
-                            file: {
-                              uri,
-                              name: file?.name,
-                              type: file?.type,
-                              rawFile: file,
-                            },
-                          },
-                        ]);
-                      })
+                            preview,
+                            file,
+                          ),
+                      )
                     }
                     onRemove={() =>
                       onChange(
@@ -179,48 +167,42 @@ export default function PartnerRegisterAgencyPage() {
             control={control}
             name="file_uploads"
             render={({ field: { value = [], onChange } }) => {
-              const faceWithCardFile = getFilesByType(
+              const faceFile = getFilesByType(
                 value,
                 _PartnerFileType.FACE_WITH_IDENTITY_CARD,
               )[0];
               return (
-                <div className="w-1/2">
-                  <ImageSlot
-                    uri={faceWithCardFile?.file.uri || null}
-                    label={t("profile.partner_form.add_photo")}
-                    onAdd={() =>
-                      pickImage((uri, file) => {
-                        const filtered = value.filter(
-                          (f) =>
-                            f.type_upload !==
-                            _PartnerFileType.FACE_WITH_IDENTITY_CARD,
-                        );
-                        onChange([
-                          ...filtered,
-                          {
-                            type_upload:
-                              _PartnerFileType.FACE_WITH_IDENTITY_CARD,
-                            file: {
-                              uri,
-                              name: file?.name,
-                              type: file?.type,
-                              rawFile: file,
-                            },
-                          },
-                        ]);
-                      })
-                    }
-                    onRemove={() =>
-                      onChange(
-                        value.filter(
-                          (f) =>
-                            f.type_upload !==
-                            _PartnerFileType.FACE_WITH_IDENTITY_CARD,
-                        ),
-                      )
-                    }
-                  />
-                </div>
+                <ImageSlot
+                  uri={faceFile?.preview || null}
+                  label={t("profile.partner_form.add_photo")}
+                  onAdd={() =>
+                    pickImage((preview, file) => {
+                      if (!file) return;
+                      const filtered = value.filter(
+                        (f) =>
+                          f.type_upload !==
+                          _PartnerFileType.FACE_WITH_IDENTITY_CARD,
+                      );
+                      onChange([
+                        ...filtered,
+                        {
+                          type_upload: _PartnerFileType.FACE_WITH_IDENTITY_CARD,
+                          file,
+                          preview,
+                        },
+                      ]);
+                    })
+                  }
+                  onRemove={() =>
+                    onChange(
+                      value.filter(
+                        (f) =>
+                          f.type_upload !==
+                          _PartnerFileType.FACE_WITH_IDENTITY_CARD,
+                      ),
+                    )
+                  }
+                />
               );
             }}
           />

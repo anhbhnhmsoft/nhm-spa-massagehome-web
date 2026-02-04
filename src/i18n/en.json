@@ -114,7 +114,8 @@
     "offline_service_title": "Technician is on break",
     "offline_service_message": "This technician is currently on break. Would you like to...?",
     "save_qr_code": "Save QR Code",
-    "total": "Total"
+    "total": "Total",
+    "nickname": "Nickname"
   },
   "common_success": {
     "save_image_success": "Image saved successfully",
@@ -418,6 +419,7 @@
       "follow_agency_desc": "Enter the code of the Agency that referred you.",
       "follow_agency_placeholder": "Enter Code",
       "field_experience_placeholder": "Enter years of experience",
+      "field_nickname_placeholder": "Enter display name",
       "button_submit": "Submit Registration",
       "alert_location_permission_title": "Location Access",
       "alert_location_permission_message": "Please allow the app to access your location.",
@@ -448,7 +450,16 @@
       "register_success": "Your application has been sent successfully. We will contact you as soon as possible.",
       "bio_placeholder_vi": "Describe yourself in Vietnamese...",
       "bio_placeholder_en": "Describe yourself in English...",
-      "bio_placeholder_cn": "Describe yourself in Chinese..."
+      "bio_placeholder_cn": "Describe yourself in Chinese...",
+      "error_nickname_required": "Please enter display name.",
+      "error_bio_required": "Please enter your bio (at least {{ min }} characters).",
+      "error_file_invalid": "Please select an image, or the uploaded image is invalid.",
+      "alert_images_display_message": "Please add at least {{ min }} images and up to {{ max }} images to display to customers.",
+      "error_check_apply_partner": "An error occurred while checking partner application. Please try again later.",
+      "info_apply_pending": "You have registered as a partner and are awaiting administrator approval. Please stay tuned for the latest updates.",
+      "info_apply_approved": "Your partner registration has been approved.",
+      "info_apply_rejected": "Your partner application has been rejected, and you cannot re-apply."
+ 
     },
     "partner_register": {
       "title": "What do you want to register as?",

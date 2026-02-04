@@ -120,7 +120,7 @@ export const WithdrawModal = ({ isVisible, onClose }: WithdrawModalProps) => {
           </div>
 
           {/* Footer */}
-          <div className="absolute bottom-0 w-full border-t border-gray-100 bg-white p-5">
+          <div className="absolute bottom-0 w-full max-w-lg  border-t border-gray-100 bg-white p-5">
             <button
               onClick={() => setShowModalCreateInfo(true)}
               className="flex w-full items-center justify-center gap-2 rounded-xl bg-primary-color-2 py-3.5 font-bold text-white hover:opacity-90 transition-opacity"
@@ -314,21 +314,21 @@ const CreateWithdrawTicketModal = ({
   setId: (id: string) => void;
 }) => {
   const { t } = useTranslation();
-  const { form, submitRequestWithdraw, loading, configPayment } =
-    useRequestWithdraw(id, setId);
+  const { form, submitRequestWithdraw, loading } = useRequestWithdraw(
+    id,
+    setId,
+  );
   const {
     register,
     setValue,
-    watch,
     formState: { errors },
   } = form;
 
-  const watchedAmount = watch("amount");
   if (id === "") return null;
 
   return (
-    <div className="fixed inset-0 z-[60] flex items-end justify-center bg-black/60 sm:items-center">
-      <div className="w-full max-w-lg rounded-t-3xl bg-white shadow-2xl animate-in slide-in-from-bottom sm:rounded-3xl h-[85vh]">
+    <div className="fixed inset-0 z-[60] flex items-end justify-center bg-black/60 sm:items-center ">
+      <div className="relative overflow-hidden w-full max-w-lg  rounded-t-3xl  bg-white shadow-2xl animate-in slide-in-from-bottom sm:rounded-3xl h-[85vh] sm:h-[75vh] ">
         <div className="flex items-center justify-between border-b p-5">
           <h3 className="text-xl font-bold">
             {t("payment.withdraw.title_modal_request")}
@@ -394,7 +394,7 @@ const CreateWithdrawTicketModal = ({
           </div>
         </div>
 
-        <div className="absolute bottom-0 w-full border-t bg-white p-5">
+        <div className="absolute bottom-0 w-full max-w-lg  border-t bg-white p-5 ">
           <button
             onClick={submitRequestWithdraw}
             disabled={loading}

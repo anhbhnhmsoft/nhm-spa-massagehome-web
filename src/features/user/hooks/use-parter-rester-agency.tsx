@@ -1,27 +1,16 @@
-import { useCallback } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslation } from "react-i18next";
 import { _UserRole } from "@/features/auth/const";
 import useApplicationStore from "@/lib/store";
-import useAuthStore from "@/features/auth/store";
-import { _PartnerFileType } from "../const";
+import { _PartnerFileType, _ReviewApplicationStatus } from "../const";
 import { ApplyPartnerRequest } from "../types";
 import useToast from "@/features/app/hooks/use-toast";
 import { useMutationApplyPartner } from "./use-mutation";
 import { useRouter } from "next/navigation";
-
-const FileSchema = z.object({
-  uri: z.string().min(1, "Thiếu uri ảnh"),
-  name: z.string().min(1, "Thiếu tên file"),
-  type: z.string().min(1, "Thiếu mime type"),
-});
-
-const FileUploadSchema = z.object({
-  type_upload: z.enum(_PartnerFileType),
-  file: FileSchema,
-});
+import { useQueryCheckApplyPartner } from "./use-query";
 
 const countByType = (
   files: { type_upload: _PartnerFileType }[],
@@ -68,11 +57,10 @@ const buildApplyPartnerFormData = (data: ApplyPartnerRequest): FormData => {
   data.file_uploads.forEach((item, index) => {
     fd.append(`file_uploads[${index}][type_upload]`, String(item.type_upload));
 
-    fd.append(`file_uploads[${index}][file]`, {
-      uri: item.file.uri, // vd: file:///data/user/0/...
-      name: item.file.name, // vd: cccd_front.jpg
-      type: item.file.type, // vd: image/jpeg
-    } as any);
+    // Web: Append trực tiếp đối tượng File
+    if (item.file instanceof File) {
+      fd.append(`file_uploads[${index}][file]`, item.file);
+    }
   });
 
   return fd;
@@ -81,10 +69,49 @@ const buildApplyPartnerFormData = (data: ApplyPartnerRequest): FormData => {
 export const usePartnerRegisterAgency = () => {
   const router = useRouter();
   const { t } = useTranslation();
-  const user = useAuthStore((state) => state.user);
   const setLoading = useApplicationStore((s) => s.setLoading);
   const { mutate } = useMutationApplyPartner();
-  const { error: errorToast, success: successToast } = useToast();
+  const {
+    error: errorToast,
+    success: successToast,
+    info: infoToast,
+  } = useToast();
+
+  const queryCheck = useQueryCheckApplyPartner();
+  const hasNavigatedRef = useRef(false);
+
+  useEffect(() => {
+    if (queryCheck.error) {
+      errorToast({
+        message: t("profile.partner_form.error_check_apply_partner"),
+      });
+    } else if (queryCheck.data) {
+      const data = queryCheck.data;
+      if (!data.can_apply && !hasNavigatedRef.current) {
+        switch (data.apply_status) {
+          case _ReviewApplicationStatus.PENDING:
+            infoToast({
+              message: t("profile.partner_form.info_apply_pending"),
+            });
+            break;
+          case _ReviewApplicationStatus.APPROVED:
+            infoToast({
+              message: t("profile.partner_form.info_apply_approved"),
+            });
+            break;
+          case _ReviewApplicationStatus.REJECTED:
+            errorToast({
+              message: t("profile.partner_form.info_apply_rejected"),
+            });
+            break;
+        }
+        hasNavigatedRef.current = true;
+        setTimeout(() => {
+          router.back();
+        }, 3000);
+      }
+    }
+  }, [queryCheck.data, queryCheck.error]);
   // hàm validate và xử lý form đăng ký đối tác
   const schemas = z
     .object({
@@ -111,7 +138,13 @@ export const usePartnerRegisterAgency = () => {
         cn: z.string().optional(),
       }),
 
-      file_uploads: z.array(FileUploadSchema),
+      file_uploads: z.array(
+        z.object({
+          type_upload: z.enum(_PartnerFileType),
+          file: z.instanceof(File),
+          preview: z.string().optional(),
+        }),
+      ),
     })
     .superRefine((data, ctx) => {
       const files = data.file_uploads;
@@ -179,7 +212,12 @@ export const usePartnerRegisterAgency = () => {
         onSuccess: (res) => {
           setLoading(false);
           successToast({ message: t("profile.partner_form.register_success") });
-          router.back();
+          if (!hasNavigatedRef.current) {
+            hasNavigatedRef.current = true;
+            setTimeout(() => {
+              router.back();
+            }, 3000);
+          }
         },
         onError: (error) => {
           setLoading(false);

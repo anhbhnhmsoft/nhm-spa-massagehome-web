@@ -58,7 +58,7 @@ export default function PartnerRegisterIndividualPage() {
   const { pickImage } = useImagePicker();
 
   const [isAgreed, setIsAgreed] = useState<boolean>(false);
-  const { form, onSubmit, onInvalidSubmit } = usePartnerRegisterForm();
+  const { form, onSubmit, onInvalidSubmit, loading } = usePartnerRegisterForm();
 
   const {
     control,
@@ -108,7 +108,8 @@ export default function PartnerRegisterIndividualPage() {
                     {displayFiles.map((item, index) => (
                       <ImageSlot
                         key={index}
-                        uri={item.file.uri}
+                        // ✅ Dùng preview để hiển thị trên Next.js
+                        uri={item.preview || null}
                         label={t("common.degree")}
                         onRemove={() =>
                           onChange(value.filter((f) => f !== item))
@@ -120,19 +121,18 @@ export default function PartnerRegisterIndividualPage() {
                       uri={null}
                       label={t("profile.partner_form.add_photo")}
                       onAdd={() =>
-                        pickImage((uri) =>
+                        pickImage((preview, file) => {
+                          // ✅ Hook trả về cả preview và file
+                          if (!file) return;
                           onChange([
                             ...value,
                             {
                               type_upload: _PartnerFileType.KTV_IMAGE_DISPLAY,
-                              file: {
-                                uri,
-                                name: "display.jpg",
-                                type: "image/jpeg",
-                              },
+                              file: file, // File object để upload
+                              preview: preview, // String URL để hiển thị
                             },
-                          ]),
-                        )
+                          ]);
+                        })
                       }
                     />
                   </div>
@@ -167,32 +167,28 @@ export default function PartnerRegisterIndividualPage() {
                 )[0];
 
                 const updateIdImage = (
-                  type: any,
-                  uri: string,
-                  fileName: string,
+                  type: _PartnerFileType,
+                  preview: string,
+                  file: File,
                 ) => {
                   const filtered = value.filter((f) => f.type_upload !== type);
-                  onChange([
-                    ...filtered,
-                    {
-                      type_upload: type,
-                      file: { uri, name: fileName, type: "image/jpeg" },
-                    },
-                  ]);
+                  onChange([...filtered, { type_upload: type, file, preview }]);
                 };
 
                 return (
                   <div className="flex flex-wrap gap-3">
                     <ImageSlot
-                      uri={idFront?.file.uri || null}
+                      uri={idFront?.preview || null} // ✅ Dùng preview
                       label={t("profile.partner_form.id_front")}
                       onAdd={() =>
-                        pickImage((uri) =>
-                          updateIdImage(
-                            _PartnerFileType.IDENTITY_CARD_FRONT,
-                            uri,
-                            "front.jpg",
-                          ),
+                        pickImage(
+                          (preview, file) =>
+                            file &&
+                            updateIdImage(
+                              _PartnerFileType.IDENTITY_CARD_FRONT,
+                              preview,
+                              file,
+                            ),
                         )
                       }
                       onRemove={() =>
@@ -206,15 +202,17 @@ export default function PartnerRegisterIndividualPage() {
                       }
                     />
                     <ImageSlot
-                      uri={idBack?.file.uri || null}
+                      uri={idBack?.preview || null} // ✅ Dùng preview
                       label={t("profile.partner_form.id_back")}
                       onAdd={() =>
-                        pickImage((uri) =>
-                          updateIdImage(
-                            _PartnerFileType.IDENTITY_CARD_BACK,
-                            uri,
-                            "back.jpg",
-                          ),
+                        pickImage(
+                          (preview, file) =>
+                            file &&
+                            updateIdImage(
+                              _PartnerFileType.IDENTITY_CARD_BACK,
+                              preview,
+                              file,
+                            ),
                         )
                       }
                       onRemove={() =>
@@ -249,10 +247,11 @@ export default function PartnerRegisterIndividualPage() {
                 )[0];
                 return (
                   <ImageSlot
-                    uri={faceFile?.file.uri || null}
+                    uri={faceFile?.preview || null}
                     label={t("profile.partner_form.add_photo")}
                     onAdd={() =>
-                      pickImage((uri) => {
+                      pickImage((preview, file) => {
+                        if (!file) return;
                         const filtered = value.filter(
                           (f) =>
                             f.type_upload !==
@@ -263,7 +262,8 @@ export default function PartnerRegisterIndividualPage() {
                           {
                             type_upload:
                               _PartnerFileType.FACE_WITH_IDENTITY_CARD,
-                            file: { uri, name: "face.jpg", type: "image/jpeg" },
+                            file,
+                            preview,
                           },
                         ]);
                       })
@@ -299,7 +299,7 @@ export default function PartnerRegisterIndividualPage() {
                     {degrees.map((item, index) => (
                       <ImageSlot
                         key={index}
-                        uri={item.file.uri}
+                        uri={item.preview || null} // ✅ Hiển thị bằng preview
                         label={t("profile.partner_form.degree_photo")}
                         onRemove={() =>
                           onChange(value.filter((f) => f !== item))
@@ -311,19 +311,17 @@ export default function PartnerRegisterIndividualPage() {
                       uri={null}
                       label={t("profile.partner_form.add_photo")}
                       onAdd={() =>
-                        pickImage((uri) =>
+                        pickImage((preview, file) => {
+                          if (!file) return;
                           onChange([
                             ...value,
                             {
                               type_upload: _PartnerFileType.LICENSE,
-                              file: {
-                                uri,
-                                name: "degree.jpg",
-                                type: "image/jpeg",
-                              },
+                              file,
+                              preview,
                             },
-                          ]),
-                        )
+                          ]);
+                        })
                       }
                     />
                   </div>
@@ -363,6 +361,20 @@ export default function PartnerRegisterIndividualPage() {
                   "profile.partner_form.field_experience_placeholder",
                 )}
                 error={errors.experience?.message}
+              />
+            </div>
+            {/* nick nảm */}
+            <div>
+              <label className="mb-1 block font-bold text-slate-900">
+                {t("common.nickname")} *
+              </label>
+              <InputField
+                control={control}
+                name="nickname"
+                placeholder={t(
+                  "profile.partner_form.field_nickname_placeholder",
+                )}
+                error={errors.nickname?.message}
               />
             </div>
 
@@ -438,8 +450,8 @@ export default function PartnerRegisterIndividualPage() {
           </div>
           <button
             onClick={handleSubmit(onSubmit, onInvalidSubmit)}
-            disabled={!isAgreed}
-            className={`w-full rounded-xl py-4 font-bold text-white transition-all ${isAgreed ? "bg-blue-600 hover:bg-blue-700 shadow-md" : "bg-gray-300 cursor-not-allowed"}`}
+            disabled={!isAgreed || loading}
+            className={`w-full rounded-xl py-4 font-bold text-white transition-all  ${!loading && isAgreed ? "bg-blue-600 hover:bg-blue-700 shadow-md" : "bg-gray-300 cursor-not-allowed"}`}
           >
             {t("profile.partner_form.button_submit")}
           </button>
