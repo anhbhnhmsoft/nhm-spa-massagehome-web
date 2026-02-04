@@ -53,8 +53,8 @@ export const ModalToast = ({ children }: { children: React.ReactNode }) => {
               stiffness: 400,
             }}
             className={`
-              fixed z-[9999]
-              top-4 left-1/2 -translate-x-1/2
+              absolute z-[9999]
+              top-4 right-4
               w-[calc(100%-2rem)]
               sm:max-w-md
               rounded-xl p-4
