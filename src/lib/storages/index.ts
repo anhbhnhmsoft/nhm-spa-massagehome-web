@@ -20,7 +20,8 @@ export const SecureStorage = {
     try {
       Cookies.set(key, JSON.stringify(value), {
         sameSite: "lax",
-        secure: true,
+        secure: false,
+        expires: 30,
       });
       return true;
     } catch {

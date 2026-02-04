@@ -24,16 +24,11 @@ export const KTVHomePageCard = ({ item }: { item: ListKTVItem }) => {
   const [imageError, setImageError] = useState(false);
 
   // Giả định hook setKtv của bạn xử lý logic chọn KTV
-  // const setKtv = useSetKtv();
-
-  const handlePress = () => {
-    console.log("Selected KTV ID:", item.id);
-    // setKtv(item.id);
-  };
+  const setKtv = useSetKtv();
 
   return (
     <button
-      onClick={handlePress}
+      onClick={() => setKtv(item.id)}
       className="group relative flex w-full flex-col rounded-xl border border-slate-100 bg-white p-2 shadow-sm transition-all hover:shadow-md active:scale-[0.98]"
     >
       {/* --- AVATAR --- */}
@@ -112,7 +107,7 @@ export const KTVServiceCard = ({ item }: { item: ListKTVItem }) => {
       {/* Avatar Section */}
       <div className="relative mr-3 h-20 w-20 shrink-0 sm:h-24 sm:w-24">
         {item.profile?.avatar_url && !imageError ? (
-          <div className="relative w-24 h-24 overflow-hidden rounded-full">
+          <div className="relative w-20 h-20 overflow-hidden rounded-full sm:h-24 sm:w-24">
             <Image
               src={item.profile.avatar_url}
               alt={item.name}

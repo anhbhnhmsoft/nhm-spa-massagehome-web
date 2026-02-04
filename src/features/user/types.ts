@@ -3,12 +3,11 @@ import {
   IMultiLangField,
   Paginator,
   ResponseDataSuccessType,
-} from '@/lib/types';
-import { _LanguageCode } from '@/lib/const';
-import { _Gender, _UserRole } from '@/features/auth/const';
-import { _BookingStatus } from '@/features/service/const';
-import { _PartnerFileType } from './const';
-import { _KTVConfigSchedules } from '@/features/ktv/consts';
+} from "@/lib/types";
+import { _KTVConfigSchedules, _LanguageCode } from "@/lib/const";
+import { _Gender, _UserRole } from "@/features/auth/const";
+import { _BookingStatus } from "@/features/service/const";
+import { _PartnerFileType, _ReviewApplicationStatus } from "./const";
 
 export type KTVWorkSchedule = {
   is_working: boolean;
@@ -84,25 +83,30 @@ export type DashboardProfile = {
   wallet_balance: string;
   coupon_user_count: number;
 };
-export type DashboardProfileResponse = ResponseDataSuccessType<DashboardProfile>;
+export type DashboardProfileResponse =
+  ResponseDataSuccessType<DashboardProfile>;
+
+export type CheckApplyPartnerResponse = ResponseDataSuccessType<{
+  can_apply: boolean;
+  apply_role: _UserRole.KTV | _UserRole.AGENCY;
+  apply_status: _ReviewApplicationStatus;
+}>;
 
 export type ApplyPartnerRequest = {
   role: _UserRole.KTV | _UserRole.AGENCY;
+  nickname?: string;
   referrer_id?: string | undefined;
   province_code: string;
   address: string;
-  latitude?: string | undefined;
-  longitude?: string | undefined;
+  latitude: string;
+  longitude: string;
   experience: number;
   is_leader?: boolean;
   bio: IMultiLangField;
   file_uploads: {
     type_upload: _PartnerFileType;
-    file: {
-      uri: string; // local uri
-      name: string; // filename
-      type: string; // mime type
-    };
+    file: File; // ✅ FILE THẬT để upload
+    preview?: string; // ✅ blob url để hiển thị
   }[];
 };
 

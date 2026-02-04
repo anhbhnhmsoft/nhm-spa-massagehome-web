@@ -12,7 +12,7 @@ const ProfileScreen = () => {
   const { user, dashboardData, refreshProfile, isLoading } = useProfile();
 
   return (
-    <div className="flex min-h-screen flex-col bg-base-color-3">
+    <div className="flex min-h-screen w-full flex-col">
       {/* --- HEADER PROFILE --- */}
       {/* Giữ UserProfileCard full width nhưng nội dung bên trong nó nên được căn giữa 1024px */}
       <UserProfileCard

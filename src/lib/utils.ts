@@ -1,8 +1,9 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
-import { _LanguageCode } from "./const";
+import { _BackendURL, _KTVConfigSchedules, _LanguageCode } from "./const";
 import ErrorAPIServer from "./types";
 import { TFunction } from "i18next";
+import dayjs from "dayjs";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -100,4 +101,38 @@ export const getMessageError = (
 // Hàm format tiền tệ
 export const formatBalance = (balance: string | number) => {
   return Number(balance).toLocaleString("vi-VN");
+};
+
+// Lấy khóa ngày hiện tại trong cấu hình KTV
+export const getCurrentDayKey = () => {
+  const day = dayjs().day(); // 0 là Chủ nhật, 1 là Thứ 2
+  if (day === 0) return _KTVConfigSchedules.SUNDAY; // 0 -> 8
+  return day + 1; // 1 -> 2 (Thứ 2), 6 -> 7 (Thứ 7)
+};
+
+// Lấy thông tin tiền tệ
+export const formatCurrency = (value: string | number) => {
+  return new Intl.NumberFormat("vi-VN", {
+    style: "currency",
+    currency: "VND",
+  }).format(Number(value));
+};
+
+/**
+ * Tạo URL hình ảnh QR Code cho VietQR
+ * @param config Tham số cấu hình QR Code
+ * @returns URL hình ảnh QR Code
+ */
+export const generateQRCodeImageUrl = (config: {
+  bin: string;
+  numberCode: string;
+  name: string;
+  money: string;
+  desc: string;
+}) => {
+  return `https://img.vietqr.io/image/${config.bin}-${config.numberCode}-qr_only.png?amount=${config.money}&addInfo=${config.desc}&accountName=${encodeURIComponent(config.name)}`;
+};
+
+export const openAboutPage = () => {
+  window.open(`${_BackendURL}/ve-chung-toi`, "_blank");
 };

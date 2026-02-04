@@ -1,17 +1,16 @@
-"use client";
-
 import { useEffect, useMemo } from "react";
 import { debounce } from "lodash";
+import type { DebouncedFunc } from "lodash";
 
 const useDebounce = <T extends (...args: any[]) => void>(
   callback: T,
   delay: number,
-  deps: any[] = [],
-): T => {
+): DebouncedFunc<T> => {
   const debouncedCallback = useMemo(() => {
-    return debounce(callback, delay);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [delay, ...deps]);
+    return debounce((...args: any[]) => {
+      callback(...args);
+    }, delay);
+  }, [callback, delay]);
 
   useEffect(() => {
     return () => {
@@ -19,7 +18,7 @@ const useDebounce = <T extends (...args: any[]) => void>(
     };
   }, [debouncedCallback]);
 
-  return debouncedCallback as T;
+  return debouncedCallback;
 };
 
 export default useDebounce;

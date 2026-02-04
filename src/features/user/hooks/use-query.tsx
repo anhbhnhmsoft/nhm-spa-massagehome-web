@@ -58,3 +58,14 @@ export const useQueryDashboardProfile = () => {
     select: (res) => res.data,
   });
 };
+
+// Kiểm tra thông tin đăng ký đối tác (KTV hoặc Agency)
+export const useQueryCheckApplyPartner = () => {
+  return useQuery({
+    queryKey: ["userApi-checkApplyPartner"],
+    queryFn: async () => {
+      return userApi.checkApplyPartner();
+    },
+    select: (res) => res.data,
+  });
+};

@@ -1,4 +1,4 @@
-import { client } from '@/lib/axios-client';
+import { client } from "@/lib/axios-client";
 import {
   AuthenticateRequest,
   AuthenticateResponse,
@@ -13,16 +13,18 @@ import {
   SetLanguageRequest,
   VerifyRegisterOTPRequest,
   VerifyRegisterOTPResponse,
-} from '@/features/auth/types';
-import { ResponseSuccessType } from '@/lib/types';
+} from "@/features/auth/types";
+import { ResponseSuccessType } from "@/lib/types";
 
-const defaultUri = '/auth';
+const defaultUri = "/auth";
 
 const authApi = {
   /**
    * Hàm để xác thực user xem là login hay register
    */
-  authenticate: async (data: AuthenticateRequest): Promise<AuthenticateResponse> => {
+  authenticate: async (
+    data: AuthenticateRequest,
+  ): Promise<AuthenticateResponse> => {
     const response = await client.post(`${defaultUri}/authenticate`, data);
     return response.data;
   },
@@ -38,8 +40,13 @@ const authApi = {
   /**
    * Hàm để xác thực user xem là login hay register
    */
-  verifyRegisterOTP: async (data: VerifyRegisterOTPRequest): Promise<VerifyRegisterOTPResponse> => {
-    const response = await client.post(`${defaultUri}/verify-otp-register`, data);
+  verifyRegisterOTP: async (
+    data: VerifyRegisterOTPRequest,
+  ): Promise<VerifyRegisterOTPResponse> => {
+    const response = await client.post(
+      `${defaultUri}/verify-otp-register`,
+      data,
+    );
     return response.data;
   },
 
@@ -47,8 +54,13 @@ const authApi = {
    * Hàm để resend OTP register
    * @param data
    */
-  resendRegisterOTP: async (data: AuthenticateRequest): Promise<ResendRegisterOTPResponse> => {
-    const response = await client.post(`${defaultUri}/resend-otp-register`, data);
+  resendRegisterOTP: async (
+    data: AuthenticateRequest,
+  ): Promise<ResendRegisterOTPResponse> => {
+    const response = await client.post(
+      `${defaultUri}/resend-otp-register`,
+      data,
+    );
     return response.data;
   },
 
@@ -72,7 +84,9 @@ const authApi = {
   /**
    * Hàm để set language cho user
    */
-  setLanguage: async (data: SetLanguageRequest): Promise<ResponseSuccessType> => {
+  setLanguage: async (
+    data: SetLanguageRequest,
+  ): Promise<ResponseSuccessType> => {
     const response = await client.post(`${defaultUri}/set-language`, data);
     return response.data;
   },
@@ -87,7 +101,9 @@ const authApi = {
   /**
    * Hàm để set device info cho user
    */
-  setDeviceInfo: async (data: DeviceInfoRequest): Promise<ResponseSuccessType> => {
+  setDeviceInfo: async (
+    data: DeviceInfoRequest,
+  ): Promise<ResponseSuccessType> => {
     const response = await client.post(`${defaultUri}/set-device`, data);
     return response.data;
   },
@@ -98,7 +114,7 @@ const authApi = {
   editAvatar: async (data: FormData): Promise<ProfileResponse> => {
     const response = await client.post(`${defaultUri}/edit-avatar`, data, {
       headers: {
-        'Content-Type': 'multipart/form-data',
+        "Content-Type": "multipart/form-data",
       },
     });
     return response.data;

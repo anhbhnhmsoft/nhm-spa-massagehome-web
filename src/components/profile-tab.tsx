@@ -31,7 +31,10 @@ import { _LanguagesMap } from "@/lib/const";
 import { useLogout } from "@/features/auth/hooks";
 import SelectLanguage from "./select-language";
 import { useRouter } from "next/navigation";
-import { formatBalance } from "@/lib/utils";
+import { formatBalance, openAboutPage } from "@/lib/utils";
+import { ListLocationModal } from "./location";
+import SupportModal from "./support-modal";
+import LogoutModal from "./dialog-logout";
 
 type UserProfileCardProps = {
   user: ReturnType<typeof useProfile>["user"];
@@ -98,7 +101,7 @@ export const UserProfileCard: FC<UserProfileCardProps> = ({
             </button>
 
             <Link
-              href="/profile/settings"
+              href="/info"
               className="rounded-full p-2 transition-colors hover:bg-white/10"
             >
               <Settings size={20} />
@@ -204,10 +207,10 @@ export const OrderBoardProfile = ({
             <Link
               key={item.status}
               href={`/orders?status=${item.status}`}
-              className="relative flex flex-col items-center p-1 rounded-lg hover:bg-slate-50 transition-colors group"
+              className="relative flex flex-col items-center  rounded-lg hover:bg-slate-50 transition-colors group"
             >
               <div className="mb-3 rounded-full bg-slate-50 p-3 group-hover:bg-white transition-colors shadow-sm">
-                <item.icon size={26} className="text-gray-600" />
+                <item.icon size={24} className="text-gray-600" />
               </div>
               <span className="text-center text-xs font-medium text-gray-500 group-hover:text-gray-900">
                 {t(item.label)}
@@ -240,20 +243,44 @@ export const FeatureList = () => {
   const router = useRouter();
 
   const [modalLangVisible, setModalLangVisible] = useState(false);
-  const { openSupportModal } = useGetSupport();
+  const {
+    visible: visibleSupport,
+    openSupportModal,
+    closeSupportModal,
+    supportChanel,
+  } = useGetSupport();
   const selectedLang = useApplicationStore((state) => state.language);
   const langConfig = useMemo(
     () => _LanguagesMap.find((lang) => lang.code === selectedLang),
     [selectedLang],
   );
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
+  // Hỗ trợ
+
+  // Quản lý địa chỉ
+  const [visibleLocation, setVisibleLocation] = useState(false);
+
+  const [showLogout, setShowLogout] = useState(false);
+  const logout = useLogout();
+
+  const handleLogout = async () => {
+    setIsLoggingOut(true);
+    try {
+      await logout();
+      router.replace("/");
+    } finally {
+      setIsLoggingOut(false);
+      setShowLogout(false);
+    }
+  };
   const features: FeatureItem[] = [
     {
       id: "location",
       icon: MapPin,
       label: "profile.manage_address",
       color: "text-blue-500",
-      onClick: () => {},
+      onClick: () => setVisibleLocation(true),
     },
     {
       id: "language",
@@ -267,7 +294,7 @@ export const FeatureList = () => {
       icon: Info,
       label: "profile.app_info",
       color: "text-blue-500",
-      onClick: () => {},
+      onClick: () => openAboutPage(),
     },
     {
       id: "support",
@@ -288,7 +315,7 @@ export const FeatureList = () => {
       icon: LogOut,
       label: "profile.log_out",
       color: "text-red-500",
-      onClick: () => {},
+      onClick: () => setShowLogout(true),
     },
   ];
 
@@ -340,6 +367,23 @@ export const FeatureList = () => {
         })}
       </div>
 
+      <ListLocationModal
+        visible={visibleLocation}
+        onClose={() => setVisibleLocation(false)}
+      />
+
+      {/* Hỗ trợ khách hàng */}
+      <SupportModal
+        isVisible={visibleSupport}
+        onClose={closeSupportModal}
+        supportChanel={supportChanel || []}
+      />
+      <LogoutModal
+        isOpen={showLogout}
+        onClose={() => setShowLogout(false)}
+        onConfirm={handleLogout}
+        isLoading={isLoggingOut}
+      />
       {modalLangVisible && (
         <SelectLanguage
           visible={modalLangVisible}

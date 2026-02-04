@@ -114,7 +114,9 @@
     "offline_service_title": "技师休息中",
     "offline_service_message": "该技师当前正在休息。你想要...？",
     "save_qr_code": "保存二维码",
-    "total": "总计"
+    "total": "总计",
+    "nickname": "昵称"
+
   },
   "common_success": {
     "save_image_success": "图片保存成功",
@@ -376,6 +378,8 @@
     "delete_account_success": "您的账户已成功从系统中删除。",
     "referral_by": "推荐人",
     "is_leader": "渠道合作商",
+    "delete_avatar_desc": "你确定要删除头像吗？",
+    "edit_avatar": "编辑头像",
     "error": {
       "invalid_name": "姓名必须为 4-255 个字符",
       "invalid_date_of_birth": "出生日期不能在未来",
@@ -416,6 +420,7 @@
       "follow_agency_desc": "输入推荐您的代理的代码。",
       "follow_agency_placeholder": "输入代码",
       "field_experience_placeholder": "输入经验年限",
+      "field_nickname_placeholder": "输入显示名称",
       "button_submit": "提交注册",
       "alert_location_permission_title": "位置权限",
       "alert_location_permission_message": "请允许应用访问您的位置。",
@@ -443,7 +448,18 @@
       "face_with_id": "手持身份证自拍",
       "alert_missing_face_with_card_title": "缺少手持身份证自拍",
       "alert_missing_face_with_card_message": "请添加一张手持身份证的自拍照片。",
-      "register_success": "您的申请已成功发送。我们将尽快与您联系。"
+      "register_success": "您的申请已成功发送。我们将尽快与您联系。",
+      "bio_placeholder_vi": "用越南语描述您自己...",
+      "bio_placeholder_en": "用英语描述您自己...",
+      "bio_placeholder_cn": "用中文描述您自己...",
+      "error_nickname_required": "请输入显示名称。",
+      "error_bio_required": "请输入您的简介（至少 {{ min }} 个字符）。",
+      "error_file_invalid": "请选择一张图片，或上传的图片无效。",
+      "alert_images_display_message": "请添加至少 {{ min }} 张且最多 {{ max }} 张照片以展示给客户。",
+      "error_check_apply_partner": "检查合作伙伴申请时发生错误。请稍后重试。",
+      "info_apply_pending": "您已注册成为合作伙伴，正在等待管理员审核，请耐心等待最新消息。",
+      "info_apply_approved": "您的合作伙伴注册已获得批准。",
+      "info_apply_rejected": "您的合作伙伴申请已被拒绝，无法再次申请。"
     },
     "partner_register": {
       "title": "您想注册为什么角色？",
@@ -490,6 +506,7 @@
     "transfer_note": "转账备注",
     "note_important": "请务必填写正确的转账备注",
     "processing_transaction": "微信支付正在处理中，系统确认可能需要 15–30 分钟",
+    "exchange_rate_wechat_pay": "换算为 {{priceCny}} 人民币",  
     "withdraw": {
       "title_modal": "选择提现账户",
       "add_new_account": "关联新账户",

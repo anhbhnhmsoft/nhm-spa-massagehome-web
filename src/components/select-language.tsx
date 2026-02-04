@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import Image from "next/image";
 import { X } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { _LanguageCode, _LanguagesMap } from "@/lib/const";
+import { _LanguagesMap } from "@/lib/const";
 import { useSetLanguageUser } from "@/features/auth/hooks";
 
 type SelectLanguageProps = {
@@ -24,13 +24,13 @@ export default function SelectLanguage({
   if (!visible) return null;
 
   return (
-    <div className="fixed inset-0 z-50">
+    <div className="fixed inset-0 z-[2147483647] isolate">
       {/* Overlay */}
       <div className="absolute inset-0 bg-black/50" onClick={onClose} />
 
       {/* Modal */}
       {/* Modal */}
-      <div className="absolute bottom-0 left-1/2 w-full max-w-[1024px] -translate-x-1/2 animate-slide-up rounded-t-3xl bg-white">
+      <div className="absolute bottom-0 left-1/2 w-full max-w-[750px] -translate-x-1/2 animate-slide-up rounded-t-3xl bg-white">
         {/* HEADER */}
         <div className="relative flex items-center justify-between border-b px-5 py-4">
           <button onClick={onClose} className="p-1">

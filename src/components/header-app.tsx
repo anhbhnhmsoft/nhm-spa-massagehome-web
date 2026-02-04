@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import GradientBackground from "./styles/gradient-background";
 import { useLocationUser } from "@/features/app/hooks/use-get-user-location";
+import { ListLocationModal } from "./location";
 
 type HeaderAppProps = {
   showSearch?: boolean;
@@ -106,20 +107,10 @@ export default function Header({
         </GradientBackground>
       </header>
 
-      {/* Modal */}
-      {showLocationModal && (
-        <div className="fixed inset-0 z-[100] bg-black/50 flex items-center justify-center p-4">
-          <div className="bg-white p-6 rounded-2xl w-full max-w-md">
-            <h2 className="text-lg font-bold mb-4">Chọn vị trí</h2>
-            <button
-              onClick={() => setShowLocationModal(false)}
-              className="text-blue-600 font-medium"
-            >
-              Đóng
-            </button>
-          </div>
-        </div>
-      )}
+      <ListLocationModal
+        visible={showLocationModal}
+        onClose={() => setShowLocationModal(false)}
+      />
     </>
   );
 }
