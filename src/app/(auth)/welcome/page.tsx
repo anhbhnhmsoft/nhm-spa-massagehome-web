@@ -8,6 +8,7 @@ import Image from "next/image";
 import SelectLanguage from "@/components/select-language";
 import { _APP_NAME, _LanguagesMap } from "@/lib/const";
 import useApplicationStore from "@/lib/store";
+import useAuthStore from "@/features/auth/store";
 
 // Giả định các import từ project của bạn
 // import useApplicationStore from '@/lib/store';
@@ -24,6 +25,8 @@ export default function IndexPage() {
     () => _LanguagesMap.find((lang) => lang.code === selectedLang),
     [selectedLang],
   );
+  const status = useAuthStore((state) => state.status);
+  console.log(status);
 
   return (
     <main className="relative flex min-h-screen w-full items-center justify-center bg-[#4A3B32] overflow-hidden">

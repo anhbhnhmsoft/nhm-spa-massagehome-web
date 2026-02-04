@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import Header from "@/components/header-app";
 import useDebounce from "@/features/app/hooks/use-debounce";
@@ -9,6 +9,7 @@ import { useGetListKTV } from "@/features/user/hooks";
 import { KTVServiceCard, KTVServiceCardSkeleton } from "@/components/ktv-card";
 import Empty from "@/components/emty";
 import { ListKTVItem } from "@/features/user/types";
+import { X } from "lucide-react";
 
 export default function MasseursPageComponent() {
   const { t } = useTranslation();
@@ -24,6 +25,7 @@ export default function MasseursPageComponent() {
     isRefetching,
     isLoading,
     setFilter,
+    params,
   } = useGetListKTV();
 
   // Đồng bộ vị trí người dùng
@@ -36,13 +38,14 @@ export default function MasseursPageComponent() {
     }
   }, [locationUser, setFilter]);
 
-  const debouncedSearch = useDebounce(
+  const searchCallback = useCallback(
     (text: string) => {
       setFilter({ keyword: text });
     },
-    500,
-    [],
+    [setFilter],
   );
+
+  const debouncedSearch = useDebounce(searchCallback, 500);
 
   return (
     <div className="min-h-screen bg-base-color-3">
@@ -64,13 +67,33 @@ export default function MasseursPageComponent() {
 
       <main className="mx-auto max-w-[1024px] p-4 sm:p-6 lg:p-8">
         {/* --- TITLE & TOTAL --- */}
-        <div className="mb-6 flex flex-row items-center gap-2">
-          <span className="text-xl font-bold text-blue-600 sm:text-2xl">
-            {pagination?.meta?.total || 0}
-          </span>
-          <h1 className="text-lg font-semibold text-slate-700 sm:text-xl">
-            {t("services.total_masseurs")}
-          </h1>
+        <div className="mb-6 flex items-center justify-between gap-4">
+          <div className="flex flex-row items-center gap-2">
+            <span className="text-xl font-bold text-blue-600 sm:text-2xl">
+              {pagination?.meta?.total || 0}
+            </span>
+            <h1 className="text-lg font-semibold text-slate-700 sm:text-xl">
+              {t("services.total_masseurs")}
+            </h1>
+          </div>
+
+          {params?.filter?.category_id && params?.filter?.category_name && (
+            <button
+              type="button"
+              onClick={() =>
+                setFilter({
+                  category_id: undefined,
+                  category_name: undefined,
+                })
+              }
+              className="flex items-center gap-2 rounded-xl bg-blue-200 px-3 py-2 text-blue-600 hover:bg-blue-300 transition"
+            >
+              <span className="text-xs font-inter-bold">
+                {params.filter.category_name}
+              </span>
+              <X size={12} />
+            </button>
+          )}
         </div>
 
         {/* --- CONTENT AREA --- */}

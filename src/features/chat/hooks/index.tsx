@@ -141,7 +141,7 @@ export const useChat = (useFor: "ktv" | "customer") => {
         },
       );
     },
-    [room.id],
+    [room],
   );
 
   // Gửi tin nhắn

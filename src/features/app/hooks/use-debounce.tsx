@@ -6,13 +6,16 @@ const useDebounce = <T extends (...args: any[]) => void>(
   callback: T,
   delay: number,
 ): DebouncedFunc<T> => {
-  const debouncedCallback = useMemo(
-    () => debounce(callback, delay),
-    [callback, delay],
-  );
+  const debouncedCallback = useMemo(() => {
+    return debounce((...args: any[]) => {
+      callback(...args);
+    }, delay);
+  }, [callback, delay]);
 
   useEffect(() => {
-    return () => debouncedCallback.cancel();
+    return () => {
+      debouncedCallback.cancel();
+    };
   }, [debouncedCallback]);
 
   return debouncedCallback;

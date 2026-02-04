@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import Header from "@/components/header-app";
 import useDebounce from "@/features/app/hooks/use-debounce";
 import { useGetCategoryList } from "@/features/service/hooks";
@@ -30,13 +30,14 @@ export default function ServicesPageComponent() {
     per_page: 10,
   });
 
-  const debouncedSearch = useDebounce(
+  const searchCallback = useCallback(
     (text: string) => {
       setFilter({ keyword: text });
     },
-    500,
-    [],
+    [setFilter],
   );
+
+  const debouncedSearch = useDebounce(searchCallback, 500);
 
   useEffect(() => {
     const observer = new IntersectionObserver(

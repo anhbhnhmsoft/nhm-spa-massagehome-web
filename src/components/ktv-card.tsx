@@ -107,7 +107,7 @@ export const KTVServiceCard = ({ item }: { item: ListKTVItem }) => {
       {/* Avatar Section */}
       <div className="relative mr-3 h-20 w-20 shrink-0 sm:h-24 sm:w-24">
         {item.profile?.avatar_url && !imageError ? (
-          <div className="relative w-24 h-24 overflow-hidden rounded-full">
+          <div className="relative w-20 h-20 overflow-hidden rounded-full sm:h-24 sm:w-24">
             <Image
               src={item.profile.avatar_url}
               alt={item.name}

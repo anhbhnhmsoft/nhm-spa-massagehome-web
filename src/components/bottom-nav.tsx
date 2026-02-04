@@ -1,19 +1,17 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { Home, Briefcase, Users, User } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { TabIcon } from "./tab-icon";
-import { useCheckAuth, useCheckAuthToRedirect } from "@/features/auth/hooks";
+import { useCheckAuthToRedirect } from "@/features/auth/hooks";
 import { useCallback } from "react";
 
 export default function BottomNav() {
   const pathname = usePathname();
-  const router = useRouter();
   const { t } = useTranslation();
-  const redirectAuth = useCheckAuthToRedirect();
-  const isAuthenticated = useCheckAuth();
+  const checkAuth = useCheckAuthToRedirect();
 
   const tabs = [
     { name: t("tab.home"), href: "/", icon: Home },
@@ -24,12 +22,13 @@ export default function BottomNav() {
 
   const handlePress = useCallback(
     (e: React.MouseEvent, tab: (typeof tabs)[0]) => {
-      if (tab.protected && !isAuthenticated) {
-        e.preventDefault();
-        router.push("/welcome");
-      }
+      if (!tab.protected) return;
+
+      e.preventDefault();
+
+      checkAuth(tab.href);
     },
-    [isAuthenticated, router],
+    [checkAuth],
   );
 
   return (

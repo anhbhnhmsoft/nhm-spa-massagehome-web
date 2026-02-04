@@ -79,7 +79,7 @@ export const useSearchLocation = () => {
   );
 
   // Debounce:
-  const debouncedSearch = useDebounce(performSearch, 600, [performSearch]);
+  const debouncedSearch = useDebounce(performSearch, 600);
 
   // Xử lý khi text thay đổi
   const handleChangeText = (text: string) => {

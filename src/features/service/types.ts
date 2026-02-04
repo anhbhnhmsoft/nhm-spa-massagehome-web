@@ -1,6 +1,14 @@
-import { BaseSearchRequest, ResponseDataSuccessType, Paginator } from '@/lib/types';
-import { ServiceOption } from '../ktv/types';
+import {
+  BaseSearchRequest,
+  ResponseDataSuccessType,
+  Paginator,
+} from "@/lib/types";
 
+export type ServiceOption = {
+  id: string;
+  duration: number;
+  price: string;
+};
 export type CategoryItem = {
   id: string;
   name: string;
@@ -10,14 +18,16 @@ export type CategoryItem = {
   description: string | null;
 };
 
-export type CategoryListFilterPatch = Partial<CategoryListRequest['filter']>;
+export type CategoryListFilterPatch = Partial<CategoryListRequest["filter"]>;
 
 export type CategoryListRequest = BaseSearchRequest<{
   keyword?: string;
   is_featured?: boolean; // Dịch vụ nổi bật
 }>;
 
-export type CategoryListResponse = ResponseDataSuccessType<Paginator<CategoryItem>>;
+export type CategoryListResponse = ResponseDataSuccessType<
+  Paginator<CategoryItem>
+>;
 
 export type ServiceItem = {
   id: string;
@@ -44,7 +54,9 @@ export type ServiceListRequest = BaseSearchRequest<{
   user_id?: string;
 }>;
 
-export type ServiceListResponse = ResponseDataSuccessType<Paginator<ServiceItem>>;
+export type ServiceListResponse = ResponseDataSuccessType<
+  Paginator<ServiceItem>
+>;
 
 export type ServiceDetailResponse = ResponseDataSuccessType<ServiceItem>;
 
@@ -74,7 +86,7 @@ export type PickBookingItem = {
 // Pick only required fields for booking requirement
 export type PickBookingRequirement = Omit<
   BookingServiceRequest,
-  'service_id' | 'service_name' | 'option_id' | 'duration'
+  "service_id" | "service_name" | "option_id" | "duration"
 >;
 
 export type BookingServiceResponse = ResponseDataSuccessType<{
@@ -120,7 +132,9 @@ export type CouponUserItem = {
 };
 
 export type CouponUserListRequest = BaseSearchRequest<object>;
-export type CouponUserListResponse = ResponseDataSuccessType<Paginator<CouponUserItem>>;
+export type CouponUserListResponse = ResponseDataSuccessType<
+  Paginator<CouponUserItem>
+>;
 
 export type SendReviewRequest = {
   service_booking_id: string;
