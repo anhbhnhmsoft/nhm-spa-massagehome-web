@@ -115,7 +115,8 @@
     "offline_service_message": "This technician is currently on break. Would you like to...?",
     "save_qr_code": "Save QR Code",
     "total": "Total",
-    "nickname": "Nickname"
+    "nickname": "Nickname",
+    "prefix": "Download on the"
   },
   "common_success": {
     "save_image_success": "Image saved successfully",
@@ -512,7 +513,11 @@
       "add_new_account": "Link New Account",
       "no_account": "No account yet",
       "title_modal_request": "Request Withdrawal",
-      "enter_withdraw_money": "Enter the amount you want to withdraw"
+      "enter_withdraw_money": "Enter the amount you want to withdraw",
+      "note": "Note (Optional)",
+      "placeholder_note": "Enter note (optional)",
+      "withdraw_fee": "Withdrawal Fee",
+       "total_withdraw": "Total Withdrawn"
     },
     "confirm": {
       "delete_withdraw_info": "Are you sure you want to delete?",

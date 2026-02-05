@@ -255,7 +255,7 @@ export const FeatureList = () => {
     [selectedLang],
   );
   const [isLoggingOut, setIsLoggingOut] = useState(false);
-
+  console.log("langConfig", langConfig);
   // Hỗ trợ
 
   // Quản lý địa chỉ

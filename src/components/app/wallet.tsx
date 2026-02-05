@@ -1,4 +1,4 @@
-import React, { FC, useState } from "react";
+import React, { FC, useMemo, useState } from "react";
 import {
   X,
   Wallet,
@@ -314,16 +314,42 @@ const CreateWithdrawTicketModal = ({
   setId: (id: string) => void;
 }) => {
   const { t } = useTranslation();
-  const { form, submitRequestWithdraw, loading } = useRequestWithdraw(
-    id,
-    setId,
-  );
+  const { form, submitRequestWithdraw, loading, configPayment } =
+    useRequestWithdraw(id, setId);
   const {
     register,
     setValue,
     formState: { errors },
+    watch,
   } = form;
 
+  const watchedAmount = watch("amount");
+  const withdrawCalculation = useMemo(() => {
+    // Chuyển đổi và xử lý fallback để tránh lỗi NaN
+    const amount = Number(watchedAmount || 0);
+    const exchangeRate = Number(configPayment?.currency_exchange_rate || 1);
+    const feePercent = Number(configPayment?.fee_withdraw_percentage || 0);
+
+    //  Quy đổi Point sang tiền mặt (Gross)
+    const grossAmount = amount * exchangeRate;
+
+    // Tính số tiền phí dựa trên %
+    const feeAmount = (grossAmount * feePercent) / 100;
+
+    // Số tiền thực nhận sau khi trừ phí
+    const withdrawMoney = Math.floor(grossAmount - feeAmount);
+
+    return {
+      feeAmount,
+      exchangeRate,
+      withdrawMoney,
+      feePercent,
+    };
+  }, [
+    configPayment?.currency_exchange_rate,
+    configPayment?.fee_withdraw_percentage,
+    watchedAmount,
+  ]);
   if (id === "") return null;
 
   return (
@@ -380,21 +406,42 @@ const CreateWithdrawTicketModal = ({
                 </button>
               ))}
             </div>
+            <div className="mt-4 flex flex-row flex-wrap gap-2">
+              <span className="font-bold text-base text-primary-color-1">
+                {t("payment.withdraw.withdraw_fee")}:{" "}
+                {formatBalance(Number(withdrawCalculation.feePercent))} %
+              </span>
+            </div>
           </div>
 
           <div className="mb-8">
             <label className="mb-2 block font-bold text-gray-700">
-              Ghi chú (Tùy chọn)
+              {t("payment.withdraw.note")}
             </label>
             <textarea
               {...register("note")}
               className="w-full min-h-[120px] rounded-xl border border-gray-200 bg-gray-50 p-4 outline-none focus:border-primary-color-2"
-              placeholder="Nhập nội dung ghi chú..."
+              placeholder={t("payment.withdraw.placeholder_note")}
             />
           </div>
         </div>
 
         <div className="absolute bottom-0 w-full max-w-lg  border-t bg-white p-5 ">
+          <div className="mb-2 flex items-center justify-between">
+            <span className="text-sm text-gray-500">
+              {t("payment.withdraw.total_withdraw")}:
+            </span>
+
+            <div className="flex items-center justify-center gap-2">
+              <span className="font-bold text-lg text-gray-900">
+                {withdrawCalculation.withdrawMoney
+                  ? formatBalance(withdrawCalculation.withdrawMoney)
+                  : "0"}{" "}
+                {t("common.currency")}
+              </span>
+            </div>
+          </div>
+
           <button
             onClick={submitRequestWithdraw}
             disabled={loading}

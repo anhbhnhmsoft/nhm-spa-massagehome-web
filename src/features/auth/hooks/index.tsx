@@ -153,7 +153,8 @@ export const useHandleLogin = () => {
               message: t("auth.success.login_success"),
             });
 
-            router.push("/");
+            router.replace("/");
+            router.refresh();
           } catch {
             error({
               message: t("auth.error.register_failed"),
@@ -368,14 +369,15 @@ export const useHandleRegister = () => {
       mutationRegister.mutate(data, {
         onSuccess: async (res) => {
           try {
-            await login(res.data); // ✅ không .then
+            await login(res.data);
 
             success({
               message: t("auth.success.register_success"),
             });
 
             clearUserReferral();
-            router.push("/");
+            router.replace("/");
+            router.refresh();
           } catch {
             error({
               message: t("auth.error.register_failed"),
@@ -538,7 +540,7 @@ export const useSetLanguageUser = (onClose?: () => void) => {
 
   const syncLanguage = useCallback(
     async (lang: _LanguageCode) => {
-      setLanguageStore(lang);
+      await setLanguageStore(lang);
 
       await i18n.changeLanguage(lang);
 
@@ -556,6 +558,7 @@ export const useSetLanguageUser = (onClose?: () => void) => {
           {
             onSuccess: async () => {
               await syncLanguage(lang);
+              onClose?.();
             },
             onError: () => {
               errorToast({
@@ -566,9 +569,8 @@ export const useSetLanguageUser = (onClose?: () => void) => {
         );
       } else {
         await syncLanguage(lang);
+        onClose?.();
       }
-
-      onClose?.();
     },
     [isAuthenticated, mutate, syncLanguage, onClose, t, errorToast],
   );

@@ -115,8 +115,8 @@
     "offline_service_message": "Kĩ thuật viên này đang trong thời gian nghỉ. Bạn?",
     "save_qr_code": "Lưu mã QR",
     "total": "Tổng",
-    "nickname": "Biệt danh"
-  
+    "nickname": "Biệt danh",
+    "prefix": "Tải về trên"
   },
   "common_success": {
     "save_image_success": "Lưu trữ ảnh thành công",
@@ -513,7 +513,11 @@
       "add_new_account": "Liên kết tài khoản mới",
       "no_account": "Chưa có tài khoản nào",
       "title_modal_request": "Yêu cầu rút tiền",
-      "enter_withdraw_money": "Nhập số tiền muốn rút"
+      "enter_withdraw_money": "Nhập số tiền muốn rút",
+      "note": "Ghi chú (Tùy chọn)",
+      "placeholder_note": "Nhập nội dung ghi chú...",
+      "withdraw_fee": "Phí rút tiền",
+      "total_withdraw": "Số tiền rút được"
     },
     "confirm": {
       "delete_withdraw_info": "Bạn có chắc chắn muốn xóa",
