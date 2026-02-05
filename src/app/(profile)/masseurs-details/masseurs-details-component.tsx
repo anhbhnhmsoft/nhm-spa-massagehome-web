@@ -226,6 +226,38 @@ const MasseurDetailScreen = () => {
           </div>
         </div>
 
+        {/* --- DANH SÁCH DỊCH VỤ --- */}
+        <div className="mt-2 bg-white px-4 pt-5 pb-10">
+          <h2 className="mb-5 border-l-4 border-[#your-primary-color] pl-2 font-bold text-lg text-gray-800">
+            {t("masseurs_detail.service_list")}
+          </h2>
+
+          <div className="space-y-4">
+            {data && data.length > 0 ? (
+              data.map((item, index) => (
+                <div
+                  key={`${item.id}-${index}`}
+                  className="border-b border-gray-50 last:border-0 pb-2"
+                >
+                  <ServiceCard item={item} />
+                </div>
+              ))
+            ) : (
+              <Empty className="bg-white" />
+            )}
+          </div>
+
+          {/* Load more button (Thay thế cho onEndReached) */}
+          {hasNextPage && (
+            <button
+              onClick={() => fetchNextPage()}
+              disabled={isFetchingNextPage}
+              className="mt-4 w-full py-2 text-sm text-[#your-primary-color] font-medium"
+            >
+              {isFetchingNextPage ? "Loading..." : t("common.see_more")}
+            </button>
+          )}
+        </div>
         {/* Lịch làm việc */}
         {detail.schedule && (
           <div className="mt-2">
@@ -258,39 +290,6 @@ const MasseurDetailScreen = () => {
                 count: detail.review_count - 1,
               })}
               <ChevronRight size={14} />
-            </button>
-          )}
-        </div>
-
-        {/* --- DANH SÁCH DỊCH VỤ --- */}
-        <div className="mt-2 bg-white px-4 pt-5 pb-10">
-          <h2 className="mb-5 border-l-4 border-[#your-primary-color] pl-2 font-bold text-lg text-gray-800">
-            {t("masseurs_detail.service_list")}
-          </h2>
-
-          <div className="space-y-4">
-            {data && data.length > 0 ? (
-              data.map((item, index) => (
-                <div
-                  key={`${item.id}-${index}`}
-                  className="border-b border-gray-50 last:border-0 pb-2"
-                >
-                  <ServiceCard item={item} />
-                </div>
-              ))
-            ) : (
-              <Empty className="bg-white" />
-            )}
-          </div>
-
-          {/* Load more button (Thay thế cho onEndReached) */}
-          {hasNextPage && (
-            <button
-              onClick={() => fetchNextPage()}
-              disabled={isFetchingNextPage}
-              className="mt-4 w-full py-2 text-sm text-[#your-primary-color] font-medium"
-            >
-              {isFetchingNextPage ? "Loading..." : t("common.see_more")}
             </button>
           )}
         </div>

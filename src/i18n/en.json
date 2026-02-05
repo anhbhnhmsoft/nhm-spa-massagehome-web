@@ -116,7 +116,10 @@
     "save_qr_code": "Save QR Code",
     "total": "Total",
     "nickname": "Nickname",
-    "prefix": "Download on the"
+    "prefix": "Download on the",
+    "document": {
+      "not_found": "No suitable document found"
+    }
   },
   "common_success": {
     "save_image_success": "Image saved successfully",

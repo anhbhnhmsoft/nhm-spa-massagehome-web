@@ -116,7 +116,10 @@
     "save_qr_code": "Lưu mã QR",
     "total": "Tổng",
     "nickname": "Biệt danh",
-    "prefix": "Tải về trên"
+    "prefix": "Tải về trên",
+    "document": {
+      "not_found": "Không tìm thấy tài liệu phù hợp"
+    }
   },
   "common_success": {
     "save_image_success": "Lưu trữ ảnh thành công",

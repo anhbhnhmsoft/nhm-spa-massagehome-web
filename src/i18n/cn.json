@@ -116,7 +116,10 @@
     "save_qr_code": "保存二维码",
     "total": "总计",
     "nickname": "昵称",
-    "prefix": "立即下载"
+    "prefix": "立即下载",
+    "document": {
+      "not_found": "未找到合适的文档"
+    }
   },
   "common_success": {
     "save_image_success": "图片保存成功",

@@ -4,7 +4,6 @@ import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Controller } from "react-hook-form";
 import Image from "next/image";
-import Link from "next/link";
 import {
   Eye,
   EyeOff,
@@ -22,11 +21,13 @@ import { _Gender } from "@/features/auth/const";
 import { _LanguagesMap } from "@/lib/const";
 import { cn } from "@/lib/utils";
 import { ContractFileType } from "@/features/file/const";
+import { usePreviewPdf } from "@/features/app/hooks";
 
 export default function RegisterComponent() {
   const { t } = useTranslation();
   const user_referral = useReferralStore((state) => state.user_referral);
   const { form, onSubmit, loading } = useHandleRegister();
+  const { handlePreviewPdf } = usePreviewPdf();
 
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [modalLangVisible, setModalLangVisible] = useState(false);
@@ -266,19 +267,24 @@ export default function RegisterComponent() {
               </button>
               <div className="flex-1 text-sm leading-5 text-gray-600">
                 {t("auth.i_agree_to")}{" "}
-                <Link
-                  href={`/term-or-use-pdf?type=${ContractFileType.TERM_OF_USE}`}
+                <button
+                  type="button"
+                  onClick={() => handlePreviewPdf(ContractFileType.TERM_OF_USE)}
                   className="font-bold text-primary-color-2 underline"
                 >
                   {t("auth.terms_and_conditions")}
-                </Link>{" "}
+                </button>{" "}
                 {t("common.and")}{" "}
-                <Link
-                  href={`/term-or-use-pdf?type=${ContractFileType.POLICY_PRIVACY}`}
+                <button
+                  type="button"
+                  onClick={() =>
+                    handlePreviewPdf(ContractFileType.POLICY_PRIVACY)
+                  }
                   className="font-bold text-primary-color-2 underline"
                 >
                   {t("auth.privacy_policy")}
-                </Link>
+                </button>
+                .
               </div>
             </div>
           </form>

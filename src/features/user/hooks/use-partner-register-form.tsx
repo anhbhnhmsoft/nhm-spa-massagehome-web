@@ -307,5 +307,6 @@ export const usePartnerRegisterForm = () => {
     onSubmit,
     onInvalidSubmit,
     loading: isPending || form.formState.isSubmitting,
+    router,
   };
 };

@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { Controller } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { CheckSquare, Square } from "lucide-react";
 import { useProvinces } from "@/features/location/hooks/use-query";
 import { LocationSelector } from "@/components/app/partner-register/location-selector";
@@ -17,6 +17,9 @@ import { useImagePicker } from "@/features/app/hooks/use-image-picker";
 import { InputField } from "@/components/app/partner-register/input-field";
 import ProvinceSelector from "@/components/app/partner-register/province-selector";
 import HeaderBack from "@/components/header-back";
+import { usePreviewPdf } from "@/features/app/hooks";
+import { ContractFileType } from "@/features/file/const";
+import useUserServiceStore from "@/features/user/stores";
 
 // Helper component cho TextArea đa ngôn ngữ
 const LanguageTextArea = ({
@@ -48,17 +51,20 @@ const LanguageTextArea = ({
 
 export default function PartnerRegisterIndividualPage() {
   const { t } = useTranslation();
-  const router = useRouter();
-  const searchParams = useSearchParams();
 
+  const searchParams = useSearchParams();
+  const { handlePreviewPdf } = usePreviewPdf();
   const referrer_id_param = searchParams?.get("referrer_id");
-  const is_leader_param = searchParams?.get("is_leader") === "true";
+
+  const isLeader = useUserServiceStore((state) => state.is_leader);
+  const setIsLeader = useUserServiceStore((state) => state.setIsLeader);
 
   const { data: provincesData, isLoading: isLoadingProvinces } = useProvinces();
   const { pickImage } = useImagePicker();
 
   const [isAgreed, setIsAgreed] = useState<boolean>(false);
-  const { form, onSubmit, onInvalidSubmit, loading } = usePartnerRegisterForm();
+  const { form, onSubmit, onInvalidSubmit, loading, router } =
+    usePartnerRegisterForm();
 
   const {
     control,
@@ -71,20 +77,28 @@ export default function PartnerRegisterIndividualPage() {
     if (referrer_id_param) {
       setValue("referrer_id", referrer_id_param, { shouldValidate: true });
     }
-    if (is_leader_param) {
+    if (isLeader) {
       setValue("is_leader", true);
     }
-  }, [referrer_id_param, is_leader_param, setValue]);
+  }, [referrer_id_param, isLeader, setValue]);
 
   return (
     <div className="min-h-screen w-full bg-white pb-32">
       {/* Header */}
       <HeaderBack
         title={
-          is_leader_param
+          isLeader
             ? "profile.partner_form.title_technician_leader"
             : "profile.partner_form.title"
         }
+        onBack={() => {
+          if (isLeader) {
+            setIsLeader(false);
+            router.back();
+          } else {
+            router.back();
+          }
+        }}
       />
 
       <main className="mx-auto max-w-2xl px-4 mt-6 space-y-8 flex-1 pb-32">
@@ -442,7 +456,9 @@ export default function PartnerRegisterIndividualPage() {
               {t("auth.i_agree_to")}{" "}
               <span
                 className="cursor-pointer font-bold text-blue-600 underline"
-                onClick={() => router.push("/terms")}
+                onClick={() =>
+                  handlePreviewPdf(ContractFileType.POLICY_PRIVACY)
+                }
               >
                 {t("auth.terms_and_conditions")}
               </span>

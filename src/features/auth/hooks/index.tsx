@@ -410,6 +410,7 @@ export const useHandleRegister = () => {
     form,
     onSubmit,
     loading: mutationRegister.isPending,
+    router,
   };
 };
 
