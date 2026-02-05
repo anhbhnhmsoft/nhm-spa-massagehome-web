@@ -296,7 +296,8 @@
       "password_invalid": "密码无效，必须至少 8 个字符，包含大小写字母和数字",
       "gender_invalid": "性别无效，请重新选择",
       "language_invalid": "语言无效，请重新选择",
-      "register_failed": "注册时发生错误，请重试"
+      "register_failed": "注册时发生错误，请重试",
+      "only_customer_web": "此账号无法在网站上登录，请下载应用程序以继续使用。"
     },
     "success": {
       "resend_otp": "OTP 发送成功",

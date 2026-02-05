@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import useAuthStore from "../store";
-import { _AuthStatus, _Gender } from "../const";
+import { _AuthStatus, _Gender, _UserRole } from "../const";
 import { useRouter } from "next/navigation";
 import {
   useAuthenticateMutation,
@@ -147,8 +147,13 @@ export const useHandleLogin = () => {
       mutate(data, {
         onSuccess: async (res) => {
           try {
+            if (res.data.user.role !== _UserRole.CUSTOMER) {
+              error({
+                message: t("auth.error.only_customer_web"),
+              });
+              return;
+            }
             await login(res.data);
-            console.log("Login success:", res.data);
             success({
               message: t("auth.success.login_success"),
             });

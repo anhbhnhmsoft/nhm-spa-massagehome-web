@@ -296,7 +296,8 @@
       "password_invalid": "Invalid password, must be at least 8 characters including lowercase, uppercase, and number",
       "gender_invalid": "Invalid gender, please select again",
       "language_invalid": "Invalid language, please select again",
-      "register_failed": "Error occurred during registration, please try again"
+      "register_failed": "Error occurred during registration, please try again",
+      "only_customer_web": "This account cannot log in on the website. Please download the app to continue."
     },
     "success": {
       "resend_otp": "OTP resent successfully",

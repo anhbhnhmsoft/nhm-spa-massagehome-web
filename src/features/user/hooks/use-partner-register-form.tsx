@@ -291,7 +291,6 @@ export const usePartnerRegisterForm = () => {
           }
         },
         onError: (error) => {
-          console.log(error);
           setLoading(false);
           errorToast({ message: error.message });
         },

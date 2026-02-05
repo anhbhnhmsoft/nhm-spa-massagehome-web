@@ -296,7 +296,9 @@
       "password_invalid": "Mật khẩu không hợp lệ, phải từ 8 ký tự trở lên, bao gồm chữ thường, chữ hoa và số",
       "gender_invalid": "Giới tính không hợp lệ, vui lòng chọn lại",
       "language_invalid": "Ngôn ngữ không hợp lệ, vui lòng chọn lại",
-      "register_failed": "Có lỗi xảy ra khi đăng ký, vui lòng thử lại"
+      "register_failed": "Có lỗi xảy ra khi đăng ký, vui lòng thử lại",
+      "only_customer_web": "Tài khoản này không thể đăng nhập trên website. Vui lòng tải ứng dụng để tiếp tục sử dụng."
+
     },
     "success": {
       "resend_otp": "Gửi lại mã OTP thành công",

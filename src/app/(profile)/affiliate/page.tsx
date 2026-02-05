@@ -27,9 +27,7 @@ const ReferralPage = () => {
           text: t("affiliate.title_1"),
           url: affiliate_link,
         });
-      } catch (error) {
-        console.log("Error sharing:", error);
-      }
+      } catch {}
     } else {
       // Fallback khi trình duyệt không hỗ trợ Web Share API
       copyToClipboard(affiliate_link);

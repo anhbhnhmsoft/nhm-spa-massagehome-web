@@ -109,3 +109,8 @@ export const _KTVConfigSchedulesLabel = {
   [_KTVConfigSchedules.SATURDAY]: "enum.KTVConfigSchedulesLabel.SATURDAY",
   [_KTVConfigSchedules.SUNDAY]: "enum.KTVConfigSchedulesLabel.SUNDAY",
 } as Readonly<{ [key in _KTVConfigSchedules]: string }>;
+
+export const _LinkDownloadIos =
+  "https://apps.apple.com/vn/app/masa-home/id6756880834?l=vi";
+
+export const _LinkDownloadAndroid = "#";

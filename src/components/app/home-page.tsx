@@ -16,6 +16,7 @@ import { useGetCategoryList } from "@/features/service/hooks";
 import { CategoryCard, CategorySkeletonCard } from "../category-card";
 import Empty from "../emty";
 import { useRouter } from "next/navigation";
+import { _LinkDownloadAndroid, _LinkDownloadIos } from "@/lib/const";
 
 export function CarouselBanner({
   bannerQuery,
@@ -272,7 +273,7 @@ export function AppDownloadSection() {
       <div className="flex w-full items-center justify-center gap-3">
         {/* Nút Google Play */}
         <a
-          href="#"
+          href={_LinkDownloadAndroid}
           target="_blank"
           rel="noopener noreferrer"
           className="flex flex-1 items-center justify-center gap-3 rounded-xl bg-white py-3 shadow-sm transition-all active:scale-95 sm:max-w-[200px]"
@@ -295,7 +296,7 @@ export function AppDownloadSection() {
 
         {/* Nút App Store */}
         <a
-          href="#"
+          href={_LinkDownloadIos}
           target="_blank"
           rel="noopener noreferrer"
           className="flex flex-1 items-center justify-center gap-3 rounded-xl bg-white py-3 shadow-sm transition-all active:scale-95 sm:max-w-[200px]"

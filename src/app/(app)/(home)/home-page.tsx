@@ -16,7 +16,7 @@ import { useGetCategoryList } from "@/features/service/hooks";
 import { useLocationUser } from "@/features/app/hooks/use-get-user-location";
 import { useCheckAuthToRedirect } from "@/features/auth/hooks";
 import { ListLocationModal } from "@/components/location";
-import useApplicationStore from "@/lib/store";
+
 export default function UserDashboard() {
   const { t } = useTranslation();
   const bannerQuery = useListBannerQuery();
@@ -25,8 +25,7 @@ export default function UserDashboard() {
   const locationUser = useLocationUser();
   const redirectAuth = useCheckAuthToRedirect();
   const [showLocationModal, setShowLocationModal] = useState(false);
-  const lang = useApplicationStore((state) => state.language);
-  console.log(lang);
+
   return (
     <div className="min-h-screen  pb-24 ">
       <main className="mx-auto w-full ">
