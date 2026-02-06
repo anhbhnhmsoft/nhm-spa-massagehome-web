@@ -18,6 +18,7 @@ import {
 import { formatBalance, cn } from "@/lib/utils";
 import Image from "next/image";
 import { ReviewModal } from "./review-modal";
+import { useGetRoomChat } from "@/features/chat/hooks";
 
 // --- Components chính ---
 
@@ -34,6 +35,7 @@ export const BookingCard = ({
   const [imageError, setImageError] = useState(false);
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [showReviewModal, setShowReviewModal] = useState(false);
+  const getRoomChat = useGetRoomChat();
 
   return (
     <>
@@ -114,9 +116,7 @@ export const BookingCard = ({
             </button>
           ) : (
             <button
-              onClick={() => {
-                /* logic chat */
-              }}
+              onClick={() => getRoomChat({ user_id: item.ktv_user.id })}
               className="flex-1 flex items-center justify-center gap-2 rounded-xl bg-blue-600 py-2.5 text-xs font-bold text-white transition-all hover:bg-blue-700 active:scale-95 md:text-sm"
             >
               <MessageCircle size={14} />
@@ -192,9 +192,9 @@ const BookingDetailModal = ({
       {/* Overlay click to close */}
       <div className="absolute inset-0" onClick={onClose} />
 
-      <div className="relative h-[90vh] w-full animate-in slide-in-from-bottom duration-300 overflow-hidden rounded-t-[32px] bg-white shadow-2xl sm:h-auto sm:max-h-[85vh] sm:max-w-xl sm:rounded-[24px]">
+      <div className="relative flex flex-col h-[90vh] sm:h-[85vh] w-full sm:max-w-xl overflow-hidden rounded-t-[32px] sm:rounded-[24px] bg-white  shadow-2xl">
         {/* Sticky Header */}
-        <div className="sticky top-0 z-10 flex items-center justify-between border-b border-slate-50 bg-white/80 p-5 backdrop-blur-md">
+        <div className="sticky top-0 z-10 shrink-0 flex items-center justify-between border-b bg-white/80 p-5 backdrop-blur-md">
           <h3 className="text-lg font-bold text-slate-800">
             {t("booking.detail_title")}
           </h3>
@@ -207,7 +207,7 @@ const BookingDetailModal = ({
         </div>
 
         {/* Scrollable Content */}
-        <div className="h-full overflow-y-auto px-5 pb-24 pt-4 sm:pb-8">
+        <div className="flex-1 overflow-y-auto px-5 pb-24 pt-4 sm:pb-8">
           <div
             className={cn(
               `mb-6 flex items-center justify-center rounded-2xl py-4 shadow-sm ${statusStyle.split(" ")[0]}`,
@@ -380,16 +380,6 @@ const BookingDetailModal = ({
               </p>
             </section>
           )}
-        </div>
-
-        {/* Footer Action */}
-        <div className="absolute bottom-0 left-0 w-full border-t border-slate-100 bg-white p-4 sm:relative">
-          <button
-            onClick={onClose}
-            className="w-full rounded-xl bg-slate-900 py-3.5 text-sm font-bold text-white transition-all hover:bg-slate-800 active:scale-[0.98]"
-          >
-            {t("common.close")}
-          </button>
         </div>
       </div>
     </div>

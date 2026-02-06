@@ -3,6 +3,7 @@ import { fetchAndFormatLocation } from "./use-location";
 import { LocationPrimaryUser } from "@/features/location/types";
 import useAuthStore from "@/features/auth/store";
 import { useCallback, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 
 const isSignificantChange = (
   oldLoc: LocationPrimaryUser | null,
@@ -23,13 +24,15 @@ const isSignificantChange = (
  * Ngược lại, thì gọi API location expo để lấy vị trí hiện tại của user.
  */
 export const useGetUserLocation = () => {
+  const { t } = useTranslation();
   const user = useAuthStore((state) => state.user);
   return useCallback(async (): Promise<LocationPrimaryUser | null> => {
     try {
       if (user && user?.primary_location) {
         // Nếu user
         const locationUser = user?.primary_location;
-        const addressUser = locationUser?.address || "";
+        const addressUser =
+          locationUser?.address || t("header_app.need_location");
         const latUser = Number(locationUser?.latitude) || 0;
         const lonUser = Number(locationUser?.longitude) || 0;
         return {
@@ -41,7 +44,7 @@ export const useGetUserLocation = () => {
         const location = await fetchAndFormatLocation();
         const lat = Number(location?.location?.latitude) || 0;
         const lng = Number(location?.location?.longitude) || 0;
-        const address = location?.address || "";
+        const address = location?.address || t("header_app.need_location");
         return {
           lat,
           lng,
@@ -51,7 +54,7 @@ export const useGetUserLocation = () => {
     } catch (err) {
       return null;
     }
-  }, [user]);
+  }, [t, user]);
 };
 /**
  * Hook để lấy vị trí của user.

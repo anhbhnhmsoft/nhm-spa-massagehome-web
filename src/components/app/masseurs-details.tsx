@@ -3,8 +3,6 @@ import Image from "next/image"; // Dùng Image của Next.js
 import { Clock, ImageOff, User } from "lucide-react"; // Lucide cho Web
 import dayjs from "dayjs";
 import { useTranslation } from "react-i18next";
-
-// Giữ nguyên các import từ dự án của bạn
 import { KTVDetail, KTVWorkSchedule } from "@/features/user/types";
 import { ServiceItem } from "@/features/service/types";
 import { cn, formatBalance, getCurrentDayKey } from "@/lib/utils";
@@ -13,7 +11,6 @@ import StarRating from "../star-rating";
 import Empty from "../emty";
 import { useSetService } from "@/features/service/hooks";
 import { _KTVConfigSchedulesLabel } from "@/lib/const";
-// Đảm bảo component Icon này hỗ trợ Web
 
 // 1. Hiển thị ảnh của KTV với xử lý lỗi ảnh
 export const ImageDisplayCustomer = ({ source }: { source: string }) => {

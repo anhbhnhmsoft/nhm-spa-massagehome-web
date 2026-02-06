@@ -115,8 +115,11 @@
     "offline_service_message": "该技师当前正在休息。你想要...？",
     "save_qr_code": "保存二维码",
     "total": "总计",
-    "nickname": "昵称"
-
+    "nickname": "昵称",
+    "prefix": "立即下载",
+    "document": {
+      "not_found": "未找到合适的文档"
+    }
   },
   "common_success": {
     "save_image_success": "图片保存成功",
@@ -296,7 +299,8 @@
       "password_invalid": "密码无效，必须至少 8 个字符，包含大小写字母和数字",
       "gender_invalid": "性别无效，请重新选择",
       "language_invalid": "语言无效，请重新选择",
-      "register_failed": "注册时发生错误，请重试"
+      "register_failed": "注册时发生错误，请重试",
+      "only_customer_web": "此账号无法在网站上登录，请下载应用程序以继续使用。"
     },
     "success": {
       "resend_otp": "OTP 发送成功",
@@ -459,7 +463,9 @@
       "error_check_apply_partner": "检查合作伙伴申请时发生错误。请稍后重试。",
       "info_apply_pending": "您已注册成为合作伙伴，正在等待管理员审核，请耐心等待最新消息。",
       "info_apply_approved": "您的合作伙伴注册已获得批准。",
-      "info_apply_rejected": "您的合作伙伴申请已被拒绝，无法再次申请。"
+      "info_apply_rejected": "您的合作伙伴申请已被拒绝，无法再次申请。",
+      "withdraw_fee": "提现手续费",
+      "total_withdraw": "提现金额"
     },
     "partner_register": {
       "title": "您想注册为什么角色？",
@@ -512,7 +518,11 @@
       "add_new_account": "关联新账户",
       "no_account": "尚无账户",
       "title_modal_request": "申请提现",
-      "enter_withdraw_money": "请输入要提取的金额"
+      "enter_withdraw_money": "请输入要提取的金额",
+      "note": "备注（可选）",
+      "placeholder_note": "输入备注（可选）",
+      "withdraw_fee": "提现手续费",
+      "total_withdraw": "提现金额"
     },
     "confirm": {
       "delete_withdraw_info": "您确定要删除吗？",
@@ -636,7 +646,14 @@
       "title": "地址错误",
       "invalid_address": "请从建议中选择有效的地址",
       "invalid_location": "请选择有效的坐标",
-      "current_location_failed": "无法获取当前位置，请稍后重试。"
+      "current_location_failed": "无法获取当前位置，请稍后重试。",
+      "not_supported": "您的浏览器不支持定位功能",
+      "permission_denied": "您已阻止位置访问权限，请在浏览器设置中重新开启。",
+      "position_unavailable": "无法获取当前位置信息",
+      "timeout": "获取位置信息超时",
+      "unknown_error": "获取位置信息时发生错误",
+      "reverse_failed": "无法通过坐标获取地址",
+      "unknown_address": "未知地址"
     }
   },
   "booking": {

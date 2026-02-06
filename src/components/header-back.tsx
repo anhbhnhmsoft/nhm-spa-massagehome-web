@@ -20,8 +20,6 @@ const HeaderBack: FC<HeaderBackProps> = ({ title, onBack, className }) => {
     if (onBack) {
       onBack();
     } else {
-      // Trong môi trường Web, ta kiểm tra history để quay lại
-      // hoặc về trang chủ nếu không có lịch sử
       if (typeof window !== "undefined" && window.history.length > 1) {
         router.back();
       } else {

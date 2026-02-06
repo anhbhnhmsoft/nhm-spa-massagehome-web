@@ -40,6 +40,7 @@ export type ListTransactionResponse = ResponseDataSuccessType<
 export type ConfigPaymentItem = {
   currency_exchange_rate: string; // Tỷ giá đổi tiền giữa VND và point
   exchange_rate_vnd_cny: string; // Tỷ giá VND/CNY
+  fee_withdraw_percentage: string;
   allow_payment: {
     qrcode: boolean; // Cho phép nạp qua QRCode
     zalopay: boolean; // Cho phép nạp qua ZaloPay

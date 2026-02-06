@@ -42,8 +42,26 @@ const useSaveFileImage = () => {
     [t],
   );
 
+  const downloadImageByLink = (url: string, fileName = "image") => {
+    const link = document.createElement("a");
+
+    link.href = url;
+    link.download = `${fileName}_${Date.now()}.png`;
+    link.target = "_blank";
+    link.rel = "noopener noreferrer";
+
+    document.body.appendChild(link);
+    link.click();
+
+    // cleanup
+    setTimeout(() => {
+      document.body.removeChild(link);
+    }, 0);
+  };
+
   return {
     saveURLImage,
+    downloadImageByLink,
   };
 };
 

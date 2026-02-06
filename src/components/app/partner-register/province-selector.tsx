@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React from "react";
 import { Controller, Control, FieldPath, FieldValues } from "react-hook-form";
-import { ChevronDown, Check, Loader2 } from "lucide-react";
+import { ChevronDown, Loader2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 // Giả định kiểu dữ liệu từ file types của bạn

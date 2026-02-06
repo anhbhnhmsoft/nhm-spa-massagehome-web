@@ -16,6 +16,7 @@ import { useGetCategoryList } from "@/features/service/hooks";
 import { CategoryCard, CategorySkeletonCard } from "../category-card";
 import Empty from "../emty";
 import { useRouter } from "next/navigation";
+import { _LinkDownloadAndroid, _LinkDownloadIos } from "@/lib/const";
 
 export function CarouselBanner({
   bannerQuery,
@@ -144,6 +145,7 @@ export function KTVSection({
 }) {
   const { t } = useTranslation();
   const { data: ktvList, isLoading } = queryKTV;
+  const route = useRouter();
 
   const [emblaRef] = useEmblaCarousel(
     {
@@ -197,6 +199,7 @@ export function KTVSection({
                               active:opacity-70
                               sm:text-base md:text-lg
                             "
+          onClick={() => route.push("masseurs")}
         >
           {t("common.see_all")}
         </button>
@@ -265,3 +268,58 @@ export const CategorySection = ({
     </div>
   );
 };
+export function AppDownloadSection() {
+  const { t } = useTranslation();
+  return (
+    <section className="mt-6 px-4 lg:px-8">
+      <div className="flex w-full items-center justify-center gap-3">
+        {/* Nút Google Play */}
+        <a
+          href={_LinkDownloadAndroid}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex flex-1 items-center justify-center gap-3 rounded-xl bg-white py-3 shadow-sm transition-all active:scale-95 sm:max-w-[200px]"
+        >
+          <div className="relative h-8 w-8 shrink-0">
+            <Image
+              src="/assets/images/ch-play-apk.png"
+              alt="Google Play"
+              fill
+              className="object-contain"
+            />
+          </div>
+          <div className="flex flex-col text-left leading-tight">
+            <span className="text-base text-slate-500">
+              {t("common.prefix")}
+            </span>
+            <span className="text-sm font-bold text-blue-600">Google Play</span>
+          </div>
+        </a>
+
+        {/* Nút App Store */}
+        <a
+          href={_LinkDownloadIos}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex flex-1 items-center justify-center gap-3 rounded-xl bg-white py-3 shadow-sm transition-all active:scale-95 sm:max-w-[200px]"
+        >
+          <div className="relative h-8 w-8 shrink-0">
+            <Image
+              src="/assets/images/app-store-1.png"
+              alt="App Store"
+              fill
+              className="object-contain"
+            />
+          </div>
+          <div className="flex flex-col text-left leading-tight">
+            <span className="text-base text-slate-500">
+              {" "}
+              {t("common.prefix")}
+            </span>
+            <span className="text-sm font-bold text-[#005bb7]">App Store</span>
+          </div>
+        </a>
+      </div>
+    </section>
+  );
+}

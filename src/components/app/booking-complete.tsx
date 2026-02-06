@@ -5,7 +5,6 @@ import {
   CheckCircle,
   XCircle,
   Calendar,
-  Clock,
   MapPin,
   User,
   Home,
@@ -14,7 +13,7 @@ import {
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useRouter } from "next/navigation";
-import { cn, formatBalance } from "@/lib/utils";
+import { formatBalance } from "@/lib/utils";
 import { useCheckBooking } from "@/features/booking/hooks";
 import { BookingCheckItem } from "@/features/booking/types";
 

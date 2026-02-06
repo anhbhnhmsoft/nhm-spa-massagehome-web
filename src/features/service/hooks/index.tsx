@@ -294,7 +294,9 @@ export const useServiceBooking = () => {
                   }),
                 });
                 // Chuyển hướng đến màn hình wallet để nạp tiền
-                router.push("/wallet");
+                setTimeout(() => {
+                  router.push("/wallet");
+                }, 3000);
               }
             } else {
               // trường hợp không có lỗi cụ thể

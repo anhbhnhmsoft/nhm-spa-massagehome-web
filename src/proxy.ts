@@ -10,8 +10,9 @@ export function proxy(req: NextRequest) {
     "/verify-otp",
     "/auth",
     "/welcome",
+    ,
   ];
-  const publicRoutes = ["/", ...authRoutes];
+  const publicRoutes = ["/", "/term-or-use-pdf", ...authRoutes];
   if (
     token &&
     authRoutes.some(

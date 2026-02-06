@@ -35,6 +35,7 @@ import { formatBalance, openAboutPage } from "@/lib/utils";
 import { ListLocationModal } from "./location";
 import SupportModal from "./support-modal";
 import LogoutModal from "./dialog-logout";
+import { useOrdersStore } from "@/features/booking/store";
 
 type UserProfileCardProps = {
   user: ReturnType<typeof useProfile>["user"];
@@ -184,6 +185,8 @@ export const OrderBoardProfile = ({
   dashboardData,
 }: OrderBoardProfileProps) => {
   const { t } = useTranslation();
+  const router = useRouter();
+  const setStatus = useOrdersStore((state) => state.setStatus);
 
   return (
     <div className="mb-4 rounded-xl bg-white p-6 shadow-sm border border-gray-100">
@@ -204,9 +207,12 @@ export const OrderBoardProfile = ({
         {ORDER_MENU_ITEMS.map((item) => {
           const count = dashboardData?.booking_count?.[item.status] || 0;
           return (
-            <Link
+            <button
               key={item.status}
-              href={`/orders?status=${item.status}`}
+              onClick={() => {
+                setStatus(item.status);
+                router.push("/orders");
+              }}
               className="relative flex flex-col items-center  rounded-lg hover:bg-slate-50 transition-colors group"
             >
               <div className="mb-3 rounded-full bg-slate-50 p-3 group-hover:bg-white transition-colors shadow-sm">
@@ -220,7 +226,7 @@ export const OrderBoardProfile = ({
                   {count > 99 ? "99+" : count}
                 </span>
               )}
-            </Link>
+            </button>
           );
         })}
       </div>
@@ -255,7 +261,6 @@ export const FeatureList = () => {
     [selectedLang],
   );
   const [isLoggingOut, setIsLoggingOut] = useState(false);
-
   // Hỗ trợ
 
   // Quản lý địa chỉ

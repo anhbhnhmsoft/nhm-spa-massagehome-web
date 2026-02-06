@@ -8,12 +8,6 @@ import Image from "next/image";
 import SelectLanguage from "@/components/select-language";
 import { _APP_NAME, _LanguagesMap } from "@/lib/const";
 import useApplicationStore from "@/lib/store";
-import useAuthStore from "@/features/auth/store";
-
-// Giả định các import từ project của bạn
-// import useApplicationStore from '@/lib/store';
-// import { _APP_NAME, _LanguagesMap } from '@/lib/const';
-// import SelectLanguage from '@/components/select-language';
 
 export default function IndexPage() {
   const { t } = useTranslation();
@@ -25,14 +19,12 @@ export default function IndexPage() {
     () => _LanguagesMap.find((lang) => lang.code === selectedLang),
     [selectedLang],
   );
-  const status = useAuthStore((state) => state.status);
-  console.log(status);
 
   return (
     <main className="relative flex min-h-screen w-full items-center justify-center bg-[#4A3B32] overflow-hidden">
       {/* Container max-w-[1024px] */}
       <div className="relative flex h-[100dvh] w-full max-w-[1024px] flex-col shadow-2xl overflow-hidden bg-[#4A3B32]">
-        {/* 1. BACKGROUND LAYER - ĐÃ FIX LỖI WIDTH/HEIGHT */}
+        {/* 1. BACKGROUND LAYER  */}
         <div className="absolute inset-0 z-0">
           <Image
             src="/assets/images/bg-index.png"
@@ -49,7 +41,8 @@ export default function IndexPage() {
           <div className="flex flex-row items-center justify-between px-5 pt-6">
             <button
               className="p-2 transition-transform active:scale-90"
-              onClick={() => router.back()}
+              onClick={() => router.replace("/")}
+              type="button"
             >
               <X className="text-white" size={28} />
             </button>

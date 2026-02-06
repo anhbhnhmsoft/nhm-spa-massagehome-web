@@ -115,7 +115,11 @@
     "offline_service_message": "This technician is currently on break. Would you like to...?",
     "save_qr_code": "Save QR Code",
     "total": "Total",
-    "nickname": "Nickname"
+    "nickname": "Nickname",
+    "prefix": "Download on the",
+    "document": {
+      "not_found": "No suitable document found"
+    }
   },
   "common_success": {
     "save_image_success": "Image saved successfully",
@@ -295,7 +299,8 @@
       "password_invalid": "Invalid password, must be at least 8 characters including lowercase, uppercase, and number",
       "gender_invalid": "Invalid gender, please select again",
       "language_invalid": "Invalid language, please select again",
-      "register_failed": "Error occurred during registration, please try again"
+      "register_failed": "Error occurred during registration, please try again",
+      "only_customer_web": "This account cannot log in on the website. Please download the app to continue."
     },
     "success": {
       "resend_otp": "OTP resent successfully",
@@ -512,7 +517,11 @@
       "add_new_account": "Link New Account",
       "no_account": "No account yet",
       "title_modal_request": "Request Withdrawal",
-      "enter_withdraw_money": "Enter the amount you want to withdraw"
+      "enter_withdraw_money": "Enter the amount you want to withdraw",
+      "note": "Note (Optional)",
+      "placeholder_note": "Enter note (optional)",
+      "withdraw_fee": "Withdrawal Fee",
+       "total_withdraw": "Total Withdrawn"
     },
     "confirm": {
       "delete_withdraw_info": "Are you sure you want to delete?",
@@ -636,7 +645,14 @@
       "title": "Address Error",
       "invalid_address": "Please select a valid address from suggestions",
       "invalid_location": "Please select valid coordinates",
-      "current_location_failed": "Cannot get current location, please try again later."
+      "current_location_failed": "Cannot get current location, please try again later.",
+      "not_supported": "Your browser does not support geolocation",
+      "permission_denied": "Location access is blocked. Please enable it in your browser settings.",
+      "position_unavailable": "Unable to determine your current location",
+      "timeout": "Location request timed out",
+      "unknown_error": "An error occurred while retrieving location",
+      "reverse_failed": "Unable to retrieve address from coordinates",
+      "unknown_address": "Unknown address"
     }
   },
   "booking": {

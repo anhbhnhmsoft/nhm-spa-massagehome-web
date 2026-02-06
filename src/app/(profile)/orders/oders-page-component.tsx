@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import { X } from "lucide-react";
 
@@ -11,12 +11,12 @@ import { cn } from "@/lib/utils";
 import { BookingCard, CancellationModal } from "@/components/app/booking";
 import Empty from "@/components/emty";
 import GradientBackground from "@/components/styles/gradient-background";
+import { useOrdersStore } from "@/features/booking/store";
 
 export default function OrdersPageComponent() {
   const { t } = useTranslation();
-  const searchParams = useSearchParams();
+  const status = useOrdersStore((state) => state.status);
   const router = useRouter();
-  const status = searchParams?.get("status");
 
   // Ref cho tính năng kéo chuột
   const scrollRef = useRef<HTMLDivElement>(null);

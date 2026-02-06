@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { MapPin } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import {
+  AppDownloadSection,
   CarouselBanner,
   CategorySection,
   InviteSection,
@@ -15,6 +16,7 @@ import { useGetCategoryList } from "@/features/service/hooks";
 import { useLocationUser } from "@/features/app/hooks/use-get-user-location";
 import { useCheckAuthToRedirect } from "@/features/auth/hooks";
 import { ListLocationModal } from "@/components/location";
+
 export default function UserDashboard() {
   const { t } = useTranslation();
   const bannerQuery = useListBannerQuery();
@@ -46,6 +48,7 @@ export default function UserDashboard() {
         <div className="mt-4">
           <InviteSection />
         </div>
+        <AppDownloadSection />
 
         {/* --- 3. TECHNICIANS SECTION --- */}
         <section className="mt-8 px-4 lg:px-8">

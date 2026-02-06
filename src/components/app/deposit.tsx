@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useMemo } from "react";
 import Image from "next/image";
 import { useTranslation } from "react-i18next";
 import { Controller } from "react-hook-form";
@@ -396,12 +396,11 @@ const WeChatPaymentModal = ({
   const { t } = useTranslation();
   const qrWechatData = useWalletStore((state) => state.qrWechatData);
   const copyToClipboard = useCopyClipboard();
-  const { saveURLImage } = useSaveFileImage();
+  const { downloadImageByLink } = useSaveFileImage();
 
   if (!visible || !qrWechatData) return null;
   const { qr_image, amount, description, amount_cny } =
     qrWechatData as QRWechatData;
-
   return (
     <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm px-0 sm:px-4">
       <div className="w-full max-w-[750px] bg-white shadow-2xl rounded-t-[32px] sm:rounded-[32px] mx-auto">
@@ -439,7 +438,7 @@ const WeChatPaymentModal = ({
               />
             </div>
             <button
-              onClick={() => saveURLImage(qr_image, "wechat-qr")}
+              onClick={() => downloadImageByLink(qr_image, "wechat-qr")}
               className="flex items-center gap-2 rounded-full bg-[#07C160]/10 px-8 py-3 font-bold text-[#07C160] hover:bg-[#07C160]/20 transition-colors"
             >
               <Download size={20} /> {t("common.save_qr_code")}

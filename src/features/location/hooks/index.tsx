@@ -325,10 +325,8 @@ export const useSaveLocation = (onSuccess: () => void) => {
         form.setValue("latitude", location.location.latitude);
         form.setValue("longitude", location.location.longitude);
       }
-    } catch {
-      alert(
-        `${t("location.error.title")}\n\n${t("location.error.current_location_failed")}`,
-      );
+    } catch (error: any) {
+      alert(t(error.message));
     }
   };
 

@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import useAuthStore from "../store";
-import { _AuthStatus, _Gender } from "../const";
+import { _AuthStatus, _Gender, _UserRole } from "../const";
 import { useRouter } from "next/navigation";
 import {
   useAuthenticateMutation,
@@ -147,13 +147,19 @@ export const useHandleLogin = () => {
       mutate(data, {
         onSuccess: async (res) => {
           try {
+            if (res.data.user.role !== _UserRole.CUSTOMER) {
+              error({
+                message: t("auth.error.only_customer_web"),
+              });
+              return;
+            }
             await login(res.data);
-            console.log("Login success:", res.data);
             success({
               message: t("auth.success.login_success"),
             });
 
-            router.push("/");
+            router.replace("/");
+            router.refresh();
           } catch {
             error({
               message: t("auth.error.register_failed"),
@@ -368,14 +374,15 @@ export const useHandleRegister = () => {
       mutationRegister.mutate(data, {
         onSuccess: async (res) => {
           try {
-            await login(res.data); // ✅ không .then
+            await login(res.data);
 
             success({
               message: t("auth.success.register_success"),
             });
 
             clearUserReferral();
-            router.push("/");
+            router.replace("/");
+            router.refresh();
           } catch {
             error({
               message: t("auth.error.register_failed"),
@@ -403,6 +410,7 @@ export const useHandleRegister = () => {
     form,
     onSubmit,
     loading: mutationRegister.isPending,
+    router,
   };
 };
 
@@ -538,7 +546,7 @@ export const useSetLanguageUser = (onClose?: () => void) => {
 
   const syncLanguage = useCallback(
     async (lang: _LanguageCode) => {
-      setLanguageStore(lang);
+      await setLanguageStore(lang);
 
       await i18n.changeLanguage(lang);
 
@@ -556,6 +564,7 @@ export const useSetLanguageUser = (onClose?: () => void) => {
           {
             onSuccess: async () => {
               await syncLanguage(lang);
+              onClose?.();
             },
             onError: () => {
               errorToast({
@@ -566,9 +575,8 @@ export const useSetLanguageUser = (onClose?: () => void) => {
         );
       } else {
         await syncLanguage(lang);
+        onClose?.();
       }
-
-      onClose?.();
     },
     [isAuthenticated, mutate, syncLanguage, onClose, t, errorToast],
   );

@@ -3,7 +3,6 @@
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Controller } from "react-hook-form";
-import { useRouter } from "next/navigation";
 import { CheckSquare, Square } from "lucide-react";
 
 import { cn } from "@/lib/utils";
@@ -18,6 +17,7 @@ import { LocationSelector } from "@/components/app/partner-register/location-sel
 import { useImagePicker } from "@/features/app/hooks/use-image-picker";
 import ProvinceSelector from "@/components/app/partner-register/province-selector";
 import HeaderBack from "@/components/header-back";
+import { usePreviewPdf } from "@/features/app/hooks";
 
 const LanguageTextArea = ({
   lang,
@@ -51,13 +51,13 @@ const LanguageTextArea = ({
 
 export default function PartnerRegisterAgencyPage() {
   const { t } = useTranslation();
-  const router = useRouter();
   const { data: provincesData, isLoading: isLoadingProvinces } = useProvinces();
   const { pickImage } = useImagePicker();
 
   const [isAgreed, setIsAgreed] = useState<boolean>(false);
   const { form, onSubmit, onInvalidSubmit } = usePartnerRegisterAgency();
 
+  const { handlePreviewPdf } = usePreviewPdf();
   const {
     control,
     formState: { errors },
@@ -281,9 +281,7 @@ export default function PartnerRegisterAgencyPage() {
               <button
                 className="font-bold text-blue-600 hover:underline"
                 onClick={() =>
-                  router.push(
-                    `/term-pdf?type=${ContractFileType.POLICY_FOR_AGENCY}`,
-                  )
+                  handlePreviewPdf(ContractFileType.POLICY_PRIVACY)
                 }
               >
                 {t("auth.terms_and_conditions")}
@@ -292,9 +290,7 @@ export default function PartnerRegisterAgencyPage() {
               <button
                 className="font-bold text-blue-600 hover:underline"
                 onClick={() =>
-                  router.push(
-                    `/term-pdf?type=${ContractFileType.POLICY_PRIVACY}`,
-                  )
+                  handlePreviewPdf(ContractFileType.POLICY_PRIVACY)
                 }
               >
                 {t("auth.privacy_policy")}

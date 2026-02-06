@@ -10,7 +10,7 @@ import { Notification } from "@/features/notification/type";
 import dayjs from "dayjs";
 import "dayjs/locale/vi";
 
-// Hàm lấy icon và màu sắc (giữ nguyên logic, chỉ đổi class Tailwind Web)
+// Hàm lấy icon và màu sắc
 const getNotificationIcon = (type: NotificationType) => {
   switch (type) {
     case NotificationType.PAYMENT_COMPLETE:

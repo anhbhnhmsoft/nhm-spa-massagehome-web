@@ -115,8 +115,11 @@
     "offline_service_message": "Kĩ thuật viên này đang trong thời gian nghỉ. Bạn?",
     "save_qr_code": "Lưu mã QR",
     "total": "Tổng",
-    "nickname": "Biệt danh"
-  
+    "nickname": "Biệt danh",
+    "prefix": "Tải về trên",
+    "document": {
+      "not_found": "Không tìm thấy tài liệu phù hợp"
+    }
   },
   "common_success": {
     "save_image_success": "Lưu trữ ảnh thành công",
@@ -296,7 +299,9 @@
       "password_invalid": "Mật khẩu không hợp lệ, phải từ 8 ký tự trở lên, bao gồm chữ thường, chữ hoa và số",
       "gender_invalid": "Giới tính không hợp lệ, vui lòng chọn lại",
       "language_invalid": "Ngôn ngữ không hợp lệ, vui lòng chọn lại",
-      "register_failed": "Có lỗi xảy ra khi đăng ký, vui lòng thử lại"
+      "register_failed": "Có lỗi xảy ra khi đăng ký, vui lòng thử lại",
+      "only_customer_web": "Tài khoản này không thể đăng nhập trên website. Vui lòng tải ứng dụng để tiếp tục sử dụng."
+
     },
     "success": {
       "resend_otp": "Gửi lại mã OTP thành công",
@@ -513,7 +518,11 @@
       "add_new_account": "Liên kết tài khoản mới",
       "no_account": "Chưa có tài khoản nào",
       "title_modal_request": "Yêu cầu rút tiền",
-      "enter_withdraw_money": "Nhập số tiền muốn rút"
+      "enter_withdraw_money": "Nhập số tiền muốn rút",
+      "note": "Ghi chú (Tùy chọn)",
+      "placeholder_note": "Nhập nội dung ghi chú...",
+      "withdraw_fee": "Phí rút tiền",
+      "total_withdraw": "Số tiền rút được"
     },
     "confirm": {
       "delete_withdraw_info": "Bạn có chắc chắn muốn xóa",
@@ -637,7 +646,14 @@
       "title": "Lỗi địa chỉ",
       "invalid_address": "Vui lòng chọn địa chỉ hợp lệ từ gợi ý",
       "invalid_location": "Vui lòng chọn toạ độ hợp lệ",
-      "current_location_failed": "Không thể lấy vị trí hiện tại, vui lòng thử lại sau."
+      "current_location_failed": "Không thể lấy vị trí hiện tại, vui lòng thử lại sau.",
+      "not_supported": "Trình duyệt không hỗ trợ định vị vị trí",
+      "permission_denied": "Bạn đã chặn quyền truy cập vị trí. Vui lòng bật lại trong cài đặt trình duyệt.",
+      "position_unavailable": "Không thể xác định vị trí hiện tại",
+      "timeout": "Lấy vị trí quá thời gian cho phép",
+      "unknown_error": "Lỗi khi lấy vị trí người dùng",
+      "reverse_failed": "Không thể lấy địa chỉ từ tọa độ",
+      "unknown_address": "Địa chỉ không xác định"
     }
   },
   "booking": {

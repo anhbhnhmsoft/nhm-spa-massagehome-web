@@ -4,14 +4,16 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 import { Building2, User as UserIcon, ChevronLeft } from "lucide-react";
 import { useRouter } from "next/navigation"; // Hoặc dùng Link nếu muốn tối ưu SEO
-import { cn } from "@/lib/utils"; // Giả định bạn có helper cn
+import useUserServiceStore from "@/features/user/stores";
 
 export default function PartnerRegisterTypePage() {
   const { t } = useTranslation();
   const router = useRouter();
+  const setIsLeader = useUserServiceStore((state) => state.setIsLeader);
 
   // Hàm điều hướng
   const navigateTo = (path: string) => {
+    setIsLeader(true);
     router.push(path);
   };
 
@@ -41,9 +43,7 @@ export default function PartnerRegisterTypePage() {
           <div className="space-y-4">
             {/* Trưởng nhóm Kỹ thuật viên */}
             <button
-              onClick={() =>
-                navigateTo("/partner-register-individual?is_leader=true")
-              }
+              onClick={() => navigateTo("/partner-register-individual")}
               className="w-full flex items-center justify-between rounded-2xl border border-gray-100 bg-white p-5 text-left shadow-sm hover:border-blue-200 hover:shadow-md transition-all active:scale-[0.98]"
             >
               <div className="flex-1 pr-4">

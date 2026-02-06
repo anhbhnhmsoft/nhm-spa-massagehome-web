@@ -7,6 +7,7 @@ import i18n from "i18next";
 import { _StorageKey } from "@/lib/storages/key";
 import { _LanguageCode } from "@/lib/const";
 import { Storage } from "@/lib/storages";
+import { ContractFileType } from "@/features/file/const";
 
 /* ===== Types ===== */
 
@@ -23,6 +24,7 @@ export interface IApplicationStore {
   language: _LanguageCode;
   loading: boolean;
   location: LocationApp | null;
+  contractType: ContractFileType | null;
 
   // functions
   setLanguage: (lang: _LanguageCode) => Promise<void>;
@@ -30,6 +32,8 @@ export interface IApplicationStore {
 
   setLoading: (state: boolean) => void;
   setLocation: (location: LocationApp | null) => void;
+  setContractType: (type: ContractFileType) => Promise<void>;
+  clearContractType: () => void;
 }
 
 /* ===== Store ===== */
@@ -40,6 +44,7 @@ const useApplicationStore = create<IApplicationStore>()(
       language: _LanguageCode.VI,
       loading: false,
       location: null,
+      contractType: null,
 
       /* ===== Actions ===== */
 
@@ -75,6 +80,14 @@ const useApplicationStore = create<IApplicationStore>()(
 
       setLocation: (location) => {
         set({ location }, false, "app/setLocation");
+      },
+
+      setContractType: (type) => {
+        set({ contractType: type }, false, "app/setContractType");
+      },
+
+      clearContractType: () => {
+        set({ contractType: null }, false, "app/clearContractType");
       },
     }),
     {

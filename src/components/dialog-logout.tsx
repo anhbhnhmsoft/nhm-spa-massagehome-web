@@ -47,7 +47,7 @@ const LogoutModal = ({
         {/* Cập nhật GradientBackground với màu mới */}
         <GradientBackground
           className="p-8"
-          colors={["#044984", "#2B7BBE"]} // Truyền màu vào component nếu nó hỗ trợ props colors
+          colors={["#044984", "#2B7BBE"]}
           style={{
             background: `linear-gradient(135deg, #044984 0%, #2B7BBE 100%)`,
           }} // Fallback style

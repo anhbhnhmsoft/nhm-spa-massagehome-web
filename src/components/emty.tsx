@@ -3,7 +3,7 @@
 import React, { FC, ReactNode } from "react";
 import { Inbox } from "lucide-react"; // Sử dụng Lucide cho nhẹ và hiện đại
 import { useTranslation } from "react-i18next";
-import { cn } from "@/lib/utils"; // Giữ nguyên hàm cn của bạn
+import { cn } from "@/lib/utils";
 
 type EmptyProps = {
   icon?: ReactNode;
@@ -11,7 +11,7 @@ type EmptyProps = {
   description?: string;
   renderAction?: () => ReactNode;
   className?: string;
-  style?: React.CSSProperties; // Style chuẩn của React Web
+  style?: React.CSSProperties;
 };
 
 const Empty: FC<EmptyProps> = ({
