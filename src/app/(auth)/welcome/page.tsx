@@ -24,7 +24,7 @@ export default function IndexPage() {
     <main className="relative flex min-h-screen w-full items-center justify-center bg-[#4A3B32] overflow-hidden">
       {/* Container max-w-[1024px] */}
       <div className="relative flex h-[100dvh] w-full max-w-[1024px] flex-col shadow-2xl overflow-hidden bg-[#4A3B32]">
-        {/* 1. BACKGROUND LAYER - ĐÃ FIX LỖI WIDTH/HEIGHT */}
+        {/* 1. BACKGROUND LAYER  */}
         <div className="absolute inset-0 z-0">
           <Image
             src="/assets/images/bg-index.png"

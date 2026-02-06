@@ -145,6 +145,7 @@ export function KTVSection({
 }) {
   const { t } = useTranslation();
   const { data: ktvList, isLoading } = queryKTV;
+  const route = useRouter();
 
   const [emblaRef] = useEmblaCarousel(
     {
@@ -198,6 +199,7 @@ export function KTVSection({
                               active:opacity-70
                               sm:text-base md:text-lg
                             "
+          onClick={() => route.push("masseurs")}
         >
           {t("common.see_all")}
         </button>

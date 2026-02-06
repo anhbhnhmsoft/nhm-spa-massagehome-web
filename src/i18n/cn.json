@@ -646,7 +646,14 @@
       "title": "地址错误",
       "invalid_address": "请从建议中选择有效的地址",
       "invalid_location": "请选择有效的坐标",
-      "current_location_failed": "无法获取当前位置，请稍后重试。"
+      "current_location_failed": "无法获取当前位置，请稍后重试。",
+      "not_supported": "您的浏览器不支持定位功能",
+      "permission_denied": "您已阻止位置访问权限，请在浏览器设置中重新开启。",
+      "position_unavailable": "无法获取当前位置信息",
+      "timeout": "获取位置信息超时",
+      "unknown_error": "获取位置信息时发生错误",
+      "reverse_failed": "无法通过坐标获取地址",
+      "unknown_address": "未知地址"
     }
   },
   "booking": {

@@ -9,15 +9,31 @@ export type WebPermissionState = "granted" | "denied" | "prompt" | null;
  */
 export const fetchAndFormatLocation = async (): Promise<LocationApp> => {
   if (typeof window === "undefined" || !navigator.geolocation) {
-    throw new Error("Trình duyệt không hỗ trợ Geolocation");
+    throw new Error("location.error.not_supported");
   }
 
-  const position = await new Promise<GeolocationPosition>((resolve, reject) => {
-    navigator.geolocation.getCurrentPosition(resolve, reject, {
-      enableHighAccuracy: false,
-      timeout: 10000,
+  let position: GeolocationPosition;
+
+  try {
+    position = await new Promise<GeolocationPosition>((resolve, reject) => {
+      navigator.geolocation.getCurrentPosition(resolve, reject, {
+        enableHighAccuracy: false,
+        timeout: 10000,
+      });
     });
-  });
+  } catch (err: any) {
+    if (err?.code === 1) {
+      throw new Error("location.error.permission_denied");
+    }
+    if (err?.code === 2) {
+      throw new Error("location.error.position_unavailable");
+    }
+    if (err?.code === 3) {
+      throw new Error("location.error.timeout");
+    }
+
+    throw new Error("location.error.unknown_error");
+  }
 
   const { latitude, longitude, accuracy } = position.coords;
 
@@ -30,7 +46,7 @@ export const fetchAndFormatLocation = async (): Promise<LocationApp> => {
     },
   );
 
-  if (!res.ok) throw new Error("Không thể lấy địa chỉ từ tọa độ");
+  if (!res.ok) throw new Error("location.error.reverse_failed");
 
   const data = await res.json();
   return {
@@ -39,7 +55,7 @@ export const fetchAndFormatLocation = async (): Promise<LocationApp> => {
       longitude,
       accuracy,
     },
-    address: data?.display_name ?? "Địa chỉ không xác định",
+    address: data?.display_name,
   };
 };
 
@@ -146,7 +162,9 @@ export const useLocationAddress = () => {
   const [permission, setPermission] = useState<WebPermissionState>(null);
 
   useEffect(() => {
-    if (!navigator.permissions) return;
+    if (!navigator.permissions) {
+      return;
+    }
 
     let mounted = true;
 
@@ -161,7 +179,8 @@ export const useLocationAddress = () => {
           setPermission(result.state);
         };
       })
-      .catch(() => {
+      .catch((err) => {
+        console.error("Get location permission failed:", err);
         // optional: giữ null
       });
 

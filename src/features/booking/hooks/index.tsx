@@ -36,7 +36,6 @@ export const useGetBookingList = () => {
     page: 1,
     per_page: 10,
   });
-  const setLoading = useApplicationStore((state) => state.setLoading);
   const setFilter = useCallback(
     (filterPatch: Partial<ListBookingRequest["filter"]>) => {
       setParams((draft) => {

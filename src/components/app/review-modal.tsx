@@ -20,7 +20,6 @@ export const ReviewModal = ({
   serviceBookingId,
 }: ReviewModalProps) => {
   const { t } = useTranslation();
-  // Giả định hook useReviewModal của bạn đã được viết lại cho Web
   const { form, onSubmit, loading } = useReviewModal(
     serviceBookingId,
     onSuccess,

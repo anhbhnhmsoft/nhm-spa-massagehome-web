@@ -269,11 +269,8 @@ export const usePartnerRegisterForm = () => {
     const fileErrors = errors?.file_uploads;
     if (!fileErrors) return;
 
-    // lấy lỗi đầu tiên
-    const firstError = fileErrors.find((e: any) => e?.message);
-
-    if (firstError?.message) {
-      errorToast({ message: firstError.message });
+    if (fileErrors?.message) {
+      errorToast({ message: fileErrors.message });
     }
   };
   const onSubmit = useCallback(

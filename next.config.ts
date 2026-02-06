@@ -6,6 +6,7 @@ const nextConfig: NextConfig = {
   experimental: {},
   devIndicators: {},
   allowedDevOrigins: ["https://192.168.1.188:3000", "http://localhost:3000"],
+
   images: {
     remotePatterns: [
       {

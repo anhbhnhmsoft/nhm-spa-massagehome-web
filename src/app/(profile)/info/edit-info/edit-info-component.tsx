@@ -6,8 +6,6 @@ import { useTranslation } from "react-i18next";
 import { Controller } from "react-hook-form";
 import { Trash2, Loader2 } from "lucide-react";
 import dayjs from "dayjs";
-
-// Hooks & Consts (Giữ nguyên logic của bạn)
 import { _Gender } from "@/features/auth/const";
 import { useEditProfile, useLockAccount } from "@/features/auth/hooks";
 import { cn } from "@/lib/utils";

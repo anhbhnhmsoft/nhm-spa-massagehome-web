@@ -27,7 +27,6 @@ export default function ServiceBooking() {
     setShowSuccessModal,
     bookingId,
   } = useServiceBooking();
-
   const {
     control,
     formState: { errors },

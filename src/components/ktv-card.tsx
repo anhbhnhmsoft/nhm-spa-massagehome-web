@@ -23,7 +23,6 @@ export const KTVHomePageCard = ({ item }: { item: ListKTVItem }) => {
   const { t } = useTranslation();
   const [imageError, setImageError] = useState(false);
 
-  // Giả định hook setKtv của bạn xử lý logic chọn KTV
   const setKtv = useSetKtv();
 
   return (

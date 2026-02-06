@@ -36,19 +36,20 @@ export function LocationSelector<T extends FieldValues>({
 
   const handleGetCurrentLocation = useCallback(
     async (e: React.MouseEvent) => {
+      setIsLocating(true);
       e.preventDefault();
       e.stopPropagation();
 
       try {
-        setIsLocating(true);
-
         const hasPermission = await getPermission();
         if (!hasPermission) {
           alert(t("profile.partner_form.alert_location_permission_message"));
           return;
         }
 
-        if (!currentLocation?.address) return;
+        if (!currentLocation?.address) {
+          return;
+        }
 
         // Field chính
         setValue(name, currentLocation.address as any, {

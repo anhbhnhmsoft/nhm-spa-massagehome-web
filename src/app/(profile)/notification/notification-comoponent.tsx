@@ -2,8 +2,6 @@
 
 import React, { useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
-
-// Components
 import HeaderBack from "@/components/header-back";
 import NotificationItem from "@/components/app/notification_card";
 import { useNotificationScreen } from "@/features/notification/hook";

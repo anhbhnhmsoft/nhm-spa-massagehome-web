@@ -149,10 +149,6 @@ export default function ChatViewScreen({
           <h1 className="font-bold text-lg text-gray-800 truncate">
             {room?.partner_name || "Chat Room"}
           </h1>
-          <div className="flex items-center gap-1.5">
-            <div className="w-2 h-2 rounded-full bg-green-500" />
-            <span className="text-xs text-gray-500">Trực tuyến</span>
-          </div>
         </div>
       </header>
 

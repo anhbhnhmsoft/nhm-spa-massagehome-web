@@ -14,12 +14,9 @@ import {
 import { useTranslation } from "react-i18next";
 import { cn, formatBalance, formatCurrency } from "@/lib/utils";
 import dayjs from "dayjs";
-
-// Giả định các hooks đã được bạn viết lại cho bản Web
 import {
   useCreateInfoWithdraw,
   useRequestWithdraw,
-  useWallet,
   useWithdrawInfo,
 } from "@/features/payment/hooks";
 import {

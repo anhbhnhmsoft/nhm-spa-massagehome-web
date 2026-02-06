@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useCallback, useEffect, useState } from "react";
-import { X, ExternalLink, Copy, Phone } from "lucide-react";
+import { X } from "lucide-react";
 import { useTranslation } from "react-i18next";
 // Giả định bạn đã config các consts này dùng chung được cho web
 import { _ConfigKey, _ConfigKeyLabel } from "@/features/config/consts";

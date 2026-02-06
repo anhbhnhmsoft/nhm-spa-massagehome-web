@@ -645,7 +645,14 @@
       "title": "Address Error",
       "invalid_address": "Please select a valid address from suggestions",
       "invalid_location": "Please select valid coordinates",
-      "current_location_failed": "Cannot get current location, please try again later."
+      "current_location_failed": "Cannot get current location, please try again later.",
+      "not_supported": "Your browser does not support geolocation",
+      "permission_denied": "Location access is blocked. Please enable it in your browser settings.",
+      "position_unavailable": "Unable to determine your current location",
+      "timeout": "Location request timed out",
+      "unknown_error": "An error occurred while retrieving location",
+      "reverse_failed": "Unable to retrieve address from coordinates",
+      "unknown_address": "Unknown address"
     }
   },
   "booking": {

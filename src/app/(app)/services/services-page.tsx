@@ -7,7 +7,6 @@ import { useGetCategoryList } from "@/features/service/hooks";
 import { useTranslation } from "react-i18next";
 import { CategoryCard, CategorySkeletonCard } from "@/components/category-card";
 import Empty from "@/components/emty";
-// Import icon từ thư viện bạn dùng (ví dụ lucide-react hoặc heroicons)
 import { RotateCw } from "lucide-react";
 
 export default function ServicesPageComponent() {

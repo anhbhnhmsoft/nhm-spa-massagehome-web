@@ -646,7 +646,14 @@
       "title": "Lỗi địa chỉ",
       "invalid_address": "Vui lòng chọn địa chỉ hợp lệ từ gợi ý",
       "invalid_location": "Vui lòng chọn toạ độ hợp lệ",
-      "current_location_failed": "Không thể lấy vị trí hiện tại, vui lòng thử lại sau."
+      "current_location_failed": "Không thể lấy vị trí hiện tại, vui lòng thử lại sau.",
+      "not_supported": "Trình duyệt không hỗ trợ định vị vị trí",
+      "permission_denied": "Bạn đã chặn quyền truy cập vị trí. Vui lòng bật lại trong cài đặt trình duyệt.",
+      "position_unavailable": "Không thể xác định vị trí hiện tại",
+      "timeout": "Lấy vị trí quá thời gian cho phép",
+      "unknown_error": "Lỗi khi lấy vị trí người dùng",
+      "reverse_failed": "Không thể lấy địa chỉ từ tọa độ",
+      "unknown_address": "Địa chỉ không xác định"
     }
   },
   "booking": {

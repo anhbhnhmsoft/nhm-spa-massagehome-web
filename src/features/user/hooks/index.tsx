@@ -21,7 +21,6 @@ import { KTVDetail } from "../types";
 export const useGetListKTV = () => {
   const params = useKTVSearchStore((state) => state.params);
   const setFilter = useKTVSearchStore((state) => state.setFilter);
-
   const query = useInfiniteListKTV(params);
 
   const data = useMemo(() => {
