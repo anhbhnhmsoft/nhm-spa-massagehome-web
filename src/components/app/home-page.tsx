@@ -17,6 +17,7 @@ import { CategoryCard, CategorySkeletonCard } from "../category-card";
 import Empty from "../emty";
 import { useRouter } from "next/navigation";
 import { _LinkDownloadAndroid, _LinkDownloadIos } from "@/lib/const";
+import useUserServiceStore from "@/features/user/stores";
 
 export function CarouselBanner({
   bannerQuery,
@@ -87,6 +88,7 @@ export function CarouselBanner({
 export function InviteSection() {
   const router = useRouter();
   const { t } = useTranslation();
+  const setForWho = useUserServiceStore((state) => state.setForWho);
   return (
     <div className="grid  gap-4 grid-cols-2  px-4">
       {/* Button 1 */}
@@ -115,7 +117,10 @@ export function InviteSection() {
       {/* Button 2 */}
       <button
         className="flex items-center gap-4 rounded-2xl bg-slate-50 p-3 transition-hover hover:bg-slate-100 text-left"
-        onClick={() => router.push("/partner-register-agency")}
+        onClick={() => {
+          setForWho("agency");
+          router.push("/partner-register-individual");
+        }}
       >
         <div className="relative h-14 w-14 overflow-hidden rounded-full border-2 border-white shadow-sm">
           <Image

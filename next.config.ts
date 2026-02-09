@@ -12,6 +12,11 @@ const nextConfig: NextConfig = {
       {
         protocol: "https",
         hostname: "massagehome.com.vn",
+        pathname: "/api/file/**",
+      },
+      {
+        protocol: "https",
+        hostname: "massagehome.com.vn",
         pathname: "/storage/**",
       },
       {

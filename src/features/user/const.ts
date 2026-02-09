@@ -11,3 +11,11 @@ export enum _ReviewApplicationStatus {
   APPROVED = 2,
   REJECTED = 3,
 }
+
+export const _ReviewApplicationStatusMap = {
+  [_ReviewApplicationStatus.PENDING]: "enum.review_application_status.PENDING",
+  [_ReviewApplicationStatus.APPROVED]:
+    "enum.review_application_status.APPROVED",
+  [_ReviewApplicationStatus.REJECTED]:
+    "enum.review_application_status.REJECTED",
+} as const;

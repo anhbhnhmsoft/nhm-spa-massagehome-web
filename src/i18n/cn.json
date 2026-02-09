@@ -227,6 +227,11 @@
       "FRIDAY": "星期五",
       "SATURDAY": "星期六",
       "SUNDAY": "星期日"
+    },
+     "review_application_status": {
+      "PENDING": "待确认",
+      "APPROVED": "已确认",
+      "REJECTED": "已拒绝"
     }
   },
   "tab": {
@@ -465,7 +470,34 @@
       "info_apply_approved": "您的合作伙伴注册已获得批准。",
       "info_apply_rejected": "您的合作伙伴申请已被拒绝，无法再次申请。",
       "withdraw_fee": "提现手续费",
-      "total_withdraw": "提现金额"
+      "total_withdraw": "提现金额",
+       "status_pending_for_ktv": "您已注册成为技师，正在等待管理员审核，请耐心等待最新消息。",
+      "status_pending_for_ktv_leader": "您已注册成为城市区域代理，正在等待管理员审核，请耐心等待最新消息。",
+      "status_pending_for_agency": "您已注册成为城市区域代理，正在等待管理员审核，请耐心等待最新消息。",
+      "cancel_reason_title": "注册取消",
+      "error_check_application": "检查合作伙伴申请时发生错误。请稍后重试。",
+      "show_application": "查看申请详情",
+      "modal_application": {
+        "title": "申請詳情",
+        "status": "已拒絕",
+        "reason": "原因",
+        "information": "基本資訊",
+        "nickname": "顯示名稱",
+        "experience": "工作經驗",
+        "year": "年",
+        "role": "角色",
+        "ktv": "技術員",
+        "agency": "合作夥伴",
+        "leader": "組長",
+        "referrer_id": "推薦碼",
+        "bio": "自我介紹 (Bio)",
+        "identity": "身份證明文件",
+        "cccd_front": "身分證正面",
+        "cccd_back": "身分證反面",
+        "face_with_identity_card": "手持身分證照片",
+        "certificate": "相關證書",
+        "gallery": "展示照片 (供客戶查看)"
+      }
     },
     "partner_register": {
       "title": "您想注册为什么角色？",

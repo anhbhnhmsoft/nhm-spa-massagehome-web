@@ -227,6 +227,11 @@
       "FRIDAY": "Thứ 6",
       "SATURDAY": "Thứ 7",
       "SUNDAY": "Chủ nhật"
+    },
+    "review_application_status": {
+      "PENDING": "Chờ xác nhận",
+      "APPROVED": "Đã chấp nhận",
+      "REJECTED": "Đã từ chối"
     }
   },
   "tab": {
@@ -464,8 +469,34 @@
       "error_check_apply_partner": "Có lỗi xảy ra khi kiểm tra đăng ký đối tác. Vui lòng thử lại sau.",
       "info_apply_pending": "Bạn đã đăng ký đối tác, đang chờ Quản trị viên duyệt, vui lòng chờ đợi thông tin mới nhất.",
       "info_apply_approved": "Bạn đã đăng ký đối tác, đã được duyệt.",
-      "info_apply_rejected": "Đơn đăng ký đối tác của bạn đã bị từ chối, bạn không thể đăng ký lại được nữa."
-  
+      "info_apply_rejected": "Đơn đăng ký đối tác của bạn đã bị từ chối, bạn không thể đăng ký lại được nữa.",
+      "status_pending_for_ktv": "Bạn đã đăng ký làm Kỹ thuật viên, đang chờ Quản trị viên duyệt, vui lòng chờ đợi thông tin mới nhất.",
+      "status_pending_for_ktv_leader": "Bạn đã đăng ký làm Trưởng nhóm Kỹ thuật viên, đang chờ Quản trị viên duyệt, vui lòng chờ đợi thông tin mới nhất.",
+      "status_pending_for_agency": "Bạn đã đăng ký đối tác, đang chờ Quản trị viên duyệt, vui lòng chờ đợi thông tin mới nhất.",
+      "cancel_reason_title": "Đăng ký của bạn đã bị hủy",
+      "error_check_application": "Có lỗi xảy ra khi kiểm tra đơn đăng ký. Vui lòng thử lại sau.",
+      "show_application": "Xem lại đơn đăng ký",
+      "modal_application": {
+        "title": "Chi tiết đơn đăng ký",
+        "status": "Từ chối",
+        "reason": "Lý do",
+        "information": "Thông tin",
+        "nickname": "Tên hiển thị",
+        "experience": "Kinh nghiệm",
+        "year": "năm",
+        "role": "Vai trò",
+        "ktv": "Kỹ thuật viên",
+        "agency": "Đối tác",
+        "leader": "Trưởng nhóm",
+        "referrer_id": "Mã giới thiệu",
+        "bio": "Giới thiệu bản thân (Bio)",
+        "identity": "Giấy tờ định danh",
+        "cccd_front": "CCCD Mặt trước",
+        "cccd_back": "CCCD Mặt sau",
+        "face_with_identity_card": "Ảnh cầm thẻ cùng CCCD",
+        "certificate": "Bằng cấp",
+        "gallery": "Ảnh hiển thị cho Khách hàng"
+      }
     },
     "partner_register": {
       "title": "Bạn muốn đăng ký làm gì?",
