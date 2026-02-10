@@ -637,6 +637,7 @@
     "booking_total_price": "支付总额",
     "booking_failed_title": "预订失败",
     "booking_failed_message": "处理预约时发生错误。很抱歉给您带来不便。请重试。",
+     "booking_today": "今日预约",
     "booking_conflict": "请选择一个不与现有预约重叠的时间槽，每个预约之间的最小间隔为 {{ min }} 分钟",
     "booking_empty": "今日暂无预约",
     "booking_empty_2": "您可以在任何时间预约",

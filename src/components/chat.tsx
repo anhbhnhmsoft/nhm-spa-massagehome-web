@@ -213,9 +213,6 @@ export default function ChatViewScreen({
             <Send size={20} fill={inputText.trim() ? "currentColor" : "none"} />
           </button>
         </form>
-        <p className="text-[10px] text-center text-gray-400 mt-2">
-          Nhấn Enter để gửi, Shift + Enter để xuống dòng
-        </p>
       </footer>
     </div>
   );
