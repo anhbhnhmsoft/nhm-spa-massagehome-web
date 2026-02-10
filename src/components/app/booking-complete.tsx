@@ -209,12 +209,12 @@ export default function BookingResultModal({
           <Success
             t={t}
             bookingData={data.data}
-            onGoHome={() => router.push("/")}
+            onGoHome={() => router.replace("/")}
           />
         )}
 
         {status === "failed" && (
-          <Failed t={t} onGoHome={() => router.push("/")} />
+          <Failed t={t} onGoHome={() => router.replace("/")} />
         )}
       </div>
     </div>

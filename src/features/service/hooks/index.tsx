@@ -21,7 +21,7 @@ import {
   ServiceItem,
   ServiceListRequest,
 } from "@/features/service/types";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useImmer } from "use-immer";
 import {
@@ -260,17 +260,18 @@ export const useServiceBooking = () => {
     }
   }, [storeLocation, user]);
 
-  // Kiểm tra xem booking có tồn tại hay không
+  const hasRedirectedRef = useRef(false);
+
   useEffect(() => {
-    // Nếu không có booking, quay lại màn hình trước
-    if (!pickServiceBooking) {
+    if (!pickServiceBooking && !hasRedirectedRef.current) {
+      hasRedirectedRef.current = true;
       router.back();
     }
-    // Nếu có, reset form khi quay lại màn hình
+
     return () => {
       form.reset();
     };
-  }, [pickServiceBooking]);
+  }, [pickServiceBooking, router, form]);
 
   // Xử lý khi nhấn nút "Đặt lịch"
   const handleBooking = (data: PickBookingRequirement) => {

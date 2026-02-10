@@ -185,12 +185,12 @@ export const ServiceCard = ({ item }: { item: ServiceItem }) => {
               })}
             </span>
             <div
-              className={cn("rounded-full px-2 py-0.5", {
+              className={cn("rounded-full px-2 py-1 items-center flex  ", {
                 "bg-primary-color-2": item.is_active,
                 "bg-red-500": !item.is_active,
               })}
             >
-              <span className="font-semibold text-[10px] text-white">
+              <span className="font-semibold text-[12px] text-white">
                 {item.is_active
                   ? t("masseurs_detail.available")
                   : t("masseurs_detail.unavailable")}

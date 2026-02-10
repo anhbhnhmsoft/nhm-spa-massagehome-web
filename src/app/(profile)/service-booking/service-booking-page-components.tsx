@@ -15,6 +15,7 @@ import {
   Calendar,
   Clock,
   AlertCircle,
+  ArrowLeft,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Controller, useWatch } from "react-hook-form";
@@ -40,6 +41,7 @@ export default function ServiceBookingPage() {
   const [isPending, startTransition] = useReactTransition(); // Next.js transition cho navigation
   const [showLocationModal, setShowLocationModal] = useState(false);
   const [coupon, setCoupon] = useState<CouponItem | null>(null);
+
   const {
     detail: item,
     form,
@@ -49,17 +51,16 @@ export default function ServiceBookingPage() {
     setShowSuccessModal,
     bookingId,
   } = useServiceBooking();
-
   const {
     control,
     formState: { errors, isSubmitting },
     setValue,
     handleSubmit,
-    getValues,
   } = form;
 
   const latitude = useWatch({ control, name: "latitude" });
   const longitude = useWatch({ control, name: "longitude" });
+
   // Memoize khoảng cách để tránh re-render thừa
   const distance = useMemo(() => {
     if (
@@ -82,6 +83,7 @@ export default function ServiceBookingPage() {
 
   // Tính toán giá trị tạm tính (giá gốc + cước di chuyển)
   const tempTotalPrice = useMemo(() => {
+    if (!item) return 0;
     let subTotalPrice = 0;
     const price = Number(item?.option.price);
     const priceTransportation = calculatePriceDistance(
@@ -107,6 +109,20 @@ export default function ServiceBookingPage() {
     return tempTotalPrice - discountAmount;
   }, [tempTotalPrice, discountAmount]);
 
+  if (!item) {
+    return (
+      <div className="flex h-screen w-full flex-col items-center justify-center bg-white p-6 text-center">
+        <RotateCw className="mb-4 animate-spin text-blue-500" size={32} />
+        <p className="text-gray-500 font-medium">{t("common.loading_data")}</p>
+        <button
+          onClick={() => router.push("/")}
+          className="mt-4 text-blue-600 flex items-center gap-2 text-sm font-bold"
+        >
+          <ArrowLeft size={16} /> {t("common.back_to_home")}
+        </button>
+      </div>
+    );
+  }
   const onGoBack = () => {
     startTransition(() => {
       router.back();
@@ -390,7 +406,10 @@ export default function ServiceBookingPage() {
       <BookingResultModal
         bookingId={bookingId}
         isVisible={showSuccessModal}
-        onClose={() => setShowSuccessModal(false)}
+        onClose={() => {
+          router.replace("/");
+          setShowSuccessModal(false);
+        }}
       />
     </main>
   );
