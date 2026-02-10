@@ -13,16 +13,16 @@ import {
 import { useListBannerQuery } from "@/features/commercial/hooks/use-query";
 import { useGetListKTVHomepage } from "@/features/user/hooks";
 import { useGetCategoryList } from "@/features/service/hooks";
-import { useLocationUser } from "@/features/app/hooks/use-get-user-location";
 import { useCheckAuthToRedirect } from "@/features/auth/hooks";
 import { ListLocationModal } from "@/components/location";
+import useApplicationStore from "@/lib/store";
 
 export default function UserDashboard() {
   const { t } = useTranslation();
   const bannerQuery = useListBannerQuery();
   const queryKTV = useGetListKTVHomepage();
   const queryCategory = useGetCategoryList({ page: 1, per_page: 5 }, true);
-  const locationUser = useLocationUser();
+  const locationUser = useApplicationStore((state) => state.location);
   const redirectAuth = useCheckAuthToRedirect();
   const [showLocationModal, setShowLocationModal] = useState(false);
 

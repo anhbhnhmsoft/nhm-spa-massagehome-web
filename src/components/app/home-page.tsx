@@ -216,12 +216,7 @@ export function KTVSection({
           {displayList.map((ktv, index) => (
             <div
               key={`${ktv.id}-${index}`}
-              className="
-          shrink-0
-          w-[33.333%]   /* 3 item trên mobile */
-          sm:w-[25%]    /* 4 item trên màn lớn (≤750px) */
-          px-1
-        "
+              className=" shrink-0 w-[33.333%] sm:w-[25%] px-1"
             >
               <KTVHomePageCard item={ktv} />
             </div>

@@ -90,8 +90,6 @@ export const usePartnerRegisterForm = (
   const { error: errorToast, success: successToast } = useToast();
   // Lấy dữ liệu từ check review application
   const queryCheck = useQueryCheckApplyPartner();
-  console.log(queryCheck.error);
-  // Form data
   const form = useForm<ApplyPartnerRequest>({
     defaultValues: {
       role: _UserRole.KTV,

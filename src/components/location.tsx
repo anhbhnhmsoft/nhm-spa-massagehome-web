@@ -41,11 +41,29 @@ export const ListLocationModal = ({
     deleteHandler,
     closeSaveModal,
     showSaveModal,
+    getCurrentLocation,
+    location,
   } = useListLocation();
 
   const { data, isFetchingNextPage } = queryList;
 
   if (!visible) return null;
+
+  const handlePress = () => {
+    if (location) {
+      if (onSelect) {
+        onSelect({
+          address: location.address,
+          latitude: location.location?.coords.latitude.toString(),
+          longitude: location.location?.coords.longitude.toString(),
+          desc: location.address,
+        });
+      }
+    } else {
+      // Trên Web, hàm này sẽ gọi navigator.geolocation
+      getCurrentLocation();
+    }
+  };
 
   return (
     <div className="fixed inset-0 z-[2147483647] isolate flex w-fullitems-center justify-center bg-black/50 p-4">
@@ -60,6 +78,35 @@ export const ListLocationModal = ({
             className="rounded-full p-2 hover:bg-gray-100"
           >
             <X size={24} />
+          </button>
+        </div>
+
+        <div className="pb-4 border-b-2 p-4 border-gray-100">
+          <button
+            type="button"
+            onClick={handlePress}
+            className="w-full flex flex-row items-center justify-between rounded-xl border border-gray-100 bg-orange-50 p-4 transition-colors hover:bg-orange-100 active:bg-gray-50 focus:outline-none"
+          >
+            {/* ICON BÊN TRÁI */}
+            <div className="mr-4 h-10 w-10 flex items-center justify-center rounded-full bg-orange-100 shrink-0">
+              <Star size={20} className="text-orange-500 fill-current" />
+            </div>
+
+            {/* NỘI DUNG TEXT */}
+            <div className="flex-1 text-left overflow-hidden">
+              <div className="flex flex-row items-center gap-2">
+                <h3 className="font-bold text-base text-slate-800 truncate">
+                  {location
+                    ? location.address.split(",")[0]
+                    : t("header_app.need_location")}
+                </h3>
+              </div>
+
+              {/* Địa chỉ chi tiết */}
+              <p className="text-sm text-orange-500">
+                {t("location.primary_address")}
+              </p>
+            </div>
           </button>
         </div>
 
@@ -169,8 +216,14 @@ export const SaveLocationModal = ({
 }) => {
   const { t } = useTranslation();
   const [showSearch, setShowSearch] = useState(false);
-  const { form, submit, isEdit, setLocationCurrent, loading } =
-    useSaveLocation(onClose);
+  const {
+    form,
+    submit,
+    isEdit,
+    setLocationCurrent,
+    loading,
+    loadingSetLocation,
+  } = useSaveLocation(onClose);
 
   const {
     control,
@@ -202,12 +255,30 @@ export const SaveLocationModal = ({
               <label className="text-sm font-semibold">
                 {t("location.label_address")} *
               </label>
+
               <button
                 type="button"
                 onClick={setLocationCurrent}
-                className="flex items-center gap-1 rounded-lg bg-blue-50 px-2 py-1 text-xs font-bold text-blue-600 hover:bg-blue-100"
+                disabled={loadingSetLocation}
+                className={`flex items-center gap-1 rounded-lg px-2 py-1 text-xs font-bold
+                      ${
+                        loadingSetLocation
+                          ? "cursor-not-allowed bg-gray-200 text-gray-400"
+                          : "bg-blue-50 text-blue-600 hover:bg-blue-100"
+                      }
+                `}
               >
-                <MapPin size={14} /> {t("location.get_current_location")}
+                {loadingSetLocation ? (
+                  <>
+                    <span className="h-3 w-3 animate-spin rounded-full border-2 border-gray-400 border-t-transparent" />
+                    {t("common.loading")}
+                  </>
+                ) : (
+                  <>
+                    <MapPin size={14} />
+                    {t("location.get_current_location")}
+                  </>
+                )}
               </button>
             </div>
 

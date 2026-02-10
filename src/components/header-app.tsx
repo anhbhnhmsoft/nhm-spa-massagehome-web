@@ -5,8 +5,8 @@ import { MapPin, Bell, Search, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import GradientBackground from "./styles/gradient-background";
-import { useLocationUser } from "@/features/app/hooks/use-get-user-location";
 import { ListLocationModal } from "./location";
+import useApplicationStore from "@/lib/store";
 
 type HeaderAppProps = {
   showSearch?: boolean;
@@ -25,7 +25,8 @@ export default function Header({
   const { t } = useTranslation();
   const [showLocationModal, setShowLocationModal] = useState(false);
 
-  const locationUser = useLocationUser();
+  const locationUser = useApplicationStore((state) => state.location);
+
   const checkAuth = true;
 
   const handleNotificationClick = () => {

@@ -34,8 +34,7 @@ const useSaveFileImage = () => {
 
         // Thông báo thành công (Có thể dùng toast hoặc alert tùy UI của bạn)
         alert(t("common_success.save_image_success"));
-      } catch (error) {
-        console.error("Save image error:", error);
+      } catch {
         alert(t("common_error.error_save_image"));
       }
     },

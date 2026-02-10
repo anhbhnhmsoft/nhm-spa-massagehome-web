@@ -37,11 +37,13 @@ export type ListKTVItem = {
     gender: _Gender;
   };
   review_application: {
-    address: string;
     experience: number;
-    latitude: number;
-    longitude: number;
     bio: string;
+  };
+  location: {
+    address: string | null;
+    latitude: number | null;
+    longitude: number | null;
   };
   schedule: KTVWorkSchedule;
 };
@@ -61,7 +63,7 @@ export type KTVDetail = ListKTVItem & {
     rating: number;
     created_at: string;
   } | null;
-  booking_soon: string | null; // Thời gian hẹn sớm nhất
+  price_transportation: number; // Giá vận chuyển
 };
 
 export type ListKTVRequest = BaseSearchRequest<{

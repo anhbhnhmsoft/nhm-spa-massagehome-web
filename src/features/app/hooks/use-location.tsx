@@ -1,196 +1,194 @@
 "use client";
 
+import { useEffect, useRef } from "react";
 import useApplicationStore, { LocationApp } from "@/lib/store";
-import { useEffect, useState, useCallback } from "react";
+import { useMutationSetDefaultAddress } from "@/features/location/hooks/use-mutation";
+import { useCheckAuth } from "@/features/auth/hooks";
+import { _TIME_OUT_LOADING_SCREEN_LAYOUT } from "@/lib/const";
 
-export type WebPermissionState = "granted" | "denied" | "prompt" | null;
+/* ===================== TYPES ===================== */
+
+/* ===================== UTILS ===================== */
+
 /**
- * Hàm fetch vị trí và format địa chỉ qua Nominatim
+ * Kiểm tra thay đổi vị trí đáng kể (~100m)
  */
-export const fetchAndFormatLocation = async (): Promise<LocationApp> => {
-  if (typeof window === "undefined" || !navigator.geolocation) {
-    throw new Error("location.error.not_supported");
-  }
+const isSignificantChange = (
+  oldLoc: GeolocationPosition | null,
+  newLoc: GeolocationPosition,
+) => {
+  if (!oldLoc) return true;
 
-  let position: GeolocationPosition;
-
-  try {
-    position = await new Promise<GeolocationPosition>((resolve, reject) => {
-      navigator.geolocation.getCurrentPosition(resolve, reject, {
-        enableHighAccuracy: false,
-        timeout: 10000,
-      });
-    });
-  } catch (err: any) {
-    if (err?.code === 1) {
-      throw new Error("location.error.permission_denied");
-    }
-    if (err?.code === 2) {
-      throw new Error("location.error.position_unavailable");
-    }
-    if (err?.code === 3) {
-      throw new Error("location.error.timeout");
-    }
-
-    throw new Error("location.error.unknown_error");
-  }
-
-  const { latitude, longitude, accuracy } = position.coords;
-
-  const res = await fetch(
-    `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}`,
-    {
-      headers: {
-        "Accept-Language": "vi",
-      },
-    },
+  const threshold = 0.001;
+  return (
+    Math.abs(oldLoc.coords.latitude - newLoc.coords.latitude) > threshold ||
+    Math.abs(oldLoc.coords.longitude - newLoc.coords.longitude) > threshold
   );
-
-  if (!res.ok) throw new Error("location.error.reverse_failed");
-
-  const data = await res.json();
-  return {
-    location: {
-      latitude,
-      longitude,
-      accuracy,
-    },
-    address: data?.display_name,
-  };
 };
 
 /**
- * Hook chính: Quản lý quyền và tự động lấy vị trí
+ * Reverse geocode bằng OpenStreetMap
+ */
+const formatLocation = async (
+  position: GeolocationPosition,
+): Promise<LocationApp | null> => {
+  try {
+    const { latitude, longitude } = position.coords;
+    if (!latitude || !longitude) {
+      return null;
+    }
+
+    const res = await fetch(
+      `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}`,
+      {
+        headers: {
+          "Accept-Language": "vi",
+        },
+      },
+    );
+
+    const data = await res.json();
+    if (!data?.address) return null;
+
+    const addressParts = [
+      data.address.road,
+      data.address.suburb || data.address.city_district,
+      data.address.city || data.address.state,
+    ];
+
+    return {
+      location: position,
+      address: addressParts.filter(Boolean).join(", "),
+    };
+  } catch {
+    return null;
+  }
+};
+
+/* ===================== MAIN HOOK ===================== */
+
+/**
+ * Hook theo dõi vị trí người dùng (global layout)
  */
 export const useLocation = () => {
-  const setLocation = useApplicationStore((s) => s.setLocation);
+  const setAppLocation = useApplicationStore((s) => s.setLocation);
 
-  const [completeCheck, setCompleteCheck] = useState(false);
-  // Sử dụng PermissionState chuẩn (granted | denied | prompt)
-  const [locationPermission, setLocationPermission] =
-    useState<PermissionState | null>(null);
+  const currentLocation = useRef<LocationApp | null>(null);
+  const watchId = useRef<number | null>(null);
+  const isStarting = useRef(false);
 
-  const handleFetch = useCallback(async () => {
-    try {
-      const locationData = await fetchAndFormatLocation();
-      setLocation(locationData);
-    } catch (error) {
-      console.error("Location Fetch Error:", error);
+  const mutation = useMutationSetDefaultAddress();
+  const checkAuth = useCheckAuth();
+
+  /* ---------- Send location ---------- */
+  const sendLocation = () => {
+    if (!currentLocation.current || !checkAuth) return;
+    if (!currentLocation.current.location) return;
+
+    const oldLocation = useApplicationStore.getState().location;
+
+    const shouldUpdate = isSignificantChange(
+      oldLocation?.location ?? null,
+      currentLocation.current.location,
+    );
+
+    if (!shouldUpdate) return;
+
+    setAppLocation(currentLocation.current);
+
+    mutation.mutate({
+      address: currentLocation.current.address,
+      latitude: currentLocation.current.location.coords.latitude,
+      longitude: currentLocation.current.location.coords.longitude,
+    });
+  };
+
+  /* ---------- Stop watch ---------- */
+  const stopWatching = () => {
+    if (watchId.current !== null) {
+      navigator.geolocation.clearWatch(watchId.current);
+      watchId.current = null;
     }
-  }, [setLocation]);
+  };
 
-  useEffect(() => {
-    if (typeof window === "undefined") return;
+  /* ---------- Start watch ---------- */
+  const startWatching = () => {
+    if (isStarting.current || watchId.current !== null) return;
+    if (!("geolocation" in navigator)) return;
 
-    let permissionObj: PermissionStatus | null = null;
+    isStarting.current = true;
 
-    const checkAndSubscribe = async () => {
-      try {
-        if (!navigator.permissions || !navigator.geolocation) {
-          setCompleteCheck(true);
-          return;
+    watchId.current = navigator.geolocation.watchPosition(
+      async (position) => {
+        const location = await formatLocation(position);
+        if (location) {
+          currentLocation.current = location;
         }
+      },
+      () => {},
+      {
+        enableHighAccuracy: true,
+        maximumAge: 1000 * 60,
+        timeout: 10000,
+      },
+    );
 
-        permissionObj = await navigator.permissions.query({
-          name: "geolocation",
-        });
+    isStarting.current = false;
+  };
 
-        const updateState = async () => {
-          if (!permissionObj) return;
+  /* ---------- App visibility ---------- */
+  useEffect(() => {
+    startWatching();
 
-          const currentState = permissionObj.state; // Đây là kiểu PermissionState
-          setLocationPermission(currentState);
-
-          if (currentState === "granted") {
-            await handleFetch();
-          }
-          setCompleteCheck(true);
-        };
-
-        // Chạy lần đầu
-        await updateState();
-
-        // Lắng nghe thay đổi
-        permissionObj.onchange = updateState;
-      } catch (err) {
-        console.error("Permission Check Error:", err);
-        setCompleteCheck(true);
+    const onVisibilityChange = () => {
+      if (document.visibilityState === "visible") {
+        startWatching();
+      } else {
+        stopWatching();
       }
     };
 
-    checkAndSubscribe();
+    document.addEventListener("visibilitychange", onVisibilityChange);
 
     return () => {
-      if (permissionObj) permissionObj.onchange = null;
-    };
-  }, [handleFetch]);
-
-  return {
-    locationPermission,
-    completeCheck,
-    refresh: handleFetch,
-  };
-};
-
-export const useGetLocation = () => {
-  const setLocation = useApplicationStore((s) => s.setLocation);
-
-  const getPermission = useCallback(async () => {
-    try {
-      if (!navigator.geolocation) return false;
-
-      const locationApp = await fetchAndFormatLocation();
-      setLocation(locationApp);
-
-      return true;
-    } catch (error) {
-      console.error("Get location failed:", error);
-      return false;
-    }
-  }, [setLocation]);
-
-  return {
-    getPermission,
-  };
-};
-
-/**
- * Hook đơn giản: Chỉ lấy dữ liệu từ store và trạng thái quyền hiện tại
- */
-export const useLocationAddress = () => {
-  const location = useApplicationStore((s) => s.location);
-  const [permission, setPermission] = useState<WebPermissionState>(null);
-
-  useEffect(() => {
-    if (!navigator.permissions) {
-      return;
-    }
-
-    let mounted = true;
-
-    navigator.permissions
-      .query({ name: "geolocation" })
-      .then((result) => {
-        if (!mounted) return;
-
-        setPermission(result.state);
-
-        result.onchange = () => {
-          setPermission(result.state);
-        };
-      })
-      .catch((err) => {
-        console.error("Get location permission failed:", err);
-        // optional: giữ null
-      });
-
-    return () => {
-      mounted = false;
+      stopWatching();
+      document.removeEventListener("visibilitychange", onVisibilityChange);
     };
   }, []);
 
-  return {
-    location,
-    permission,
+  /* ---------- Send interval ---------- */
+  useEffect(() => {
+    const timeoutId = setTimeout(sendLocation, _TIME_OUT_LOADING_SCREEN_LAYOUT);
+    const intervalId = setInterval(sendLocation, 1000 * 60 * 5);
+
+    return () => {
+      clearTimeout(timeoutId);
+      clearInterval(intervalId);
+    };
+  }, [checkAuth]);
+};
+
+/* ===================== GET CURRENT LOCATION ===================== */
+
+/**
+ * Lấy vị trí hiện tại khi user click button
+ */
+export const useGetLocation = () => {
+  const setAppLocation = useApplicationStore((s) => s.setLocation);
+
+  return async (): Promise<LocationApp | null> => {
+    if (!("geolocation" in navigator)) return null;
+
+    return new Promise((resolve) => {
+      navigator.geolocation.getCurrentPosition(
+        async (position) => {
+          const location = await formatLocation(position);
+          if (location) setAppLocation(location);
+          resolve(location);
+        },
+        () => resolve(null),
+        { enableHighAccuracy: true },
+      );
+    });
   };
 };

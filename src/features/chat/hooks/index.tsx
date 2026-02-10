@@ -205,6 +205,7 @@ export const useChat = (useFor: "ktv" | "customer") => {
 
         if (isMounted) setJoinStatus("joined");
       } catch (error: any) {
+        console.log(error);
         if (isMounted) setJoinStatus("error");
       }
     };
