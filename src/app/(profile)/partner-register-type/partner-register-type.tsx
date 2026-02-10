@@ -9,13 +9,9 @@ import useUserServiceStore from "@/features/user/stores";
 export default function PartnerRegisterTypePage() {
   const { t } = useTranslation();
   const router = useRouter();
-  const setIsLeader = useUserServiceStore((state) => state.setIsLeader);
+  const setForWho = useUserServiceStore((state) => state.setForWho);
 
   // Hàm điều hướng
-  const navigateTo = (path: string) => {
-    setIsLeader(true);
-    router.push(path);
-  };
 
   return (
     <div className="min-h-screen bg-gray-50 flex justify-center">
@@ -43,7 +39,10 @@ export default function PartnerRegisterTypePage() {
           <div className="space-y-4">
             {/* Trưởng nhóm Kỹ thuật viên */}
             <button
-              onClick={() => navigateTo("/partner-register-individual")}
+              onClick={() => {
+                setForWho("leader-ktv");
+                router.push("/partner-register-individual");
+              }}
               className="w-full flex items-center justify-between rounded-2xl border border-gray-100 bg-white p-5 text-left shadow-sm hover:border-blue-200 hover:shadow-md transition-all active:scale-[0.98]"
             >
               <div className="flex-1 pr-4">
@@ -61,7 +60,10 @@ export default function PartnerRegisterTypePage() {
 
             {/* Đại lý khu vực */}
             <button
-              onClick={() => navigateTo("/partner-register-agency")}
+              onClick={() => {
+                setForWho("agency");
+                router.push("/partner-register-individual");
+              }}
               className="w-full flex items-center justify-between rounded-2xl border border-gray-100 bg-white p-5 text-left shadow-sm hover:border-blue-200 hover:shadow-md transition-all active:scale-[0.98]"
             >
               <div className="flex-1 pr-4">

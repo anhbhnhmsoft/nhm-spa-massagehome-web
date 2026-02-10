@@ -227,6 +227,11 @@
       "FRIDAY": "Thứ 6",
       "SATURDAY": "Thứ 7",
       "SUNDAY": "Chủ nhật"
+    },
+    "review_application_status": {
+      "PENDING": "Chờ xác nhận",
+      "APPROVED": "Đã chấp nhận",
+      "REJECTED": "Đã từ chối"
     }
   },
   "tab": {
@@ -464,8 +469,34 @@
       "error_check_apply_partner": "Có lỗi xảy ra khi kiểm tra đăng ký đối tác. Vui lòng thử lại sau.",
       "info_apply_pending": "Bạn đã đăng ký đối tác, đang chờ Quản trị viên duyệt, vui lòng chờ đợi thông tin mới nhất.",
       "info_apply_approved": "Bạn đã đăng ký đối tác, đã được duyệt.",
-      "info_apply_rejected": "Đơn đăng ký đối tác của bạn đã bị từ chối, bạn không thể đăng ký lại được nữa."
-  
+      "info_apply_rejected": "Đơn đăng ký đối tác của bạn đã bị từ chối, bạn không thể đăng ký lại được nữa.",
+      "status_pending_for_ktv": "Bạn đã đăng ký làm Kỹ thuật viên, đang chờ Quản trị viên duyệt, vui lòng chờ đợi thông tin mới nhất.",
+      "status_pending_for_ktv_leader": "Bạn đã đăng ký làm Trưởng nhóm Kỹ thuật viên, đang chờ Quản trị viên duyệt, vui lòng chờ đợi thông tin mới nhất.",
+      "status_pending_for_agency": "Bạn đã đăng ký đối tác, đang chờ Quản trị viên duyệt, vui lòng chờ đợi thông tin mới nhất.",
+      "cancel_reason_title": "Đăng ký của bạn đã bị hủy",
+      "error_check_application": "Có lỗi xảy ra khi kiểm tra đơn đăng ký. Vui lòng thử lại sau.",
+      "show_application": "Xem lại đơn đăng ký",
+      "modal_application": {
+        "title": "Chi tiết đơn đăng ký",
+        "status": "Từ chối",
+        "reason": "Lý do",
+        "information": "Thông tin",
+        "nickname": "Tên hiển thị",
+        "experience": "Kinh nghiệm",
+        "year": "năm",
+        "role": "Vai trò",
+        "ktv": "Kỹ thuật viên",
+        "agency": "Đối tác",
+        "leader": "Trưởng nhóm",
+        "referrer_id": "Mã giới thiệu",
+        "bio": "Giới thiệu bản thân (Bio)",
+        "identity": "Giấy tờ định danh",
+        "cccd_front": "CCCD Mặt trước",
+        "cccd_back": "CCCD Mặt sau",
+        "face_with_identity_card": "Ảnh cầm thẻ cùng CCCD",
+        "certificate": "Bằng cấp",
+        "gallery": "Ảnh hiển thị cho Khách hàng"
+      }
     },
     "partner_register": {
       "title": "Bạn muốn đăng ký làm gì?",
@@ -568,7 +599,8 @@
     "sales_count_item_service": "Đã bán {{ count }}",
     "price_service_sub": "Chỉ từ",
     "booking_soon": "Lịch hẹn sớm nhất sau {{ time }}",
-    "working_hours": "Giờ làm việc"
+    "working_hours": "Giờ làm việc",
+    "price_transportation": "Cước di chuyển"
   },
   "services": {
     "total_services": "dịch vụ có sẵn",
@@ -604,6 +636,16 @@
     "booking_total_price": "Tổng thanh toán",
     "booking_failed_title": "Đặt lịch thất bại",
     "booking_failed_message": "Đã có lỗi xảy ra trong quá trình xử lý lịch hẹn. Xin lỗi vì sự bất tiện này. Vui lòng thử lại.",
+    "booking_today": "Lịch hẹn hôm nay",
+    "booking_conflict": "Vui lòng chọn khung giờ không trùng với lịch trên, mỗi lịch cách nhau ít nhất {{ min }} phút",
+    "booking_empty": "Hôm nay KTV chưa có lịch hẹn",
+    "booking_empty_2": "Bạn có thể thoải mái chọn giờ",
+    "busy_slot": "Đã có khách đặt",
+    "confirmed": "Lịch đã xác nhận",
+    "subtotal": "Tổng tiền tạm tính",
+    "distance": "Khoảng cách tới bạn",
+    "distance_price": "Cước di chuyển / km",
+    "discount": "Giảm giá",
     "review": {
       "title": "Đánh giá dịch vụ",
       "rating": "Mức độ hài lòng",
@@ -639,6 +681,7 @@
     "is_primary_desc": "Địa chỉ mặc định sẽ được chọn khi bạn đặt dịch vụ",
     "save_address": "Lưu địa chỉ",
     "primary": "Mặc định",
+    "primary_address": "Địa chỉ hiện tại",
     "no_desc": "Không có ghi chú",
     "get_current_location": "Lấy vị trí hiện tại",
     "loading": "Đang lưu...",

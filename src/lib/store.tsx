@@ -12,11 +12,7 @@ import { ContractFileType } from "@/features/file/const";
 /* ===== Types ===== */
 
 export type LocationApp = {
-  location: {
-    latitude: number;
-    longitude: number;
-    accuracy?: number;
-  };
+  location: GeolocationPosition | null;
   address: string;
 };
 

@@ -5,7 +5,12 @@ import dayjs from "dayjs";
 import isBetween from "dayjs/plugin/isBetween";
 import { useTranslation } from "react-i18next";
 import useCalculateDistance from "@/features/app/hooks/use-calculate-distance";
-import { formatDistance, getCurrentDayKey } from "@/lib/utils";
+import {
+  calculatePriceDistance,
+  formatBalance,
+  formatDistance,
+  getCurrentDayKey,
+} from "@/lib/utils";
 import { _GenderMap } from "@/features/auth/const";
 import { useKTVDetail } from "@/features/user/hooks";
 import { useGetRoomChat } from "@/features/chat/hooks";
@@ -40,17 +45,28 @@ const MasseurDetailScreen = () => {
 
   // Logic tính khoảng cách (Giữ nguyên)
   const distance = useMemo(() => {
-    if (detail) {
-      return calculateDistance(
-        detail.review_application.latitude,
-        detail.review_application.longitude,
-      );
+    const lat = detail?.location?.latitude;
+    const lon = detail?.location?.longitude;
+
+    if (!lat || !lon || lat === 0 || lon === 0) {
+      return null;
     }
-    return null;
+
+    return calculateDistance(lat, lon);
   }, [detail, calculateDistance]);
 
-  // Logic Online Realtime (Giữ nguyên)
+  // Tính giá tiền di chuyển tạm thời
+  const priceTransportation = useMemo(() => {
+    if (detail && distance) {
+      return calculatePriceDistance(detail.price_transportation, distance);
+    }
+    return null;
+  }, [detail, distance]);
+
+  // Kiểm tra xem KTV có đang làm việc trong thời gian hiện tại không
+
   const currentDayKey = getCurrentDayKey();
+
   const isOnlineRealtime = useMemo(() => {
     if (!detail?.schedule?.is_working) return false;
     const todayConfig = detail.schedule?.schedule_time?.find(
@@ -137,15 +153,6 @@ const MasseurDetailScreen = () => {
               <h1 className="font-bold text-2xl text-gray-800">
                 {detail.name}
               </h1>
-              {detail.booking_soon && (
-                <div className="mt-1.5 inline-block rounded-md bg-orange-100 px-2 py-0.5">
-                  <span className="font-bold text-[10px] text-orange-600 uppercase">
-                    {t("masseurs_detail.booking_soon", {
-                      time: detail.booking_soon,
-                    })}
-                  </span>
-                </div>
-              )}
             </div>
           </div>
 
@@ -217,10 +224,11 @@ const MasseurDetailScreen = () => {
             </div>
             <div className="flex flex-col gap-1">
               <span className="text-[10px] text-gray-400 uppercase tracking-tight">
-                {t("masseurs_detail.distance")}
+                {t("masseurs_detail.price_transportation")}
               </span>
               <span className="font-semibold text-sm">
-                {distance ? formatDistance(distance) : "-"}
+                {priceTransportation ? formatBalance(priceTransportation) : "-"}{" "}
+                {t("common.currency")}
               </span>
             </div>
           </div>

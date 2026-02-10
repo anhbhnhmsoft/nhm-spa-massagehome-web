@@ -77,9 +77,7 @@ const SupportModal = ({ isVisible, onClose, supportChanel }: Props) => {
           setCopied(true);
           setTimeout(() => setCopied(false), 2000);
           alert(t("common.copied")); // Hoặc dùng toast
-        } catch (err) {
-          console.error("Failed to copy!", err);
-        }
+        } catch {}
         break;
       default:
         // Mở link Zalo/Facebook ở tab mới

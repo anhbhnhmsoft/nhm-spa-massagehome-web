@@ -7,10 +7,7 @@ import {
   useMutationSearchLocation,
 } from "@/features/location/hooks/use-mutation";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import {
-  fetchAndFormatLocation,
-  useLocationAddress,
-} from "@/features/app/hooks/use-location";
+
 import {
   AddressItem,
   DetailLocation,
@@ -28,14 +25,14 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { getMessageError } from "@/lib/utils";
-import { useRouter } from "next/navigation";
+import { useGetLocation } from "@/features/app/hooks/use-location";
 
 // Hook quản lý tìm kiếm location
 export const useSearchLocation = () => {
   const [keyword, setKeyword] = useState<string>("");
   const [results, setResults] = useState<SearchLocation[]>([]);
   const handleError = useErrorToast();
-  const { location } = useLocationAddress();
+  const location = useApplicationStore((s) => s.location);
 
   const {
     mutate: mutateSearchLocation,
@@ -63,8 +60,8 @@ export const useSearchLocation = () => {
         {
           keyword: text,
           // Dùng optional chaining cẩn thận hoặc fallback undefined
-          latitude: location?.location?.latitude ?? undefined,
-          longitude: location?.location?.longitude ?? undefined,
+          latitude: location?.location?.coords.latitude ?? undefined,
+          longitude: location?.location?.coords.longitude ?? undefined,
         },
         {
           onSuccess: (res) => {
@@ -151,7 +148,8 @@ export const useListLocation = () => {
   const checkAuth = useCheckAuth();
   const handleError = useErrorToast();
   const [showSaveModal, setShowSaveModal] = useState(false);
-
+  const location = useApplicationStore((s) => s.location);
+  const getCurrentLocation = useGetLocation();
   useEffect(() => {
     // Nếu không auth, quay lại trang trước
     if (!checkAuth) {
@@ -217,6 +215,8 @@ export const useListLocation = () => {
     deleteHandler,
     showSaveModal,
     closeSaveModal,
+    location,
+    getCurrentLocation,
   };
 };
 
@@ -226,7 +226,8 @@ export const useSaveLocation = (onSuccess: () => void) => {
   const setRefreshList = useStoreLocation((s) => s.setRefreshList);
   const setItemAddress = useStoreLocation((s) => s.setItemAddress);
   const getProfile = useGetProfile();
-
+  const getCurrentLocation = useGetLocation();
+  const [loadingSetLocation, setLoadingSetLocation] = useState(false);
   const { t } = useTranslation();
 
   // Mutation lưu địa chỉ
@@ -318,15 +319,18 @@ export const useSaveLocation = (onSuccess: () => void) => {
   };
 
   const setLocationCurrent = async () => {
+    setLoadingSetLocation(true);
     try {
-      const location = await fetchAndFormatLocation();
+      const location = await getCurrentLocation();
       if (location) {
         form.setValue("address", location.address);
-        form.setValue("latitude", location.location.latitude);
-        form.setValue("longitude", location.location.longitude);
+        form.setValue("latitude", location.location?.coords.latitude ?? 0);
+        form.setValue("longitude", location.location?.coords.longitude ?? 0);
       }
     } catch (error: any) {
       alert(t(error.message));
+    } finally {
+      setLoadingSetLocation(false);
     }
   };
 
@@ -337,5 +341,6 @@ export const useSaveLocation = (onSuccess: () => void) => {
     isEdit: Boolean(item_address),
     setLocationCurrent,
     loading: isSaving || isEditing,
+    loadingSetLocation,
   };
 };

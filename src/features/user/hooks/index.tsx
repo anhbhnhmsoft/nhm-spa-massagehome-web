@@ -3,7 +3,7 @@ import {
   useInfiniteListManageKTV,
   useQueryDashboardProfile,
 } from "@/features/user/hooks/use-query";
-import { useCallback, useEffect, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useRef } from "react";
 import useUserServiceStore, { useKTVSearchStore } from "@/features/user/stores";
 import useApplicationStore from "@/lib/store";
 import { useMutationKtvDetail } from "./use-mutation";
@@ -130,12 +130,14 @@ export const useKTVDetail = () => {
   const router = useRouter();
   const setLoading = useApplicationStore((s) => s.setLoading);
 
+  const didBack = useRef(false);
+
   useEffect(() => {
-    // Nếu không có massager, quay lại màn hình trước
-    if (!ktv) {
+    if (!ktv && !didBack.current) {
+      didBack.current = true;
       router.back();
     }
-  }, [ktv]);
+  }, [ktv, router]);
 
   const serviceParams = useMemo(
     () => ({

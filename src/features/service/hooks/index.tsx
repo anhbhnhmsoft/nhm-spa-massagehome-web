@@ -16,15 +16,17 @@ import {
   ListReviewRequest,
   PickBookingItem,
   PickBookingRequirement,
+  PrepareBookingResponse,
   SendReviewRequest,
   ServiceItem,
   ServiceListRequest,
 } from "@/features/service/types";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useImmer } from "use-immer";
 import {
   useMutationBookingService,
+  useMutationPrepareBooking,
   useMutationSendReview,
   useMutationServiceDetail,
 } from "./use-mutation";
@@ -39,7 +41,6 @@ import useErrorToast from "@/features/app/hooks/use-error-toast";
 import { useRouter } from "next/navigation";
 import useAuthStore from "@/features/auth/store";
 import dayjs from "dayjs";
-import { useLocationAddress } from "@/features/app/hooks/use-location";
 
 /**
  * Lấy danh sách danh mục dịch vụ
@@ -164,6 +165,9 @@ export const useServiceDetail = () => {
   const service = useServiceStore((s) => s.service);
   const setPickServiceBooking = useServiceStore((s) => s.setPickServiceBooking);
   const router = useRouter();
+  const handleError = useErrorToast();
+
+  const { mutate } = useMutationPrepareBooking();
   // Kiểm tra xem dịch vụ có tồn tại và đang hoạt động hay không
   useEffect(() => {
     // Nếu không có service, quay lại màn hình trước
@@ -173,8 +177,15 @@ export const useServiceDetail = () => {
   }, [service]);
 
   const pickServiceToBooking = (data: PickBookingItem) => {
-    setPickServiceBooking(data);
-    router.push("/service-booking");
+    mutate(data, {
+      onSuccess: (res) => {
+        setPickServiceBooking(res.data);
+        router.push("/service-booking");
+      },
+      onError: (error) => {
+        handleError(error);
+      },
+    });
   };
 
   return {
@@ -194,7 +205,7 @@ export const useServiceBooking = () => {
   const mutationBookingService = useMutationBookingService();
   const { t } = useTranslation();
   const setLoading = useApplicationStore((s) => s.setLoading);
-  const { location: storeLocation } = useLocationAddress();
+  const storeLocation = useApplicationStore((s) => s.location);
   const handleError = useErrorToast();
   const { error: errorToast, warning: warningToast } = useToast();
   const [showSuccessModal, setShowSuccessModal] = useState<boolean>(false);
@@ -228,7 +239,7 @@ export const useServiceBooking = () => {
   const queryCoupon = useQueryListCoupon(
     {
       filter: {
-        for_service_id: pickServiceBooking?.service_id,
+        for_service_id: pickServiceBooking?.service.id,
       },
     },
     true,
@@ -244,29 +255,33 @@ export const useServiceBooking = () => {
       form.setValue("note_address", user.primary_location.desc || "");
     } else if (storeLocation) {
       form.setValue("address", storeLocation.address);
-      form.setValue("latitude", storeLocation.location.latitude);
-      form.setValue("longitude", storeLocation.location.longitude);
+      form.setValue("latitude", storeLocation.location?.coords.latitude ?? 0);
+      form.setValue("longitude", storeLocation.location?.coords.longitude ?? 0);
     }
   }, [storeLocation, user]);
 
-  // Kiểm tra xem booking có tồn tại hay không
+  const hasRedirectedRef = useRef(false);
+
   useEffect(() => {
-    // Nếu không có booking, quay lại màn hình trước
-    if (!pickServiceBooking) {
+    if (!pickServiceBooking && !hasRedirectedRef.current) {
+      hasRedirectedRef.current = true;
       router.back();
     }
-    // Nếu có, reset form khi quay lại màn hình
+
     return () => {
       form.reset();
     };
-  }, [pickServiceBooking]);
+  }, [pickServiceBooking, router, form]);
 
   // Xử lý khi nhấn nút "Đặt lịch"
   const handleBooking = (data: PickBookingRequirement) => {
     if (pickServiceBooking) {
       const request: BookingServiceRequest = {
         ...data,
-        ...pickServiceBooking,
+        service_id: pickServiceBooking.service.id,
+        service_name: pickServiceBooking.service.name,
+        option_id: pickServiceBooking.option.id,
+        duration: pickServiceBooking.option.duration,
         book_time: dayjs(data.book_time).format("YYYY-MM-DD HH:mm:ss"),
       };
 
@@ -316,7 +331,7 @@ export const useServiceBooking = () => {
   };
 
   return {
-    detail: pickServiceBooking as PickBookingItem,
+    detail: pickServiceBooking as PrepareBookingResponse["data"],
     form,
     queryCoupon,
     handleBooking,
