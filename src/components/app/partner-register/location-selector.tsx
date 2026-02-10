@@ -10,10 +10,7 @@ import { MapPin, Loader2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { ListLocationModal } from "@/components/location";
 import { AddressItem } from "@/features/location/types";
-import {
-  useGetLocation,
-  useLocationAddress,
-} from "@/features/app/hooks/use-location";
+import { useGetLocation } from "@/features/app/hooks/use-location";
 
 type LocationSelectorProps<T extends FieldValues> = {
   control: Control<T>;
@@ -29,59 +26,20 @@ export function LocationSelector<T extends FieldValues>({
   error,
 }: LocationSelectorProps<T>) {
   const [showLocationModal, setShowLocationModal] = useState(false);
-  const { getPermission } = useGetLocation();
-  const { location: currentLocation } = useLocationAddress();
+  const getLocation = useGetLocation();
   const [isLocating, setIsLocating] = useState(false);
   const { t } = useTranslation();
 
-  const handleGetCurrentLocation = useCallback(
-    async (e: React.MouseEvent) => {
-      setIsLocating(true);
-      e.preventDefault();
-      e.stopPropagation();
-
-      try {
-        const hasPermission = await getPermission();
-        if (!hasPermission) {
-          alert(t("profile.partner_form.alert_location_permission_message"));
-          return;
-        }
-
-        if (!currentLocation?.address) {
-          return;
-        }
-
-        // Field chính
-        setValue(name, currentLocation.address as any, {
-          shouldDirty: true,
-          shouldValidate: true,
-        });
-
-        // Fields phụ
-        const coords = currentLocation.location;
-
-        if (coords?.latitude != null) {
-          setValue("latitude" as Path<T>, coords.latitude.toString() as any, {
-            shouldDirty: true,
-            shouldValidate: true,
-          });
-        }
-
-        if (coords?.longitude != null) {
-          setValue("longitude" as Path<T>, coords.longitude.toString() as any, {
-            shouldDirty: true,
-            shouldValidate: true,
-          });
-        }
-      } catch (error) {
-        console.error("Get location error:", error);
-        alert(t("location.error.current_location_failed"));
-      } finally {
-        setIsLocating(false);
-      }
-    },
-    [currentLocation, getPermission, name, setValue, t],
-  );
+  const handleGetCurrentLocation = async () => {
+    const location = await getLocation();
+    if (location && location?.address) {
+      setValue(name, location.address as any);
+      setValue("lat" as any, location.location?.coords.latitude as any);
+      setValue("lng" as any, location.location?.coords.longitude as any);
+    } else {
+      alert(t("permission.location.error"));
+    }
+  };
 
   return (
     <div className="w-full" onClick={(e) => e.stopPropagation()}>

@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import Image from "next/image";
 import {
   Star,
@@ -90,14 +90,20 @@ export const KTVHomePageCard = ({ item }: { item: ListKTVItem }) => {
 export const KTVServiceCard = ({ item }: { item: ListKTVItem }) => {
   const { t } = useTranslation();
   const [imageError, setImageError] = useState(false);
-  const calculateDistance = useCalculateDistance();
   const setKtv = useSetKtv();
 
-  const distance = calculateDistance(
-    item.review_application.latitude,
-    item.review_application.longitude,
-  );
+  const calculateDistance = useCalculateDistance();
 
+  const distance = useMemo(() => {
+    const lat = item.location.latitude;
+    const lon = item.location.longitude;
+
+    if (!lat || !lon || lat === 0 || lon === 0) {
+      return null;
+    }
+
+    return calculateDistance(lat, lon);
+  }, [item, calculateDistance]);
   return (
     <div
       className="group mb-3 flex w-full flex-row rounded-2xl border border-slate-100 bg-white p-3 shadow-sm transition-all hover:shadow-md cursor-pointer active:scale-[0.98]"
@@ -160,14 +166,12 @@ export const KTVServiceCard = ({ item }: { item: ListKTVItem }) => {
               </span>
             </div>
 
-            {distance && (
-              <div className="flex flex-row items-center gap-1">
-                <MapPin size={12} className="text-slate-500" />
-                <span className="text-[10px] text-slate-500 sm:text-xs">
-                  {formatDistance(distance)}
-                </span>
-              </div>
-            )}
+            <div className="flex flex-row items-center gap-1">
+              <MapPin size={12} className="text-slate-500" />
+              <span className="text-[10px] text-slate-500 sm:text-xs">
+                {distance ? formatDistance(distance) : "-"}
+              </span>
+            </div>
 
             <div className="flex flex-row items-center gap-1">
               <TrendingUp size={12} className="text-slate-500" />

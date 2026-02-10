@@ -4,17 +4,17 @@ import React, { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import Header from "@/components/header-app";
 import useDebounce from "@/features/app/hooks/use-debounce";
-import { useLocationUser } from "@/features/app/hooks/use-get-user-location";
 import { useGetListKTV } from "@/features/user/hooks";
 import { KTVServiceCard, KTVServiceCardSkeleton } from "@/components/ktv-card";
 import Empty from "@/components/emty";
 import { ListKTVItem } from "@/features/user/types";
 import { X } from "lucide-react";
+import useApplicationStore from "@/lib/store";
 
 export default function MasseursPageComponent() {
   const { t } = useTranslation();
   const [keyword, setKeyword] = useState("");
-  const locationUser = useLocationUser();
+  const locationUser = useApplicationStore((state) => state.location);
 
   const {
     data,
@@ -32,8 +32,8 @@ export default function MasseursPageComponent() {
   useEffect(() => {
     if (locationUser) {
       setFilter({
-        lat: locationUser.lat,
-        lng: locationUser.lng,
+        lat: locationUser.location?.coords.latitude,
+        lng: locationUser.location?.coords.longitude,
       });
     }
   }, [locationUser, setFilter]);
