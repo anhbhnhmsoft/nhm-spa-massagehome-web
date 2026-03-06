@@ -1,8 +1,8 @@
-
-
 export enum _AuthStatus {
-  AUTHORIZED = 'AUTHORIZED',
-  UNAUTHORIZED = 'UNAUTHORIZED',
+  INITIAL = "INITIAL",
+  HYDRATE = "HYDRATE",
+  AUTHORIZED = "AUTHORIZED",
+  UNAUTHORIZED = "UNAUTHORIZED",
 }
 
 export enum _UserRole {
@@ -17,7 +17,6 @@ export enum _Gender {
   FEMALE = 2,
 }
 export const _GenderMap = {
-  [_Gender.MALE]: 'enum.gender.MALE',
-  [_Gender.FEMALE]: 'enum.gender.FEMALE',
+  [_Gender.MALE]: "enum.gender.MALE",
+  [_Gender.FEMALE]: "enum.gender.FEMALE",
 } as const;
-

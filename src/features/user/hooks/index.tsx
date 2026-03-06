@@ -8,7 +8,7 @@ import useUserServiceStore, { useKTVSearchStore } from "@/features/user/stores";
 import useApplicationStore from "@/lib/store";
 import { useMutationKtvDetail } from "./use-mutation";
 import { useCheckAuth, useCheckAuthToRedirect } from "@/features/auth/hooks";
-import useAuthStore from "@/features/auth/store";
+import useAuthStore from "@/features/auth/store/auth-store";
 import { useProfileQuery } from "@/features/auth/hooks/use-query";
 import { useRouter } from "next/navigation";
 import useErrorToast from "@/features/app/hooks/use-error-toast";

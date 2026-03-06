@@ -1,11 +1,12 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import useAuthStore from "../store";
+import useAuthStore from "../store/auth-store";
 import { _AuthStatus, _Gender, _UserRole } from "../const";
 import { useRouter } from "next/navigation";
 import {
   useAuthenticateMutation,
+  useForgotPasswordMutation,
   useLockAccountMutation,
   useLoginMutation,
   useLogoutMutation,
@@ -15,7 +16,9 @@ import {
   useProfileMutation,
   useRegisterMutation,
   useResendRegisterOTPMutation,
+  useResetPasswordMutation,
   useSetLanguageMutation,
+  useVerifyForgotPasswordOTPMutation,
   useVerifyRegisterOTPMutation,
 } from "@/features/auth/hooks/use-mutation";
 import useToast from "@/features/app/hooks/use-toast";
@@ -29,13 +32,14 @@ import {
   EditProfileRequest,
   LoginRequest,
   RegisterRequest,
-  VerifyRegisterOTPRequest,
+  ResetPasswordRequest,
 } from "../types";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useReferralStore } from "@/features/affiliate/store";
 import dayjs from "dayjs";
+import { useFormAuthStore } from "../store/form-auth-store";
 
 /**
  * Hàm để xác thực user xem là login hay register
@@ -45,10 +49,8 @@ export const useHandleAuthenticate = () => {
   const router = useRouter();
   // handle error toast khi gọi API thất bại
   const handleError = useErrorToast();
-  // set phone_authen vào auth store khi submit form
-  const setPhoneAuthen = useAuthStore((state) => state.setPhoneAuthen);
-  // set expire_minutes vào auth store khi submit form
-  const setExpireMinutes = useAuthStore((state) => state.setExpireMinutes);
+  const { error: errorToast } = useToast();
+  const updateStateForm = useFormAuthStore((state) => state.updateState);
   // mutate function để gọi API xác thực user
   const { mutate, isPending } = useAuthenticateMutation();
   // form hook để validate và submit form
@@ -72,18 +74,37 @@ export const useHandleAuthenticate = () => {
     (data: AuthenticateRequest) => {
       mutate(data, {
         onSuccess: (res) => {
-          // Nếu cần đăng ký thì redirect đến màn hình xác thực OTP
-          const needRegister = res.data?.need_register || false;
-          setPhoneAuthen(data.phone);
-          if (needRegister) {
-            // Lưu expire_minutes vào auth store khi submit form
-            const expireMinutes = res.data?.expire_minutes || null;
-            setExpireMinutes(expireMinutes);
-            // Nếu cần đăng ký thì redirect đến màn hình xác thực OTP
-            router.replace("/verify-otp");
-          } else {
-            // Nếu không cần đăng ký thì redirect đến màn hình login
-            router.replace("/login");
+          const dataResponse = res.data;
+          const caseHandle = dataResponse.case;
+          // Lưu phone_authenticate vào auth store khi submit form
+          updateStateForm({
+            phone_authenticate: data.phone,
+          });
+          // case need_login: redirect về màn hình login
+          if (caseHandle === "need_login") {
+            router.push("/login");
+          }
+          // case need_re_enter_register: redirect về màn hình register
+          else if (caseHandle === "need_re_enter_register") {
+            router.replace("/register");
+          }
+          // case need_register hoặc need_re_enter_otp: redirect về màn hình verify OTP
+          else if (
+            caseHandle === "need_register" ||
+            caseHandle === "need_re_enter_otp"
+          ) {
+            if (dataResponse.last_sent_at && dataResponse.retry_after_seconds) {
+              updateStateForm({
+                case_verify_otp: "register",
+                last_sent_at: dataResponse.last_sent_at,
+                retry_after_seconds: dataResponse.retry_after_seconds,
+              });
+              router.replace("/verify-otp");
+            } else {
+              errorToast({
+                message: t("common_error.unknown_error"),
+              });
+            }
           }
         },
         onError: (err) => {
@@ -91,7 +112,7 @@ export const useHandleAuthenticate = () => {
         },
       });
     },
-    [handleError, mutate, setExpireMinutes, setPhoneAuthen, router],
+    [mutate, updateStateForm, router, errorToast, t, handleError],
   );
 
   return {
@@ -110,12 +131,19 @@ export const useHandleLogin = () => {
   // handle error toast khi gọi API thất bại
   const handleError = useErrorToast();
   // set phone_authen vào auth store khi submit form
-  const phone = useAuthStore((state) => state.phone_authen);
+
+  const phone = useFormAuthStore((state) => state.phone_authenticate);
   // handle success toast khi gọi API thành công
   const { success, error } = useToast();
   // set login vào auth store khi submit form
   const login = useAuthStore((state) => state.login);
+
+  const updateStateForm = useFormAuthStore((state) => state.updateState);
+
+  const { mutate: mutateForgotPassword, isPending: pendingForgotPassword } =
+    useForgotPasswordMutation();
   // form hook để validate và submit form
+
   const form = useForm<LoginRequest>({
     resolver: zodResolver(
       z.object({
@@ -175,144 +203,60 @@ export const useHandleLogin = () => {
     [error, handleError, login, mutate, router, success, t],
   );
 
-  return {
-    form,
-    onSubmit,
-    loading: isPending,
-  };
-};
-
-/**
- * Hàm để xác thực OTP đăng ký
- */
-export const useHandleVerifyRegisterOtp = () => {
-  const { t } = useTranslation();
-  const router = useRouter();
-  // handle error toast khi gọi API thất bại
-  const handleError = useErrorToast();
-  // handle success toast khi gọi API thành công
-  const { success } = useToast();
-
-  // set phone_authen vào auth store khi submit form
-  const phoneAuthen = useAuthStore((state) => state.phone_authen);
-
-  // set token_register vào auth store khi submit form
-  const setTokenRegister = useAuthStore((state) => state.setTokenRegister);
-
-  // mutate function để gọi API xác thực user
-  const mutationVerifyRegisterOTP = useVerifyRegisterOTPMutation();
-
-  // form hook để validate và submit form
-  const form = useForm<VerifyRegisterOTPRequest>({
-    mode: "onChange",
-    resolver: zodResolver(
-      z.object({
-        phone: z
-          .string()
-          .min(1, { error: t("auth.error.phone_required") })
-          .regex(/^[0-9]+$/, { error: t("auth.error.phone_invalid") })
-          .min(9, { error: t("auth.error.phone_min") })
-          .max(12, { error: t("auth.error.phone_max") }),
-        otp: z
-          .string()
-          .min(1, { error: t("auth.error.otp_required") })
-          .regex(/^[0-9]+$/, { error: t("auth.error.otp_invalid") })
-          .min(6, { error: t("auth.error.otp_min") })
-          .max(6, { error: t("auth.error.otp_max") }),
-      }),
-    ),
-    defaultValues: {
-      phone: "",
-      otp: "",
-    },
-  });
-
-  // set phone_authen vào form khi submit form
-  useEffect(() => {
-    if (phoneAuthen) {
-      form.setValue("phone", phoneAuthen);
+  const onForgotPassword = useCallback(() => {
+    if (!phone) {
+      error({ message: t("auth.error.phone_required") });
+      return;
     }
-  }, [phoneAuthen]);
-
-  // handle submit form
-  const onSubmit = useCallback(
-    (data: VerifyRegisterOTPRequest) => {
-      mutationVerifyRegisterOTP.mutate(data, {
+    mutateForgotPassword(
+      { phone },
+      {
         onSuccess: (res) => {
-          setTokenRegister(res.data.token);
-          success({
-            message: t("auth.success.verify_register_otp"),
-          });
-          router.replace("/register");
+          const dataResponse = res.data;
+          const caseHandle = dataResponse.case;
+          // case nếu đã verify otp trước đó, chuyển hướng đến reset password
+          if (caseHandle === "need_re_enter_reset_password") {
+            router.replace("/reset-password");
+          }
+          // case nếu chưa verify otp, chuyển hướng đến verify otp
+          else if (
+            caseHandle === "success" ||
+            caseHandle === "need_re_enter_otp"
+          ) {
+            if (dataResponse.last_sent_at && dataResponse.retry_after_seconds) {
+              updateStateForm({
+                case_verify_otp: "forgot_password",
+                last_sent_at: dataResponse.last_sent_at,
+                retry_after_seconds: dataResponse.retry_after_seconds,
+              });
+              router.replace("/verify-otp");
+            } else {
+              error({
+                message: t("common_error.unknown_error"),
+              });
+            }
+          }
         },
         onError: (err) => {
           handleError(err);
         },
-      });
-    },
-    [
-      handleError,
-      mutationVerifyRegisterOTP,
-      router,
-      setTokenRegister,
-      success,
-      t,
-    ],
-  );
-
-  /**
-   * ---------- Resend OTP Logic ----------
-   */
-  // mutate function để gọi API resend OTP register
-  const mutationResendRegisterOTP = useResendRegisterOTPMutation();
-  // Timer để đếm ngược thời gian resend OTP
-  const [timer, setTimer] = useState(60);
-
-  useEffect(() => {
-    let interval: ReturnType<typeof setInterval> | undefined;
-
-    if (timer > 0) {
-      interval = setInterval(() => {
-        setTimer((prev) => prev - 1);
-      }, 1000);
-    }
-
-    return () => {
-      if (interval) clearInterval(interval);
-    };
-  }, [timer]);
-
-  // handle resend OTP
-  const resendOTP = () => {
-    if (phoneAuthen && timer === 0) {
-      mutationResendRegisterOTP.mutate(
-        {
-          phone: phoneAuthen,
-        },
-        {
-          onSuccess: () => {
-            success({
-              message: t("auth.success.resend_otp"),
-            });
-            setTimer(60);
-          },
-          onError: (err) => {
-            handleError(err);
-          },
-        },
-      );
-    }
-  };
+      },
+    );
+  }, [
+    handleError,
+    mutateForgotPassword,
+    phone,
+    router,
+    t,
+    updateStateForm,
+    error,
+  ]);
 
   return {
-    phoneAuthen,
-    timer,
     form,
     onSubmit,
-    resendOTP,
-    loading:
-      mutationVerifyRegisterOTP.isPending ||
-      mutationResendRegisterOTP.isPending,
+    loading: isPending || pendingForgotPassword,
+    onForgotPassword,
   };
 };
 
@@ -327,10 +271,11 @@ export const useHandleRegister = () => {
   const clearUserReferral = useReferralStore(
     (state) => state.clearUserReferral,
   );
-  // handle success toast khi gọi API thành công
   const { success, error } = useToast();
-  // Lấy token_register từ auth store khi submit form verify OTP
-  const tokenRegister = useAuthStore((state) => state.token_register);
+
+  const phone = useFormAuthStore((state) => state.phone_authenticate);
+
+  const resetState = useFormAuthStore((state) => state.resetState);
 
   const login = useAuthStore((state) => state.login);
 
@@ -341,7 +286,7 @@ export const useHandleRegister = () => {
   const form = useForm<RegisterRequest>({
     resolver: zodResolver(
       z.object({
-        token: z.string().min(1),
+        phone: z.string().min(1),
         name: z.string().min(1, { error: t("auth.error.name_required") }),
         password: z
           .string()
@@ -360,7 +305,7 @@ export const useHandleRegister = () => {
       }),
     ),
     defaultValues: {
-      token: tokenRegister || "",
+      phone: phone || "",
       name: "",
       password: "",
       gender: _Gender.MALE,
@@ -374,13 +319,13 @@ export const useHandleRegister = () => {
       mutationRegister.mutate(data, {
         onSuccess: async (res) => {
           try {
-            await login(res.data);
-
             success({
               message: t("auth.success.register_success"),
             });
 
             clearUserReferral();
+            resetState();
+            await login(res.data);
             router.replace("/");
             router.refresh();
           } catch {
@@ -400,6 +345,7 @@ export const useHandleRegister = () => {
       handleError,
       login,
       mutationRegister,
+      resetState,
       router,
       success,
       t,
@@ -455,7 +401,6 @@ export const useGetProfile = () => {
   const logout = useAuthStore((state) => state.logout);
   const { mutate } = useProfileMutation();
   const { error } = useToast();
-
   return useCallback(() => {
     mutate(undefined, {
       onSuccess: (res) => {
@@ -470,64 +415,6 @@ export const useGetProfile = () => {
       },
     });
   }, [error, logout, mutate, setUser, t]);
-};
-
-/**
- * Hook để hydrate auth state từ local storage
- */
-export const useHydrateAuth = () => {
-  const _hydrated = useAuthStore((state) => state._hydrated);
-  const status = useAuthStore((state) => state.status);
-  const setUser = useAuthStore((state) => state.setUser);
-  const logout = useAuthStore((state) => state.logout);
-
-  const { mutate } = useProfileMutation();
-  const { error } = useToast();
-  const { t } = useTranslation();
-
-  const [complete, setComplete] = useState(false);
-
-  useEffect(() => {
-    useAuthStore.persist.rehydrate();
-    useAuthStore.getState().hydrate();
-  }, []);
-
-  useEffect(() => {
-    // Nếu chưa hydrate xong từ local storage thì chưa làm gì cả
-    if (!_hydrated) {
-      return;
-    }
-
-    const initAuth = () => {
-      //  Nếu trạng thái là đã đăng nhập, cần verify token
-      if (status === _AuthStatus.AUTHORIZED) {
-        mutate(undefined, {
-          onSuccess: (res) => {
-            // Cập nhật thông tin user mới nhất
-            setUser(res.data.user);
-          },
-          onError: () => {
-            // Token hết hạn hoặc không hợp lệ
-            error({
-              message: t("common_error.invalid_or_expired_token"),
-            });
-            logout();
-          },
-          onSettled: () => {
-            // Dù thành công hay thất bại đều phải cho app chạy tiếp
-            setComplete(true);
-          },
-        });
-      } else {
-        // Nếu chưa đăng nhập (GUEST), cho qua luôn
-        setComplete(true);
-      }
-    };
-
-    initAuth();
-  }, [_hydrated, t]);
-
-  return complete;
 };
 
 /**
@@ -871,5 +758,65 @@ export const useLockAccount = () => {
   return {
     handleLockAccount,
     isPending,
+  };
+};
+
+/**
+ * Hook để reset password
+ */
+export const useResetPassword = () => {
+  const { t } = useTranslation();
+  const router = useRouter();
+  const handleError = useErrorToast();
+  const { success } = useToast();
+
+  // Get phone from auth store (should be set during forgot password flow)
+  const phone = useFormAuthStore((state) => state.phone_authenticate);
+
+  const resetState = useFormAuthStore((state) => state.resetState);
+
+  const form = useForm<ResetPasswordRequest>({
+    resolver: zodResolver(
+      z.object({
+        phone: z.string().min(1, { error: t("auth.error.phone_required") }),
+        password: z
+          .string()
+          .min(1, { message: t("auth.error.password_invalid") })
+          .min(8, { message: t("auth.error.password_invalid") })
+          .regex(/[a-z]/, { message: t("auth.error.password_invalid") })
+          .regex(/[A-Z]/, { message: t("auth.error.password_invalid") })
+          .regex(/[0-9]/, { message: t("auth.error.password_invalid") }),
+      }),
+    ),
+    defaultValues: {
+      phone: phone || "",
+      password: "",
+    },
+  });
+
+  const { mutate, isPending } = useResetPasswordMutation();
+
+  const onSubmit = useCallback(
+    (data: ResetPasswordRequest) => {
+      mutate(data, {
+        onSuccess: () => {
+          success({
+            message: t("auth.success.reset_password_success"),
+          });
+          resetState();
+          router.replace("auth");
+        },
+        onError: (err) => {
+          handleError(err);
+        },
+      });
+    },
+    [mutate, success, t, resetState, router, handleError],
+  );
+
+  return {
+    form,
+    onSubmit,
+    loading: isPending,
   };
 };

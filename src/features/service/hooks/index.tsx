@@ -39,7 +39,7 @@ import { useCheckAuthToRedirect } from "@/features/auth/hooks";
 import useApplicationStore from "@/lib/store";
 import useErrorToast from "@/features/app/hooks/use-error-toast";
 import { useRouter } from "next/navigation";
-import useAuthStore from "@/features/auth/store";
+import useAuthStore from "@/features/auth/store/auth-store";
 import dayjs from "dayjs";
 
 /**

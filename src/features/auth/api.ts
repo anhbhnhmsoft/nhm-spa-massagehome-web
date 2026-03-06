@@ -4,15 +4,17 @@ import {
   AuthenticateResponse,
   DeviceInfoRequest,
   EditProfileRequest,
+  ForgotPasswordRequest,
+  ForgotPasswordResponse,
   LoginRequest,
   LoginResponse,
   ProfileResponse,
   RegisterRequest,
   RegisterResponse,
-  ResendRegisterOTPResponse,
+  ResendOTPResponse,
+  ResetPasswordRequest,
   SetLanguageRequest,
-  VerifyRegisterOTPRequest,
-  VerifyRegisterOTPResponse,
+  VerifyOTPRequest,
 } from "@/features/auth/types";
 import { ResponseSuccessType } from "@/lib/types";
 
@@ -38,13 +40,36 @@ const authApi = {
   },
 
   /**
-   * Hàm để xác thực user xem là login hay register
+   * Hàm để quên mật khẩu
+   */
+  forgotPassword: async (
+    data: ForgotPasswordRequest,
+  ): Promise<ForgotPasswordResponse> => {
+    const response = await client.post(`${defaultUri}/forgot-password`, data);
+    return response.data;
+  },
+
+  /**
+   * Hàm để xác thực OTP register
    */
   verifyRegisterOTP: async (
-    data: VerifyRegisterOTPRequest,
-  ): Promise<VerifyRegisterOTPResponse> => {
+    data: VerifyOTPRequest,
+  ): Promise<ResponseSuccessType> => {
     const response = await client.post(
       `${defaultUri}/verify-otp-register`,
+      data,
+    );
+    return response.data;
+  },
+
+  /**
+   * Hàm để xác thực OTP forgot password
+   */
+  verifyForgotPasswordOTP: async (
+    data: VerifyOTPRequest,
+  ): Promise<ResponseSuccessType> => {
+    const response = await client.post(
+      `${defaultUri}/verify-otp-forgot-password`,
       data,
     );
     return response.data;
@@ -56,11 +81,35 @@ const authApi = {
    */
   resendRegisterOTP: async (
     data: AuthenticateRequest,
-  ): Promise<ResendRegisterOTPResponse> => {
+  ): Promise<ResendOTPResponse> => {
     const response = await client.post(
       `${defaultUri}/resend-otp-register`,
       data,
     );
+    return response.data;
+  },
+
+  /**
+   * Hàm để resend OTP forgot password
+   */
+  resendForgotPasswordOTP: async (
+    data: AuthenticateRequest,
+  ): Promise<ResendOTPResponse> => {
+    const response = await client.post(
+      `${defaultUri}/resend-otp-forgot-password`,
+      data,
+    );
+    return response.data;
+  },
+
+  /**
+   * Hàm để reset password sau khi xác thực OTP
+   * @param data
+   */
+  resetPassword: async (
+    data: ResetPasswordRequest,
+  ): Promise<ResponseSuccessType> => {
+    const response = await client.post(`${defaultUri}/reset-password`, data);
     return response.data;
   },
 

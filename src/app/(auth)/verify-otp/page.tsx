@@ -2,13 +2,26 @@
 
 import React, { useRef } from "react";
 import { useTranslation } from "react-i18next";
-import { useHandleVerifyRegisterOtp } from "@/features/auth/hooks";
 import { cn } from "@/lib/utils";
+import {
+  useHandleResendOtp,
+  useHandleVerifyOtp,
+} from "@/features/auth/hooks/use-handle-verify-otp";
 
 export default function VerifyOtp() {
   const { t } = useTranslation();
-  const { phoneAuthen, timer, form, onSubmit, resendOTP, loading } =
-    useHandleVerifyRegisterOtp();
+  const {
+    phone,
+    form,
+    onSubmit,
+    loading: loadingVerifyOTP,
+  } = useHandleVerifyOtp();
+
+  const {
+    resendOTP,
+    secondsLeft,
+    loading: loadingResendOTP,
+  } = useHandleResendOtp();
 
   const { handleSubmit, setValue, watch } = form;
 
@@ -59,7 +72,7 @@ export default function VerifyOtp() {
           </p>
 
           <p className="mb-8 text-center font-bold text-primary-color-2">
-            {phoneAuthen}
+            {phone}
           </p>
 
           {/* OTP INPUT */}
@@ -91,16 +104,16 @@ export default function VerifyOtp() {
             <button
               type="button"
               onClick={resendOTP}
-              disabled={timer > 0 || loading}
+              disabled={secondsLeft > 0 || loadingVerifyOTP || loadingResendOTP}
               className={cn(
                 "text-base font-medium",
-                timer > 0
+                secondsLeft > 0
                   ? "text-primary-color-2"
                   : "text-gray-400 hover:text-primary-color-2",
               )}
             >
-              {timer > 0
-                ? `${t("auth.resend_otp")} (${timer})`
+              {secondsLeft > 0
+                ? `${t("auth.resend_otp")} (${secondsLeft})`
                 : t("auth.resend_otp")}
             </button>
           </div>
@@ -109,15 +122,17 @@ export default function VerifyOtp() {
         <div className=" m-auto w-full px-5 pb-[env(safe-area-inset-bottom)] max-w-[480px]">
           <button
             onClick={handleSubmit(onSubmit)}
-            disabled={otpValue.length !== 6 || loading}
+            disabled={
+              otpValue.length !== 6 || loadingVerifyOTP || loadingResendOTP
+            }
             className={cn(
               "flex m-auto h-14 w-full items-center justify-center rounded-full text-lg font-bold text-white transition active:scale-[0.98]",
-              otpValue.length === 6 && !loading
+              otpValue.length === 6 && !loadingVerifyOTP && !loadingResendOTP
                 ? "bg-primary-color-2"
                 : "cursor-not-allowed bg-gray-200",
             )}
           >
-            {loading ? (
+            {loadingVerifyOTP || loadingResendOTP ? (
               <div className="h-6 w-6 animate-spin rounded-full border-2 border-white border-t-transparent" />
             ) : (
               t("common.continue")

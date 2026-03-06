@@ -1,13 +1,16 @@
-import { useMutation } from '@tanstack/react-query';
+import { useMutation } from "@tanstack/react-query";
 import {
   AuthenticateRequest,
   EditProfileRequest,
+  ForgotPasswordRequest,
   LoginRequest,
   RegisterRequest,
+  ResetPasswordRequest,
   SetLanguageRequest,
+  VerifyOTPRequest,
   VerifyRegisterOTPRequest,
-} from '@/features/auth/types';
-import authApi from '@/features/auth/api';
+} from "@/features/auth/types";
+import authApi from "@/features/auth/api";
 
 /**
  * Hook để xác thực user xem là login hay register
@@ -29,7 +32,34 @@ export const useSetLanguageMutation = () => {
  */
 export const useVerifyRegisterOTPMutation = () => {
   return useMutation({
-    mutationFn: (data: VerifyRegisterOTPRequest) => authApi.verifyRegisterOTP(data),
+    mutationFn: (data: VerifyRegisterOTPRequest) =>
+      authApi.verifyRegisterOTP(data),
+  });
+};
+/**
+ * Hook để quên mật khẩu
+ */
+export const useForgotPasswordMutation = () => {
+  return useMutation({
+    mutationFn: (data: ForgotPasswordRequest) => authApi.forgotPassword(data),
+  });
+};
+
+/**
+ * Hook để xác thực user xem là login hay register
+ */
+export const useVerifyForgotPasswordOTPMutation = () => {
+  return useMutation({
+    mutationFn: (data: VerifyOTPRequest) =>
+      authApi.verifyForgotPasswordOTP(data),
+  });
+};
+/**
+ * Hook để reset password user
+ */
+export const useResetPasswordMutation = () => {
+  return useMutation({
+    mutationFn: (data: ResetPasswordRequest) => authApi.resetPassword(data),
   });
 };
 
@@ -39,6 +69,15 @@ export const useVerifyRegisterOTPMutation = () => {
 export const useResendRegisterOTPMutation = () => {
   return useMutation({
     mutationFn: (data: AuthenticateRequest) => authApi.resendRegisterOTP(data),
+  });
+};
+/**
+ * Hook để resend OTP forgot password
+ */
+export const useResendForgotPasswordOTPMutation = () => {
+  return useMutation({
+    mutationFn: (data: AuthenticateRequest) =>
+      authApi.resendForgotPasswordOTP(data),
   });
 };
 

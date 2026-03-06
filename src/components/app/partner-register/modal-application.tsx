@@ -12,7 +12,7 @@ import {
   Link as LinkIcon,
 } from "lucide-react";
 import { _UserRole } from "@/features/auth/const";
-import useAuthStore from "@/features/auth/store";
+import useAuthStore from "@/features/auth/store/auth-store";
 import {
   _ReviewApplicationStatus,
   _ReviewApplicationStatusMap,

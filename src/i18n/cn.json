@@ -119,7 +119,8 @@
     "prefix": "立即下载",
     "document": {
       "not_found": "未找到合适的文档"
-    }
+    },
+    "password_description" : "密码必须至少 8 个字符，包含大小写字母和数字"
   },
   "common_success": {
     "save_image_success": "图片保存成功",
@@ -287,10 +288,14 @@
     "register_description": "请输入您的信息以帮助我们验证您的账户。",
     "login_title": "登录",
     "login_description": "请输入您的信息以帮助我们验证您的账户。",
+     "reset_password_title": "重置密码",
+    "reset_password_description": "请输入您的新密码。",
+    "btn_reset_password": "重置密码",
     "i_agree_to": "我同意",
     "terms_and_conditions": "服务条款",
     "privacy_policy": "隐私政策",
     "error_terms_required": "您必须同意条款才能继续",
+    "forgot_password": "忘记密码?",
     "error": {
       "phone_required": "请输入手机号码",
       "phone_invalid": "手机号码无效，请重新输入",

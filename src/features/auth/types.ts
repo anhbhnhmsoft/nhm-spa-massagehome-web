@@ -1,6 +1,6 @@
-import { _Gender, _UserRole } from '@/features/auth/const';
-import { _LanguageCode } from '@/lib/const';
-import { ResponseDataSuccessType } from '@/lib/types';
+import { _Gender, _UserRole } from "@/features/auth/const";
+import { _LanguageCode } from "@/lib/const";
+import { ResponseDataSuccessType } from "@/lib/types";
 
 export type User = {
   id: string;
@@ -44,10 +44,34 @@ export type AuthenticateRequest = {
 };
 
 export type AuthenticateResponse = ResponseDataSuccessType<{
-  need_register: boolean;
-  expire_minutes: number | null; // Thời gian hết hạn của OTP
-  number_of_attempts: number; // Số lần nhập sai OTP
+  case:
+    | "need_login"
+    | "need_re_enter_otp"
+    | "need_register"
+    | "need_re_enter_register";
+  last_sent_at?: string;
+  retry_after_seconds?: number;
 }>;
+
+export type ForgotPasswordRequest = {
+  phone: string;
+};
+
+export type ForgotPasswordResponse = ResponseDataSuccessType<{
+  case: "need_re_enter_otp" | "need_re_enter_reset_password" | "success";
+  last_sent_at?: string; // Thời gian cuối cùng OTP được gửi
+  retry_after_seconds?: number; // Thời gian chờ trước khi có thể gửi lại OTP
+}>;
+
+export type ResendOTPResponse = ResponseDataSuccessType<{
+  last_sent_at: string; // Thời gian cuối cùng OTP được gửi
+  retry_after_seconds: number;
+}>;
+
+export type VerifyOTPRequest = {
+  phone: string;
+  otp: string;
+};
 
 export type ResendRegisterOTPResponse = ResponseDataSuccessType<{
   expire_minutes: number | null; // Thời gian hết hạn của OTP
@@ -63,7 +87,7 @@ export type VerifyRegisterOTPResponse = ResponseDataSuccessType<{
 }>;
 
 export type RegisterRequest = {
-  token: string;
+  phone: string;
   name: string;
   password: string;
   referral_code?: string | null;
@@ -89,7 +113,7 @@ export type SetLanguageRequest = {
 };
 
 export type DeviceInfoRequest = {
-  platform: 'ios' | 'android';
+  platform: "ios" | "android";
   device_id: string;
   device_name: string;
   token: string;
@@ -102,4 +126,9 @@ export type EditProfileRequest = {
   bio?: string;
   old_password?: string;
   new_password?: string;
+};
+
+export type ResetPasswordRequest = {
+  phone: string;
+  password: string;
 };
