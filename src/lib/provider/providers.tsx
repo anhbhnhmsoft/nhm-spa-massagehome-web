@@ -6,6 +6,7 @@ import { initI18n } from "./i18n";
 import { Toaster } from "@/components/ui/sonner";
 import { HydrateAuthProvider } from "@/features/auth/providers";
 import FullScreenLoading from "@/components/app/full-screen-loading";
+import { useLocation } from "@/features/app/hooks/use-location";
 
 export default function Providers({ children }: { children: React.ReactNode }) {
   const [isI18nReady, setIsI18nReady] = useState(false);
@@ -22,12 +23,20 @@ export default function Providers({ children }: { children: React.ReactNode }) {
     return <FullScreenLoading loading={true} />;
   }
 
+  // wrapper component so that useLocation runs inside QueryProvider context
+  const LocationInitializer = ({ children }: { children: React.ReactNode }) => {
+    useLocation();
+    return <>{children}</>;
+  };
+
   return (
     <QueryProvider>
-      <HydrateAuthProvider>
-        {children}
-        <Toaster position="top-right" />
-      </HydrateAuthProvider>
+      <LocationInitializer>
+        <HydrateAuthProvider>
+          {children}
+          <Toaster position="top-right" />
+        </HydrateAuthProvider>
+      </LocationInitializer>
     </QueryProvider>
   );
 }

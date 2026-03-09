@@ -28,7 +28,7 @@ export const KTVHomePageCard = ({ item }: { item: ListKTVItem }) => {
   return (
     <button
       onClick={() => setKtv(item.id)}
-      className="group relative flex w-full flex-col rounded-xl border border-slate-100 bg-white p-2 shadow-sm transition-all hover:shadow-md active:scale-[0.98]"
+      className="group relative flex w-full flex-col rounded-xl border border-slate-100 bg-white p-2 shadow-sm transition-all "
     >
       {/* --- AVATAR --- */}
       <div className="relative mb-2 aspect-square w-full overflow-hidden rounded-lg bg-slate-100 sm:aspect-video lg:aspect-square">

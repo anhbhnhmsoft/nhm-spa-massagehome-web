@@ -42,17 +42,14 @@ export function CarouselBanner({
   if (isLoading || isFetching || !banners || banners.length === 0) {
     return (
       <div className="mx-auto w-full max-w-[750px]">
-        <Skeleton className="w-full aspect-[5/3] rounded-2xl bg-gray-200" />
+        <Skeleton className="w-full aspect-[5/3]  bg-gray-200" />
       </div>
     );
   }
 
   return (
     <div className="mx-auto w-full max-w-[750px] relative">
-      <div
-        ref={emblaRef}
-        className="overflow-hidden rounded-2xl aspect-[5/3] w-full"
-      >
+      <div ref={emblaRef} className="overflow-hidden  aspect-[5/3] w-full">
         <div className="flex h-full">
           {banners.map((item, i) => (
             <div key={item.id} className="relative flex-[0_0_100%] h-full">
@@ -93,7 +90,7 @@ export function InviteSection() {
     <div className="grid  gap-4 grid-cols-2  px-4">
       {/* Button 1 */}
       <button
-        className="flex items-center gap-4 rounded-2xl bg-slate-50 p-3 transition-hover hover:bg-slate-100 text-left "
+        className="flex items-center gap-4 rounded-2xl bg-white shadow-sm border border-slate-100 p-3 transition-hover  text-left "
         onClick={() => router.push("/partner-register-individual")}
       >
         <div className="relative h-14 w-14 overflow-hidden rounded-full border-2 border-white shadow-sm">
@@ -116,7 +113,7 @@ export function InviteSection() {
 
       {/* Button 2 */}
       <button
-        className="flex items-center gap-4 rounded-2xl bg-slate-50 p-3 transition-hover hover:bg-slate-100 text-left"
+        className="flex items-center gap-4 rounded-2xl  bg-white shadow-sm border border-slate-100 p-3 transition-hover  text-left"
         onClick={() => {
           setForWho("agency");
           router.push("/partner-register-individual");
@@ -192,17 +189,16 @@ export function KTVSection({
       {/* Header */}
       <div className="flex items-end justify-between px-1 mb-4 sm:items-center">
         {/* Tiêu đề: Tự động co giãn từ text-lg (mobile) lên text-2xl (desktop) */}
-        <h2 className="text-lg font-bold tracking-tight text-slate-800 sm:text-xl md:text-2xl">
+        <h2 className="text-title-lg  tracking-tight text-slate-800 ">
           {t("homepage.technician_suggest")}
         </h2>
 
         {/* Nút Xem tất cả: Nhỏ gọn trên mobile, rõ ràng trên desktop */}
         <button
-          className=" text-sm font-semibold text-blue-600
+          className=" text-subtitle font-semibold text-blue-600
                               transition-colors duration-200
                               hover:text-blue-700 hover:underline
                               active:opacity-70
-                              sm:text-base md:text-lg
                             "
           onClick={() => route.push("masseurs")}
         >
@@ -216,7 +212,7 @@ export function KTVSection({
           {displayList.map((ktv, index) => (
             <div
               key={`${ktv.id}-${index}`}
-              className=" shrink-0 w-[33.333%] sm:w-[25%] px-1"
+              className="shrink-0 w-1/3 sm:w-1/6 px-1"
             >
               <KTVHomePageCard item={ktv} />
             </div>
@@ -236,15 +232,15 @@ export const CategorySection = ({
   const { data, isLoading, isFetching } = queryCategory;
 
   return (
-    <div className="mb-10 mt-8">
+    <div className="mb-10 mt-4 ">
       {/* Header */}
       <div className="mb-4 flex items-center justify-between">
-        <h2 className="text-lg font-bold text-slate-800 md:text-xl">
+        <h2 className="text-title-lg  tracking-tight text-slate-800 ">
           {t("homepage.services")}
         </h2>
         <Link
           href="/services"
-          className="text-xs font-bold text-blue-600 transition-colors hover:text-blue-700 md:text-sm"
+          className="text-subtitle font-semibold text-blue-600 transition-colors hover:text-blue-700 hover:underline active:opacity-70"
         >
           {t("common.see_all")}
         </Link>
@@ -271,14 +267,14 @@ export const CategorySection = ({
 export function AppDownloadSection() {
   const { t } = useTranslation();
   return (
-    <section className="mt-6 px-4 lg:px-8">
+    <section className="mt-2 px-4 lg:px-8">
       <div className="flex w-full items-center justify-center gap-3">
         {/* Nút Google Play */}
         <a
           href={_LinkDownloadAndroid}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex flex-1 items-center justify-center gap-3 rounded-xl bg-white py-3 shadow-sm transition-all active:scale-95 sm:max-w-[200px]"
+          className="flex flex-1 items-center justify-center gap-3 rounded-xl bg-white   border border-slate-100 py-3 shadow-sm transition-all active:scale-95 sm:max-w-[200px]"
         >
           <div className="relative h-8 w-8 shrink-0">
             <Image
@@ -301,7 +297,7 @@ export function AppDownloadSection() {
           href={_LinkDownloadIos}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex flex-1 items-center justify-center gap-3 rounded-xl bg-white py-3 shadow-sm transition-all active:scale-95 sm:max-w-[200px]"
+          className="flex flex-1 items-center justify-center gap-3 rounded-xl bg-white border border-slate-100 py-3 shadow-sm transition-all active:scale-95 sm:max-w-[200px]"
         >
           <div className="relative h-8 w-8 shrink-0">
             <Image

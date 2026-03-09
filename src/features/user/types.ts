@@ -18,6 +18,18 @@ export type KTVWorkSchedule = {
     active: boolean;
   }[];
 };
+export type ServiceCategoryItem = {
+  id: string;
+  name: string;
+  description: string;
+  image_url: string | null;
+  booking_count: number;
+  prices: {
+    id: string;
+    price: string;
+    duration: number;
+  }[];
+};
 
 export type ListKTVItem = {
   id: string;
@@ -45,6 +57,8 @@ export type ListKTVItem = {
     latitude: number | null;
     longitude: number | null;
   };
+
+  service_categories: ServiceCategoryItem[];
   schedule: KTVWorkSchedule;
 };
 export type KTVDetail = ListKTVItem & {

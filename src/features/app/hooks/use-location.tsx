@@ -6,10 +6,6 @@ import { useMutationSetDefaultAddress } from "@/features/location/hooks/use-muta
 import { useCheckAuth } from "@/features/auth/hooks";
 import { _TIME_OUT_LOADING_SCREEN_LAYOUT } from "@/lib/const";
 
-/* ===================== TYPES ===================== */
-
-/* ===================== UTILS ===================== */
-
 /**
  * Kiểm tra thay đổi vị trí đáng kể (~100m)
  */
@@ -167,8 +163,6 @@ export const useLocation = () => {
     };
   }, [checkAuth]);
 };
-
-/* ===================== GET CURRENT LOCATION ===================== */
 
 /**
  * Lấy vị trí hiện tại khi user click button

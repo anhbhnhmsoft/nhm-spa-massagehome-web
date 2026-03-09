@@ -48,7 +48,7 @@ export default function MasseursPageComponent() {
   const debouncedSearch = useDebounce(searchCallback, 500);
 
   return (
-    <div className="min-h-screen bg-base-color-3">
+    <div className="min-h-screen ">
       {/* --- HEADER --- */}
       <Header
         showSearch={true}

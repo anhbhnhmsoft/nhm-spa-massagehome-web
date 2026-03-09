@@ -12,19 +12,6 @@ import useToast from "@/features/app/hooks/use-toast";
 import useApplicationStore from "@/lib/store";
 import { getMessageError } from "@/lib/utils";
 
-// Lấy thông tin đặt lịch
-export const useCheckBooking = (id: string | null) => {
-  const query = useQueryBookingCheck(id);
-  const status = useMemo(() => {
-    return query.data?.status || "waiting";
-  }, [query.data]);
-
-  return {
-    status,
-    data: query.data,
-  };
-};
-
 // Lấy danh sách đặt lịch
 
 export const useGetBookingList = () => {
