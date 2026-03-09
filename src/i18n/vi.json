@@ -498,8 +498,10 @@
       "cancel_reason_title": "Đăng ký của bạn đã bị hủy",
       "error_check_application": "Có lỗi xảy ra khi kiểm tra đơn đăng ký. Vui lòng thử lại sau.",
       "show_application": "Xem lại đơn đăng ký",
+      "invalid_realname_length": "Họ và tên phải có ít nhất {{ min }} ký tự và tối đa {{ max }} ký tự.",
+      "invalid_address": "Địa chỉ không hợp lệ",
       "modal_application": {
-        "title": "Chi tiết đơn đăng ký",
+       "title": "Chi tiết đơn đăng ký",
         "status": "Từ chối",
         "reason": "Lý do",
         "information": "Thông tin",
@@ -517,7 +519,9 @@
         "cccd_back": "CCCD Mặt sau",
         "face_with_identity_card": "Ảnh cầm thẻ cùng CCCD",
         "certificate": "Bằng cấp",
-        "gallery": "Ảnh hiển thị cho Khách hàng"
+        "gallery": "Ảnh hiển thị cho Khách hàng",
+        "real_name": "Họ và tên (trùng với CCCD)",
+        "address": "Địa chỉ đối tác"
       }
     },
     "partner_register": {

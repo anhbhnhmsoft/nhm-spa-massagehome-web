@@ -138,9 +138,20 @@ export type ApplyTechnicalRequest = {
   };
   file_uploads: {
     type_upload: _PartnerFileType;
-    file: File; // ✅ FILE THẬT để upload
-    preview?: string; // ✅ blob url để hiển thị
+    file: File;
+    preview?: string;
   }[];
 };
 
+export type ApplyAgencyRequest = {
+  nickname: string;
+  address: string;
+  latitude: number;
+  longitude: number;
+  file_uploads: {
+    type_upload: _PartnerFileType;
+    file: File;
+    preview?: string;
+  }[];
+};
 export type ApplyPartnerResponse = ResponseDataSuccessType<unknown>;

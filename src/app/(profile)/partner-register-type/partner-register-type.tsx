@@ -61,7 +61,7 @@ export default function PartnerRegisterTypePage() {
             {/* Đại lý khu vực */}
             <button
               onClick={() => {
-                router.push("/partner-register-individual");
+                router.push("/register-agency");
               }}
               className="w-full flex items-center justify-between rounded-2xl border border-gray-100 bg-white p-5 text-left shadow-sm hover:border-blue-200 hover:shadow-md transition-all active:scale-[0.98]"
             >

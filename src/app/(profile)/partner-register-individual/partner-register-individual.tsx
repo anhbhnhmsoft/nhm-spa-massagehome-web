@@ -20,55 +20,15 @@ import {
   useRegisterTechnical,
 } from "@/features/user/hooks/use-register-technical";
 import { useCheckPartnerRegister } from "@/features/user/hooks/use-check-partner-register";
-import { ApplyTechnicalRequest } from "@/features/user/types";
 import useUserServiceStore from "@/features/user/stores";
-
-const addOrUpdateFile = (
-  currentFiles: any[],
-  type: _PartnerFileType,
-  file: File,
-  preview: string,
-) => {
-  const newFile = { type_upload: type, file, preview };
-  const filtered = currentFiles.filter((f) => f.type_upload !== type);
-  return [...filtered, newFile];
-};
-
-const removeFileByType = (currentFiles: any[], type: _PartnerFileType) => {
-  return currentFiles.filter((f) => f.type_upload !== type);
-};
-
-const appendFile = (
-  currentFiles: any[],
-  type: _PartnerFileType,
-  file: File,
-  preview: string,
-) => {
-  return [...currentFiles, { type_upload: type, file, preview }];
-};
-
-const removeSpecificFile = (currentFiles: any[], itemToRemove: any) => {
-  return currentFiles.filter((f) => f !== itemToRemove);
-};
-
-const updateSpecificFile = (
-  currentFiles: any[],
-  itemToUpdate: any,
-  file: File,
-  preview: string,
-) => {
-  return currentFiles.map((f) =>
-    f === itemToUpdate ? { ...f, file, preview } : f,
-  );
-};
-
-const getErrorsFileType = (
-  errors: FieldErrors<ApplyTechnicalRequest>,
-  type: _PartnerFileType,
-) => {
-  const fileUploadErrors = errors.file_uploads as any;
-  return fileUploadErrors?.[type]?.message as string | undefined;
-};
+import {
+  addOrUpdateFile,
+  appendFile,
+  getErrorsFileType,
+  removeFileByType,
+  removeSpecificFile,
+  updateSpecificFile,
+} from "@/lib/utils";
 
 export default function PartnerRegisterIndividualPage() {
   const { t } = useTranslation();
@@ -496,7 +456,7 @@ export default function PartnerRegisterIndividualPage() {
               )}
             </button>
             <p className="text-sm text-gray-600">
-              {t("auth.i_agree_to")}
+              {t("auth.i_agree_to")}{" "}
               <span
                 className="cursor-pointer font-bold text-blue-600 underline"
                 onClick={() =>
@@ -505,9 +465,9 @@ export default function PartnerRegisterIndividualPage() {
                   )
                 }
               >
-                {t("auth.terms_and_conditions_register_technical")}
+                {t("auth.terms_and_conditions_register_technical")}{" "}
               </span>
-              {t("common.and")}
+              {t("common.and")}{" "}
               <span
                 className="cursor-pointer font-bold text-blue-600 underline"
                 onClick={() =>

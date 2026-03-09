@@ -49,6 +49,17 @@ const userApi = {
     );
     return response.data;
   },
+
+  // User hiện tại đăng ký làm đại lý
+  applyAgency: async (payload: FormData): Promise<ResponseSuccessType> => {
+    const response = await client.post(`${defaultUri}/apply-agency`, payload, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    return response.data;
+  },
+
   // Lấy danh sách KTV được quản lý bởi Agency hoặc KTV
   listManageKTV: async (params: ListKTVRequest): Promise<ListKTVResponse> => {
     const response = await client.get(`${defaultUri}/list-manage-ktv`, {

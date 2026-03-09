@@ -286,8 +286,11 @@ const InfoRow = ({
       <span className="text-[#94a3b8]">{icon}</span>
       <span className="ml-3 text-gray-500 text-sm">{label}</span>
     </div>
-    <div className="flex-1 flex justify-end">
-      <span className="font-bold text-slate-800 text-sm truncate">{value}</span>
+
+    <div className="flex-1 flex justify-end min-w-0">
+      <span className="font-bold text-slate-800 text-sm truncate max-w-[200px]">
+        {value}
+      </span>
     </div>
   </div>
 );

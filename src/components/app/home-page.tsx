@@ -118,7 +118,7 @@ export function InviteSection() {
       <button
         className="flex items-center gap-4 rounded-2xl  bg-white shadow-sm border border-slate-100 p-3 transition-hover  text-left"
         onClick={() => {
-          router.push("/partner-register-individual");
+          router.push("/register-agency");
         }}
       >
         <div className="relative h-14 w-14 overflow-hidden rounded-full border-2 border-white shadow-sm">
