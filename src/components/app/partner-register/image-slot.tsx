@@ -46,7 +46,7 @@ export default function ImageSlot({
       ) : (
         <div className="flex flex-col items-center justify-center">
           <ImagePlus size={24} className="text-gray-400" />
-          <span className="mt-1 text-[10px] text-gray-400 font-medium">
+          <span className="mt-1 text-[10px] text-gray-400 font-medium text-center">
             {label}
           </span>
         </div>

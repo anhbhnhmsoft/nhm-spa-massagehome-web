@@ -91,7 +91,10 @@ export function InviteSection() {
       {/* Button 1 */}
       <button
         className="flex items-center gap-4 rounded-2xl bg-white shadow-sm border border-slate-100 p-3 transition-hover  text-left "
-        onClick={() => router.push("/partner-register-individual")}
+        onClick={() => {
+          setForWho("0");
+          router.push("/partner-register-individual");
+        }}
       >
         <div className="relative h-14 w-14 overflow-hidden rounded-full border-2 border-white shadow-sm">
           <Image
@@ -115,7 +118,6 @@ export function InviteSection() {
       <button
         className="flex items-center gap-4 rounded-2xl  bg-white shadow-sm border border-slate-100 p-3 transition-hover  text-left"
         onClick={() => {
-          setForWho("agency");
           router.push("/partner-register-individual");
         }}
       >

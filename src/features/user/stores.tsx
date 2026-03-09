@@ -2,8 +2,7 @@ import { KTVDetail, ListKTVRequest } from "@/features/user/types";
 import { create } from "zustand";
 import { immer } from "zustand/middleware/immer";
 
-export type ForWho = "ktv" | "agency" | "leader-ktv";
-
+export type ForWho = "0" | "1";
 interface IUserServiceStore {
   ktv: KTVDetail | null;
   forWho: ForWho;
@@ -14,7 +13,7 @@ interface IUserServiceStore {
 
 const useUserServiceStore = create<IUserServiceStore>((set) => ({
   ktv: null,
-  forWho: "ktv", // ✅ default
+  forWho: "0",
 
   setKtv: (ktv) => set({ ktv }),
   setForWho: (forWho) => set({ forWho }),

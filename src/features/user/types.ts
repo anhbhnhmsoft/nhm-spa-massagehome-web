@@ -121,16 +121,21 @@ export type CheckApplyPartnerResponse = ResponseDataSuccessType<{
     cccd_back: string | null; // URL of back side of CCCD
     face_with_identity_card: string | null; // URL of face with identity card
     certificate: string | null; // URL of certificate
+    address: string | null;
   } | null;
 }>;
 
-export type ApplyPartnerRequest = {
-  role: _UserRole.KTV | _UserRole.AGENCY;
-  nickname?: string;
-  referrer_id?: string | undefined;
-  experience?: number;
+export type ApplyTechnicalRequest = {
+  nickname: string;
+  referrer_id?: string;
   is_leader?: boolean;
-  bio: IMultiLangField;
+  experience: number;
+  bio: string;
+  dob: string;
+  avatar: {
+    file: File;
+    preview?: string;
+  };
   file_uploads: {
     type_upload: _PartnerFileType;
     file: File; // ✅ FILE THẬT để upload

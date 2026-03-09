@@ -649,6 +649,10 @@
     "busy_slot": "已预订",
     "confirmed": "日历已确认",
     "subtotal": "临时总金额",
+    "time_to_go_to_place": "技师将在大约 {{ break_time }} 分钟后到达您所在的位置",
+    "service_name": "服务名称",
+    "duration": "时长",
+    "service_price": "服务价格",
     "distance": "距离",
     "distance_price": "每公里价格",
     "discount": "折扣",
@@ -748,6 +752,9 @@
     "no_customer_notes": "没有客户备注",
     "no_cancel_reason": "没有取消原因",
     "cancel_pending_note": "取消请求将发送给管理员进行审核。",
+    "start_error_booking": "开始服务时发生错误。请稍后再试。",
+    "warning_alert_service_booking_confirm": "您有一项服务已确认在 {{time}} 进行。请联系技师确认，或联系客服热线以更改预约。",
+    "warning_alert_service_booking_ongoing": "您有一项正在进行的服务，开始时间为 {{time}}。",
     "notification": {
       "booking_end_title": "服务结束",
       "booking_end_body": "服务已结束"

@@ -10,6 +10,7 @@ import {
   BadgeCheck,
   Star,
   Link as LinkIcon,
+  MapPin,
 } from "lucide-react";
 import { _UserRole } from "@/features/auth/const";
 import useAuthStore from "@/features/auth/store/auth-store";
@@ -18,11 +19,13 @@ import {
   _ReviewApplicationStatusMap,
 } from "@/features/user/const";
 import Image from "next/image";
+import { CheckApplyPartnerResponse } from "@/features/user/types";
+import { _LanguageCode } from "@/lib/const";
 
 type ModalApplicationProps = {
   isVisible: boolean;
   onClose: () => void;
-  data: any; // Thay bằng type CheckApplyPartnerResponse['data']['review_application'] của bạn
+  data: CheckApplyPartnerResponse["data"]["review_application"]; // Thay bằng type CheckApplyPartnerResponse['data']['review_application'] của bạn
 };
 
 const statusMap = (status: _ReviewApplicationStatus) => {
@@ -30,19 +33,19 @@ const statusMap = (status: _ReviewApplicationStatus) => {
     case _ReviewApplicationStatus.PENDING:
       return {
         bgColor: "bg-yellow-100",
-        textColor: "text-yellow-600",
+        textColor: "text-yellow-500",
         text: _ReviewApplicationStatusMap[status],
       };
     case _ReviewApplicationStatus.APPROVED:
       return {
         bgColor: "bg-green-100",
-        textColor: "text-green-600",
+        textColor: "text-green-500",
         text: _ReviewApplicationStatusMap[status],
       };
     case _ReviewApplicationStatus.REJECTED:
       return {
         bgColor: "bg-red-100",
-        textColor: "text-red-600",
+        textColor: "text-red-500",
         text: _ReviewApplicationStatusMap[status],
       };
     default:
@@ -59,7 +62,7 @@ const ModalApplication = ({
   const token = useAuthStore((s) => s.token);
 
   if (!isVisible || !data) return null;
-
+  const gallery = data.gallery ?? [];
   const statusMapping = statusMap(data.status);
 
   return (
@@ -106,7 +109,7 @@ const ModalApplication = ({
             </h3>
 
             <div className="divide-y divide-gray-50 border-y border-gray-50">
-              {data.role === _UserRole.KTV ? (
+              {data.role === _UserRole.KTV && (
                 <>
                   <InfoRow
                     icon={<User size={18} />}
@@ -138,38 +141,70 @@ const ModalApplication = ({
                     value={data.referrer_id || t("common.no")}
                   />
                 </>
-              ) : (
-                <InfoRow
-                  icon={<BadgeCheck size={18} />}
-                  label={t("profile.partner_form.modal_application.role")}
-                  value={t("profile.partner_form.modal_application.agency")}
-                />
+              )}
+              {data.role === _UserRole.AGENCY && (
+                <>
+                  <InfoRow
+                    icon={<BadgeCheck size={18} />}
+                    label={t("profile.partner_form.modal_application.role")}
+                    value={t("profile.partner_form.modal_application.agency")}
+                  />
+                  <InfoRow
+                    icon={<User size={18} />}
+                    label={t(
+                      "profile.partner_form.modal_application.real_name",
+                    )}
+                    value={data.nickname}
+                  />
+                  <InfoRow
+                    icon={<MapPin size={18} />}
+                    label={t("profile.partner_form.modal_application.address")}
+                    value={data.address || t("common.no")}
+                  />
+                </>
               )}
             </div>
           </section>
 
           {/* Section 2: Bio đa ngôn ngữ */}
-          <section className="mb-10 rounded-2xl bg-slate-50 p-6">
-            <h3 className="mb-5 text-xs font-black uppercase tracking-widest text-slate-400">
-              {t("profile.partner_form.modal_application.bio")}
-            </h3>
-            <div className="space-y-6">
-              {[
-                { label: "Tiếng Việt", key: "vi", color: "border-blue-500" },
-                { label: "English", key: "en", color: "border-slate-300" },
-                { label: "中文", key: "cn", color: "border-slate-300" },
-              ].map((lang) => (
-                <div key={lang.key} className={`border-l-4 ${lang.color} pl-4`}>
-                  <span className="text-[10px] font-bold uppercase text-slate-400 block mb-1">
-                    {lang.label}
-                  </span>
-                  <p className="text-slate-700 text-sm leading-relaxed whitespace-pre-wrap">
-                    {data.bio?.[lang.key] || "---"}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </section>
+          {data.role === _UserRole.KTV && (
+            <section className="mb-10 rounded-2xl bg-slate-50 p-6">
+              <h3 className="mb-5 text-xs font-black uppercase tracking-widest text-slate-400">
+                {t("profile.partner_form.modal_application.bio")}
+              </h3>
+              <div className="space-y-6">
+                {[
+                  {
+                    label: "Tiếng Việt",
+                    key: _LanguageCode.VI,
+                    color: "border-blue-500",
+                  },
+                  {
+                    label: "English",
+                    key: _LanguageCode.EN,
+                    color: "border-slate-300",
+                  },
+                  {
+                    label: "中文",
+                    key: _LanguageCode.CN,
+                    color: "border-slate-300",
+                  },
+                ].map((lang) => (
+                  <div
+                    key={lang.key}
+                    className={`border-l-4 ${lang.color} pl-4`}
+                  >
+                    <span className="text-[10px] font-bold uppercase text-slate-400 block mb-1">
+                      {lang.label}
+                    </span>
+                    <p className="text-slate-700 text-sm leading-relaxed whitespace-pre-wrap">
+                      {data.bio?.[lang.key] || "---"}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
 
           {/* Section 3: Giấy tờ xác thực */}
           <section className="mb-10">
@@ -187,13 +222,15 @@ const ModalApplication = ({
                 uri={data.cccd_back}
                 token={token}
               />
-              <ImageItem
-                label={t(
-                  "profile.partner_form.modal_application.face_with_identity_card",
-                )}
-                uri={data.face_with_identity_card}
-                token={token}
-              />
+              {data.role === _UserRole.KTV && (
+                <ImageItem
+                  label={t(
+                    "profile.partner_form.modal_application.face_with_identity_card",
+                  )}
+                  uri={data.face_with_identity_card}
+                  token={token}
+                />
+              )}
               {data.role === _UserRole.KTV && (
                 <ImageItem
                   label={t(
@@ -207,21 +244,22 @@ const ModalApplication = ({
           </section>
 
           {/* Section 4: Gallery */}
-          {data.role === _UserRole.KTV && data.gallery?.length > 0 && (
+          {data.role === _UserRole.KTV && gallery.length > 0 && (
             <section className="mb-10">
               <h3 className="mb-4 text-xs font-bold uppercase tracking-widest text-slate-400">
                 {t("profile.partner_form.modal_application.gallery")} (
-                {data.gallery.length})
+                {gallery.length})
               </h3>
+
               <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide">
-                {data.gallery.map((img: string, idx: number) => (
+                {gallery.map((img, idx) => (
                   <Image
                     key={idx}
-                    width={400}
-                    height={400}
                     src={img}
                     alt="Gallery"
-                    className="h-40 w-40 shrink-0 rounded-2xl object-cover shadow-sm border border-slate-100"
+                    width={160}
+                    height={160}
+                    className="h-40 w-40 shrink-0 rounded-2xl object-cover border border-slate-100 shadow-sm"
                   />
                 ))}
               </div>
@@ -244,11 +282,13 @@ const InfoRow = ({
   icon: React.ReactNode;
 }) => (
   <div className="flex items-center justify-between py-3.5">
-    <div className="flex items-center gap-3 text-slate-500">
-      <span className="text-slate-400">{icon}</span>
-      <span className="text-sm font-medium">{label}</span>
+    <div className="flex items-center mr-4">
+      <span className="text-[#94a3b8]">{icon}</span>
+      <span className="ml-3 text-gray-500 text-sm">{label}</span>
     </div>
-    <span className="text-sm font-bold text-slate-900">{value}</span>
+    <div className="flex-1 flex justify-end">
+      <span className="font-bold text-slate-800 text-sm truncate">{value}</span>
+    </div>
   </div>
 );
 
@@ -259,7 +299,7 @@ const ImageItem = ({
   token,
 }: {
   label: string;
-  uri: string;
+  uri: string | null;
   token: string | null;
 }) => {
   const [imgSrc, setImgSrc] = useState<string | null>(null);
@@ -290,6 +330,76 @@ const ImageItem = ({
             N/A
           </div>
         )}
+      </div>
+    </div>
+  );
+};
+
+export const CardReasonRejectApplication = ({
+  data,
+  setShowModalApplication,
+}: {
+  data: any;
+  setShowModalApplication: (show: boolean) => void;
+}) => {
+  const { t } = useTranslation();
+  if (!data || data.status !== _ReviewApplicationStatus.REJECTED) return null;
+
+  return (
+    <div className="mb-2 p-4 border border-gray-200 rounded-xl bg-white shadow-sm">
+      <div className="flex flex-col gap-2">
+        <p className="font-bold text-base text-red-500">
+          {t("profile.partner_form.cancel_reason_title")}
+        </p>
+        <button
+          type="button"
+          onClick={() => setShowModalApplication(true)}
+          className="flex items-center justify-center rounded-xl bg-primary-color-2 px-3 py-1 w-fit"
+        >
+          <span className="font-bold text-sm text-white">
+            {t("profile.partner_form.show_application")}
+          </span>
+        </button>
+      </div>
+    </div>
+  );
+};
+
+export const CardPendingApplication = ({
+  data,
+  setShowModalApplication,
+}: {
+  data: CheckApplyPartnerResponse["data"]["review_application"];
+  setShowModalApplication: (show: boolean) => void;
+}) => {
+  const { t } = useTranslation();
+  if (!data || data.status !== _ReviewApplicationStatus.PENDING) return null;
+
+  return (
+    <div className="flex flex-1 items-center justify-center p-4 min-h-[60vh]">
+      <div className="flex flex-col items-center justify-center gap-2 rounded-xl bg-white p-6 shadow-xl border border-slate-100 max-w-sm w-full">
+        <p className="font-bold text-subtitle text-center leading-6 text-black">
+          {/* KTV */}
+          {data.role === _UserRole.KTV &&
+            !data.is_leader &&
+            t("profile.partner_form.status_pending_for_ktv")}
+          {/* KTV Leader */}
+          {data.role === _UserRole.KTV &&
+            data.is_leader &&
+            t("profile.partner_form.status_pending_for_ktv_leader")}
+          {/* Agency */}
+          {data.role === _UserRole.AGENCY &&
+            t("profile.partner_form.status_pending_for_agency")}
+        </p>
+
+        <button
+          onClick={() => setShowModalApplication(true)}
+          className="flex items-center justify-center rounded-xl bg-primary-color-1 px-3 py-2 transition-all"
+        >
+          <span className="font-bold text-sm text-white">
+            {t("profile.partner_form.show_application")}
+          </span>
+        </button>
       </div>
     </div>
   );

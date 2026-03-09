@@ -7,6 +7,7 @@ import {
   ApplyPartnerResponse,
   CheckApplyPartnerResponse,
 } from "@/features/user/types";
+import { ResponseSuccessType } from "@/lib/types";
 
 const defaultUri = "/user";
 
@@ -33,6 +34,19 @@ const userApi = {
         "Content-Type": "multipart/form-data",
       },
     });
+    return response.data;
+  },
+  // User hiện tại đăng ký làm kỹ thuật viên
+  applyTechnical: async (payload: FormData): Promise<ResponseSuccessType> => {
+    const response = await client.post(
+      `${defaultUri}/apply-technical`,
+      payload,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      },
+    );
     return response.data;
   },
   // Lấy danh sách KTV được quản lý bởi Agency hoặc KTV
