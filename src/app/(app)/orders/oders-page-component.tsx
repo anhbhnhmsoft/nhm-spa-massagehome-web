@@ -1,24 +1,25 @@
 "use client";
 
 import React, { useEffect, useRef } from "react";
-import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
-import { X } from "lucide-react";
 
 import { _BookingStatus, _BookingStatusMap } from "@/features/service/const";
 import { useGetBookingList } from "@/features/booking/hooks";
 import { cn } from "@/lib/utils";
-import { BookingCard, CancellationModal } from "@/components/app/booking";
+import {
+  BookingCard,
+  BookingDetailModal,
+  CancellationModal,
+} from "@/components/app/booking";
 import Empty from "@/components/emty";
-import GradientBackground from "@/components/styles/gradient-background";
 import { useOrdersStore } from "@/features/booking/store";
+import Header from "@/components/header-app";
+import { useGetRoomChat } from "@/features/chat/hooks";
+import { ReviewModal } from "@/components/app/review-modal";
 
 export default function OrdersPageComponent() {
   const { t } = useTranslation();
   const status = useOrdersStore((state) => state.status);
-  const router = useRouter();
-
-  // Ref cho tính năng kéo chuột
   const scrollRef = useRef<HTMLDivElement>(null);
   const isDown = useRef(false);
   const startX = useRef(0);
@@ -33,12 +34,24 @@ export default function OrdersPageComponent() {
     isRefetching,
     setFilter,
     params,
+
+    detail,
+    openDetail,
+    closeDetail,
+    showDetailModal,
+
+    showReviewModal,
+    setShowReviewModal,
+    handleOpenReview,
+
     showModalCancelBooking,
     setShowModalCancelBooking,
     handleOpenModalCancelBooking,
     handleCancelBooking,
     isCancelBookingPending,
   } = useGetBookingList();
+
+  const getRoomChat = useGetRoomChat();
 
   useEffect(() => {
     if (status) {
@@ -88,50 +101,38 @@ export default function OrdersPageComponent() {
   }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col items-center">
-      <div className="w-full bg-white min-h-screen shadow-sm flex flex-col">
+    <div className="min-h-screen  flex flex-col items-center">
+      <div className="w-full  min-h-screen flex flex-col">
+        <Header showSearch={false} />
         {/* --- HEADER --- */}
-        <GradientBackground className="relative w-full overflow-hidden bg-gradient-to-br pt-8 pb-6">
-          <div className="flex items-center justify-between mb-6 px-4 md:px-8">
-            <div className="space-y-1">
-              <h1 className="text-xl md:text-2xl font-bold text-white uppercase tracking-tight">
-                {t("header_app.title_orders")}
-              </h1>
-              <p className="text-xs md:text-sm text-blue-100 opacity-90 font-medium">
-                {t("header_app.orders_description")}
-              </p>
-            </div>
-
-            <button
-              onClick={() => router.back()}
-              className="p-2 bg-white/20 hover:bg-white/30 rounded-full transition-colors backdrop-blur-md"
-            >
-              <X size={20} className="text-white" />
-            </button>
-          </div>
-
+        <div className="sticky top-0 z-10 bg-white border-b border-slate-100">
           <div
             ref={scrollRef}
             onMouseDown={handleMouseDown}
             onMouseLeave={handleMouseLeave}
             onMouseUp={handleMouseUp}
             onMouseMove={handleMouseMove}
-            className="w-full overflow-x-auto no-scrollbar scroll-smooth cursor-grab active:cursor-grabbing select-none"
+            className="w-full overflow-x-auto no-scrollbar py-4 cursor-grab active:cursor-grabbing"
           >
-            <div className="flex gap-2 pb-2 min-w-max px-4 md:px-8">
+            <div className="flex gap-3 px-4 md:px-8 min-w-max">
               {Object.entries(_BookingStatusMap).map(([key, value]) => {
                 const statusKey = Number(key);
                 const isChecked = params?.filter?.status === statusKey;
+                // Nếu không có status nào trong filter, mặc định nút "Tất cả" (giả sử key là 0 hoặc undefined) sẽ sáng
+                const isActive =
+                  isChecked || (statusKey === 0 && !params?.filter?.status);
 
                 return (
                   <button
                     key={key}
+                    type="button"
                     onClick={() => setFilter({ status: statusKey })}
                     className={cn(
-                      "whitespace-nowrap rounded-full px-5 py-2 text-xs font-semibold transition-all duration-200 border flex-shrink-0",
-                      isChecked
-                        ? "bg-white text-blue-700 border-white shadow-md"
-                        : "bg-blue-800/30 text-blue-100 border-blue-400/20 hover:bg-blue-800/40",
+                      "px-5 py-2.5 rounded-full text-sm font-medium transition-all duration-200",
+                      "border shadow-sm active:scale-95",
+                      isActive
+                        ? "bg-primary-color-2 text-white font-bold  shadow-blue-100"
+                        : "bg-blue-100 text-slate-600 border-slate-200 hover:border-blue-300 hover:text-blue-500",
                     )}
                   >
                     {t(value)}
@@ -140,7 +141,7 @@ export default function OrdersPageComponent() {
               })}
             </div>
           </div>
-        </GradientBackground>
+        </div>
 
         {/* --- BODY / LIST --- */}
         <main className="flex-1 px-4 py-6 md:px-8">
@@ -150,12 +151,14 @@ export default function OrdersPageComponent() {
             </div>
           ) : data && data.length > 0 ? (
             <div className="grid grid-cols-1 gap-4">
-              {data.map((item, index) => (
+              {data.map((item) => (
                 <BookingCard
-                  key={`${item.id}-${index}`}
                   item={item}
-                  onRefresh={() => refetch()}
-                  cancelBooking={handleOpenModalCancelBooking}
+                  key={item.id}
+                  openDetail={openDetail}
+                  handleOpenCancelBooking={handleOpenModalCancelBooking}
+                  getRoomChat={getRoomChat}
+                  handleOpenReview={handleOpenReview}
                 />
               ))}
             </div>
@@ -175,6 +178,22 @@ export default function OrdersPageComponent() {
           </div>
         </main>
       </div>
+
+      <BookingDetailModal
+        isOpen={showDetailModal}
+        onClose={closeDetail}
+        item={detail}
+      />
+      {/* Review Modal */}
+      <ReviewModal
+        isVisible={showReviewModal}
+        onClose={() => setShowReviewModal(false)}
+        serviceBookingId={detail?.id}
+        onSuccess={() => {
+          setShowReviewModal(false);
+          refetch();
+        }}
+      />
 
       <CancellationModal
         isVisible={showModalCancelBooking}

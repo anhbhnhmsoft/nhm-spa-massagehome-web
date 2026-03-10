@@ -168,7 +168,8 @@
       "COMPLETED": "Hoàn thành",
       "CANCELED": "Hủy",
       "PAYMENT_FAILED": "Thanh toán thất bại",
-      "WAITING_CANCEL": "Chờ hủy"
+      "WAITING_CANCEL": "Chờ hủy",
+      "ALL" :"Tất cả"
     },
     "payment_type": {
       "QR_BANKING": "Chuyển khoản QR Banking",

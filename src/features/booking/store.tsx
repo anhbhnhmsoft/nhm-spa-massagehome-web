@@ -7,7 +7,7 @@ interface OrdersState {
 }
 
 export const useOrdersStore = create<OrdersState>((set) => ({
-  status: null,
+  status: _BookingStatus.ALL,
   setStatus: (status) => {
     set({ status });
   },

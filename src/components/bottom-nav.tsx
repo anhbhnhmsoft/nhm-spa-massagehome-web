@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, Briefcase, Users, User } from "lucide-react";
+import { Home, Briefcase, Users, User, CalendarCheck } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { TabIcon } from "./tab-icon";
 import { useCheckAuthToRedirect } from "@/features/auth/hooks";
@@ -17,6 +17,12 @@ export default function BottomNav() {
     { name: t("tab.home"), href: "/", icon: Home },
     { name: t("tab.services"), href: "/services", icon: Briefcase },
     { name: t("tab.masseurs"), href: "/masseurs", icon: Users },
+    {
+      name: t("tab.orders"),
+      href: "/orders",
+      icon: CalendarCheck,
+      protected: true,
+    },
     { name: t("tab.profile"), href: "/profile", icon: User, protected: true },
   ];
 

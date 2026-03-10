@@ -1,34 +1,28 @@
-import {
-  useInfiniteBookingList,
-  useQueryBookingCheck,
-} from "@/features/booking/hooks/use-query";
+import { useInfiniteBookingList } from "@/features/booking/hooks/use-query";
 import { useCallback, useMemo, useState } from "react";
-import { ListBookingRequest } from "@/features/booking/types";
+import { ListBookingRequest, BookingItem } from "@/features/booking/types";
 import { useImmer } from "use-immer";
 import { _BookingStatus } from "@/features/service/const";
 import { useCancelBookingCustomerMutation } from "@/features/booking/hooks/use-mutation";
 import { useTranslation } from "react-i18next";
 import useToast from "@/features/app/hooks/use-toast";
-import useApplicationStore from "@/lib/store";
 import { getMessageError } from "@/lib/utils";
-
-// Lấy danh sách đặt lịch
 
 export const useGetBookingList = () => {
   const { t } = useTranslation();
+
   const [params, setParams] = useImmer<ListBookingRequest>({
     filter: {
-      status: _BookingStatus.PENDING,
+      status: _BookingStatus.ALL,
     },
     page: 1,
     per_page: 10,
   });
+
   const setFilter = useCallback(
     (filterPatch: Partial<ListBookingRequest["filter"]>) => {
       setParams((draft) => {
-        // 🚨 QUAN TRỌNG: Reset page về 1 khi filter thay đổi
         draft.page = 1;
-        // Merge filter mới vào draft.filter (sử dụng logic Immer)
         draft.filter = {
           ...draft.filter,
           ...filterPatch,
@@ -38,12 +32,6 @@ export const useGetBookingList = () => {
     [setParams],
   );
 
-  const [showModalCancelBooking, setShowModalCancelBooking] = useState(false);
-  const { error } = useToast();
-  const { mutate: cancelBooking, isPending: isCancelBookingPending } =
-    useCancelBookingCustomerMutation();
-
-  const [bookingIdCancel, setBookingIdCancel] = useState<string>("");
   const query = useInfiniteBookingList(params);
 
   const data = useMemo(() => {
@@ -54,7 +42,48 @@ export const useGetBookingList = () => {
     return query.data?.pages[0].data || null;
   }, [query.data]);
 
-  // hủy dịch vụ
+  // =========================
+  // DETAIL MODAL
+  // =========================
+
+  const [detail, setDetail] = useState<BookingItem | null>(null);
+
+  const [showDetailModal, setShowDetailModal] = useState(false);
+
+  const openDetail = useCallback((item: BookingItem) => {
+    setDetail(item);
+    setShowDetailModal(true);
+  }, []);
+
+  const closeDetail = useCallback(() => {
+    setDetail(null);
+    setShowDetailModal(false);
+  }, []);
+
+  // =========================
+  // REVIEW MODAL
+  // =========================
+
+  const [showReviewModal, setShowReviewModal] = useState(false);
+
+  const handleOpenReview = useCallback((item: BookingItem) => {
+    setDetail(item);
+    setShowReviewModal(true);
+  }, []);
+
+  const [showModalCancelBooking, setShowModalCancelBooking] = useState(false);
+  const [bookingIdCancel, setBookingIdCancel] = useState<string>("");
+
+  const { error } = useToast();
+
+  const { mutate: cancelBooking, isPending: isCancelBookingPending } =
+    useCancelBookingCustomerMutation();
+
+  const handleOpenModalCancelBooking = useCallback((bookingId: string) => {
+    setBookingIdCancel(bookingId);
+    setShowModalCancelBooking(true);
+  }, []);
+
   const handleCancelBooking = useCallback(
     async (reason: string) => {
       if (reason.trim().length === 0) {
@@ -87,19 +116,28 @@ export const useGetBookingList = () => {
     [bookingIdCancel, cancelBooking, error, query, t],
   );
 
-  const handleOpenModalCancelBooking = useCallback((bookingId: string) => {
-    setShowModalCancelBooking(true);
-    setBookingIdCancel(bookingId);
-  }, []);
   return {
     ...query,
     data,
     pagination,
-    params, // Trả về params hiện tại để dễ debug/hiển thị
-    setFilter, // Trả về hàm setFilter để component sử dụng
+    params,
+    setFilter,
+
+    // detail
+    detail,
+    openDetail,
+    closeDetail,
+    showDetailModal,
+    setShowDetailModal,
+
+    // review
+    showReviewModal,
+    setShowReviewModal,
+    handleOpenReview,
+
+    // cancel
     showModalCancelBooking,
     setShowModalCancelBooking,
-    setBookingIdCancel,
     handleOpenModalCancelBooking,
     handleCancelBooking,
     isCancelBookingPending,

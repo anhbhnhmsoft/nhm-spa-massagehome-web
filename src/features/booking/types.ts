@@ -54,6 +54,8 @@ export type BookingItem = {
   status: _BookingStatus;
   price: string;
   price_before_discount: string;
+  price_transportation: number;
+  total_price: number;
   coupon: {
     id: string;
     label: string;

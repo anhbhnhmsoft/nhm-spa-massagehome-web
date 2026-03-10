@@ -5,27 +5,22 @@ import {
   useInfiniteCategoryList,
   useInfiniteListReview,
   useInfiniteServiceList,
-  useQueryListCoupon,
   useQueryListCouponUser,
 } from "@/features/service/hooks/use-query";
 import {
-  BookingServiceRequest,
   CategoryListFilterPatch,
   CategoryListRequest,
   CouponUserListRequest,
   ListReviewRequest,
   PickBookingItem,
-  PickBookingRequirement,
-  PrepareBookingResponse,
   SendReviewRequest,
   ServiceItem,
   ServiceListRequest,
 } from "@/features/service/types";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useImmer } from "use-immer";
 import {
-  useMutationBookingService,
   useMutationPrepareBooking,
   useMutationSendReview,
   useMutationServiceDetail,
@@ -33,15 +28,12 @@ import {
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import z from "zod";
-import { formatBalance, getMessageError } from "@/lib/utils";
+import { getMessageError } from "@/lib/utils";
 import useServiceStore from "../stores";
 import { useCheckAuthToRedirect } from "@/features/auth/hooks";
 import useApplicationStore from "@/lib/store";
 import useErrorToast from "@/features/app/hooks/use-error-toast";
 import { useRouter } from "next/navigation";
-import useAuthStore from "@/features/auth/store/auth-store";
-import dayjs from "dayjs";
-
 /**
  * Lấy danh sách danh mục dịch vụ
  * @param initialParams
@@ -226,7 +218,7 @@ export const useGetCouponUserList = (
  * @param onSuccess Callback khi đánh giá thành công
  */
 export const useReviewModal = (
-  serviceBookingId: string,
+  serviceBookingId: string | undefined,
   onSuccess: () => void,
 ) => {
   const { t } = useTranslation();
