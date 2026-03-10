@@ -22,23 +22,16 @@ export const initI18n = async () => {
   if (i18n.isInitialized) return;
 
   const setLanguage = useApplicationStore.getState().setLanguage;
+
   let savedLanguage = await Storage.getItem<_LanguageCode>(
     _StorageKey.LANGUAGE,
   );
-  const deviceLang = navigator.language;
 
+  // Nếu chưa lưu ngôn ngữ hoặc ngôn ngữ không hợp lệ -> mặc định VI
   if (!savedLanguage || !checkLanguage(savedLanguage)) {
-    switch (deviceLang) {
-      case _LanguageCode.EN:
-      case _LanguageCode.VI:
-      case _LanguageCode.CN:
-        savedLanguage = deviceLang;
-        break;
-      default:
-        savedLanguage = _LanguageCode.VI;
-        break;
-    }
+    savedLanguage = _LanguageCode.VI;
   }
+
   await i18n.use(initReactI18next).init({
     resources,
     lng: savedLanguage,
@@ -48,8 +41,7 @@ export const initI18n = async () => {
     },
   });
 
-  // ❗ giống RN: lưu lại language
-  Storage.setItem(_StorageKey.LANGUAGE, savedLanguage);
+  await Storage.setItem(_StorageKey.LANGUAGE, savedLanguage);
   await setLanguage(savedLanguage);
 };
 

@@ -120,7 +120,7 @@
     "document": {
       "not_found": "未找到合适的文档"
     },
-    "password_description" : "密码必须至少 8 个字符，包含大小写字母和数字"
+    "password_description": "密码必须至少 8 个字符，包含大小写字母和数字"
   },
   "common_success": {
     "save_image_success": "图片保存成功",
@@ -168,7 +168,8 @@
       "COMPLETED": "已完成",
       "CANCELED": "已取消",
       "PAYMENT_FAILED": "支付失败",
-      "WAITING_CANCEL": "等待取消"
+      "WAITING_CANCEL": "等待取消",
+      "ALL": "全部"
     },
     "payment_type": {
       "QR_BANKING": "银行扫码转账",
@@ -187,7 +188,7 @@
       "REFUND": "退款",
       "RETRIEVE_PAYMENT_REFUND_KTV": "提取退款",
       "REFERRAL_KTV": "推荐给技师",
-      "REFERRAL_PARTNER": "推荐合作伙伴",
+      "REFERRAL_INVITE_KTV_REWARD": "技师注册推荐佣金",
       "DEPOSIT_WECHAT_PAY": "Wechat Pay 充值"
     },
     "transaction_status": {
@@ -229,7 +230,7 @@
       "SATURDAY": "星期六",
       "SUNDAY": "星期日"
     },
-     "review_application_status": {
+    "review_application_status": {
       "PENDING": "待确认",
       "APPROVED": "已确认",
       "REJECTED": "已拒绝"
@@ -288,13 +289,15 @@
     "register_description": "请输入您的信息以帮助我们验证您的账户。",
     "login_title": "登录",
     "login_description": "请输入您的信息以帮助我们验证您的账户。",
-     "reset_password_title": "重置密码",
+    "reset_password_title": "重置密码",
     "reset_password_description": "请输入您的新密码。",
     "btn_reset_password": "重置密码",
     "i_agree_to": "我同意",
     "terms_and_conditions": "服务条款",
     "privacy_policy": "隐私政策",
     "error_terms_required": "您必须同意条款才能继续",
+    "terms_and_conditions_register_technical": "技师注册条款和条件",
+    "terms_and_conditions_register_agency": "代理注册条款和条件",
     "forgot_password": "忘记密码?",
     "error": {
       "phone_required": "请输入手机号码",
@@ -314,6 +317,7 @@
     },
     "success": {
       "resend_otp": "OTP 发送成功",
+      "verify_otp": "OTP 验证成功",
       "verify_register_otp": "OTP 验证成功",
       "register_success": "注册成功，欢迎使用本应用！",
       "login_success": "登录成功，欢迎使用本应用！"
@@ -379,21 +383,21 @@
     "take_photo": "拍照",
     "choose_from_lib": "从相册选择",
     "delete_avatar_title": "删除头像",
+    "delete_avatar_desc": "你确定要删除头像吗？",
+    "edit_avatar": "编辑头像",
     "user_info_title": "账户信息",
     "edit_info": "编辑信息",
     "notification": "通知",
     "affiliate": "推荐佣金",
     "config_schedule": "日程配置",
-    "inviteTechnician": "邀请技师",
     "scanReferral": "扫描推荐",
+    "inviteTechnician": "邀请技师",
     "delete_account_confirm_title": "确认删除账户",
     "delete_account": "删除账户",
     "delete_account_warning": "此操作将永久删除您的所有数据、交易记录和个人信息。删除后数据将无法恢复。",
     "delete_account_success": "您的账户已成功从系统中删除。",
     "referral_by": "推荐人",
     "is_leader": "渠道合作商",
-    "delete_avatar_desc": "你确定要删除头像吗？",
-    "edit_avatar": "编辑头像",
     "error": {
       "invalid_name": "姓名必须为 4-255 个字符",
       "invalid_date_of_birth": "出生日期不能在未来",
@@ -411,6 +415,14 @@
       "images_min_note": "最少 3 张，最多 5 张照片",
       "images_warning": "请勿使用虚假或不雅照片。照片必须清晰、露脸、正面、严肃且适合工作。严禁包含个人信息（电话、社交媒体、详细地址...）。",
       "id_title": "身份证（正反面）",
+      "id_cccd_title": "身份证（正反面）",
+      "id_cccd_title_exclude": "身份证（正反面）",
+      "id_cccd_front": "身份证正面",
+      "id_cccd_back": "身份证反面",
+      "avatar": "头像",
+      "field_dob_label": "出生日期",
+      "real_name": "全名（与身份证一致）",
+      "address": "合作伙伴地址",
       "error_agency_id_invalid": "代理 ID 无效。请输入数字。",
       "id_front": "正面",
       "id_back": "反面",
@@ -468,20 +480,26 @@
       "bio_placeholder_cn": "用中文描述您自己...",
       "error_nickname_required": "请输入显示名称。",
       "error_bio_required": "请输入您的简介（至少 {{ min }} 个字符）。",
+      "error_invalid_nickname_length": "显示名称必须在 {{min}} 到 {{max}} 个字符之间。",
+      "error_invalid_experience": "经验必须在 {{min}} 到 {{max}} 年之间。",
+      "error_invalid_dob": "出生日期无效。",
+      "error_avatar_required": "请选择头像。",
+      "error_missing_id_front": "请添加身份证正面照片。",
+      "error_missing_id_back": "请添加身份证反面照片。",
       "error_file_invalid": "请选择一张图片，或上传的图片无效。",
       "alert_images_display_message": "请添加至少 {{ min }} 张且最多 {{ max }} 张照片以展示给客户。",
       "error_check_apply_partner": "检查合作伙伴申请时发生错误。请稍后重试。",
       "info_apply_pending": "您已注册成为合作伙伴，正在等待管理员审核，请耐心等待最新消息。",
       "info_apply_approved": "您的合作伙伴注册已获得批准。",
       "info_apply_rejected": "您的合作伙伴申请已被拒绝，无法再次申请。",
-      "withdraw_fee": "提现手续费",
-      "total_withdraw": "提现金额",
-       "status_pending_for_ktv": "您已注册成为技师，正在等待管理员审核，请耐心等待最新消息。",
+      "status_pending_for_ktv": "您已注册成为技师，正在等待管理员审核，请耐心等待最新消息。",
       "status_pending_for_ktv_leader": "您已注册成为城市区域代理，正在等待管理员审核，请耐心等待最新消息。",
       "status_pending_for_agency": "您已注册成为城市区域代理，正在等待管理员审核，请耐心等待最新消息。",
       "cancel_reason_title": "注册取消",
       "error_check_application": "检查合作伙伴申请时发生错误。请稍后重试。",
       "show_application": "查看申请详情",
+      "invalid_realname_length": "真实姓名必须至少包含 {{ min }} 个字符，最多 {{ max }} 个字符。",
+      "invalid_address": "地址无效。",
       "modal_application": {
         "title": "申請詳情",
         "status": "已拒絕",
@@ -501,7 +519,9 @@
         "cccd_back": "身分證反面",
         "face_with_identity_card": "手持身分證照片",
         "certificate": "相關證書",
-        "gallery": "展示照片 (供客戶查看)"
+        "gallery": "展示照片 (供客戶查看)",
+        "real_name": "全名（与身份证一致）",
+        "address": "合作伙伴地址"
       }
     },
     "partner_register": {
@@ -549,7 +569,7 @@
     "transfer_note": "转账备注",
     "note_important": "请务必填写正确的转账备注",
     "processing_transaction": "微信支付正在处理中，系统确认可能需要 15–30 分钟",
-    "exchange_rate_wechat_pay": "换算为 {{priceCny}} 人民币",  
+    "exchange_rate_wechat_pay": "换算为 {{priceCny}} 人民币",
     "withdraw": {
       "title_modal": "选择提现账户",
       "add_new_account": "关联新账户",
@@ -642,20 +662,20 @@
     "booking_total_price": "支付总额",
     "booking_failed_title": "预订失败",
     "booking_failed_message": "处理预约时发生错误。很抱歉给您带来不便。请重试。",
-     "booking_today": "今日预约",
+    "booking_today": "今日预约",
     "booking_conflict": "请选择一个不与现有预约重叠的时间槽，每个预约之间的最小间隔为 {{ min }} 分钟",
     "booking_empty": "今日暂无预约",
     "booking_empty_2": "您可以在任何时间预约",
     "busy_slot": "已预订",
-    "confirmed": "日历已确认",
     "subtotal": "临时总金额",
     "time_to_go_to_place": "技师将在大约 {{ break_time }} 分钟后到达您所在的位置",
     "service_name": "服务名称",
     "duration": "时长",
-    "service_price": "服务价格",
+    "confirmed": "日历已确认",
     "distance": "距离",
     "distance_price": "每公里价格",
     "discount": "折扣",
+    "service_price": "服务价格",
     "review": {
       "title": "评价服务",
       "rating": "满意度",
@@ -691,6 +711,7 @@
     "is_primary_desc": "预订服务时将默认选择此地址",
     "save_address": "保存地址",
     "primary": "默认",
+    "primary_address": "当前地址",
     "no_desc": "无备注",
     "get_current_location": "获取当前位置",
     "loading": "正在保存...",
@@ -904,10 +925,10 @@
           "active_ktv": "有订单的技师"
         },
         "items": {
-          "reviews": "{{count}} đánh giá",
-          "revenue": "Doanh thu",
-          "orders": "Đơn hàng",
-          "customers": "Khách hàng"
+          "reviews": "{{count}} 评价",
+          "revenue": "收入",
+          "orders": "订单",
+          "customers": "客户"
         },
         "performance_title": "技师绩效"
       }

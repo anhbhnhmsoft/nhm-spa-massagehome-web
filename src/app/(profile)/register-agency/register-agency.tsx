@@ -24,9 +24,13 @@ import { useRegisterAgency } from "@/features/user/hooks/use-register-agency";
 import { getFilesByType } from "@/features/user/hooks/use-register-technical";
 import ImageSlot from "@/components/app/partner-register/image-slot";
 import { ListLocationModal } from "@/components/location";
+import { usePreviewPdf } from "@/features/app/hooks";
+import { ContractFileType } from "@/features/file/const";
 
 export default function PartnerRegisterAgencyScreen() {
   const { t } = useTranslation();
+
+  const { handlePreviewPdf } = usePreviewPdf();
   const { pickImage } = useImagePicker();
   const { showForm, reviewApplication } = useCheckPartnerRegister();
   const { form, onSubmit, loading } = useRegisterAgency();
@@ -233,11 +237,21 @@ export default function PartnerRegisterAgencyScreen() {
                   </button>
                   <p className="text-sm leading-relaxed text-slate-600">
                     {t("auth.i_agree_to")}{" "}
-                    <span className="cursor-pointer font-bold text-blue-600 underline">
+                    <span
+                      className="cursor-pointer font-bold text-blue-600 underline"
+                      onClick={() =>
+                        handlePreviewPdf(ContractFileType.POLICY_FOR_AGENCY)
+                      }
+                    >
                       {t("auth.terms_and_conditions_register_agency")}{" "}
                     </span>
                     {t("common.and")}{" "}
-                    <span className="cursor-pointer font-bold text-blue-600 underline">
+                    <span
+                      className="cursor-pointer font-bold text-blue-600 underline"
+                      onClick={() =>
+                        handlePreviewPdf(ContractFileType.POLICY_PRIVACY)
+                      }
+                    >
                       {t("auth.privacy_policy")}
                     </span>
                   </p>

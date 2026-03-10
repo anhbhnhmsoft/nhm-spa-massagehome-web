@@ -23,7 +23,6 @@ import { useTranslation } from "react-i18next";
 import Image from "next/image";
 import Link from "next/link";
 import GradientBackground from "@/components/styles/gradient-background";
-import { useProfile } from "@/features/user/hooks";
 import { _BookingStatus, _BookingStatusMap } from "@/features/service/const";
 import { useGetSupport } from "@/features/config/hooks";
 import useApplicationStore from "@/lib/store";
@@ -36,11 +35,13 @@ import { ListLocationModal } from "./location";
 import SupportModal from "./support-modal";
 import LogoutModal from "./dialog-logout";
 import { useOrdersStore } from "@/features/booking/store";
+import { useProfileCustomer } from "@/features/profile/hooks";
+import { DashboardBookingStatus } from "@/features/profile/types";
 
 type UserProfileCardProps = {
-  user: ReturnType<typeof useProfile>["user"];
-  dashboardData: ReturnType<typeof useProfile>["dashboardData"];
-  refreshProfile: ReturnType<typeof useProfile>["refreshProfile"];
+  user: ReturnType<typeof useProfileCustomer>["user"];
+  dashboardData: ReturnType<typeof useProfileCustomer>["dashboardData"];
+  refreshProfile: ReturnType<typeof useProfileCustomer>["refreshProfile"];
 };
 // --- USER PROFILE CARD ---
 export const UserProfileCard: FC<UserProfileCardProps> = ({
@@ -50,7 +51,6 @@ export const UserProfileCard: FC<UserProfileCardProps> = ({
 }) => {
   const [imageError, setImageError] = useState(false);
   const { t } = useTranslation();
-
   return (
     <header className="sticky top-0 z-50 w-full">
       <GradientBackground className="mx-auto max-w-[1024px] rounded-b-[30px] px-4 pt-10 pb-6 text-white md:px-8">
@@ -157,7 +157,7 @@ export const UserProfileCard: FC<UserProfileCardProps> = ({
 
 // --- ORDER BOARD ---
 type OrderBoardProfileProps = {
-  dashboardData: ReturnType<typeof useProfile>["dashboardData"];
+  dashboardData: ReturnType<typeof useProfileCustomer>["dashboardData"];
 };
 const ORDER_MENU_ITEMS = [
   {
@@ -205,7 +205,10 @@ export const OrderBoardProfile = ({
 
       <div className="grid grid-cols-4 gap-4">
         {ORDER_MENU_ITEMS.map((item) => {
-          const count = dashboardData?.booking_count?.[item.status] || 0;
+          const count =
+            dashboardData?.booking_count?.[
+              item.status as DashboardBookingStatus
+            ] || 0;
           return (
             <button
               key={item.status}

@@ -29,10 +29,12 @@ import {
   removeSpecificFile,
   updateSpecificFile,
 } from "@/lib/utils";
+import { usePreviewPdf } from "@/features/app/hooks";
 
 export default function PartnerRegisterIndividualPage() {
   const { t } = useTranslation();
   const router = useRouter();
+  const { handlePreviewPdf } = usePreviewPdf();
   const forWho = useUserServiceStore((state) => state.forWho);
   const searchParams = useSearchParams();
 
@@ -460,9 +462,7 @@ export default function PartnerRegisterIndividualPage() {
               <span
                 className="cursor-pointer font-bold text-blue-600 underline"
                 onClick={() =>
-                  router.push(
-                    `/(app)/term-or-use-pdf?type=${ContractFileType.POLICY_FOR_KTV}`,
-                  )
+                  handlePreviewPdf(ContractFileType.POLICY_FOR_KTV)
                 }
               >
                 {t("auth.terms_and_conditions_register_technical")}{" "}
@@ -471,9 +471,7 @@ export default function PartnerRegisterIndividualPage() {
               <span
                 className="cursor-pointer font-bold text-blue-600 underline"
                 onClick={() =>
-                  router.push(
-                    `/(app)/term-or-use-pdf?type=${ContractFileType.POLICY_PRIVACY}`,
-                  )
+                  handlePreviewPdf(ContractFileType.POLICY_PRIVACY)
                 }
               >
                 {t("auth.privacy_policy")}

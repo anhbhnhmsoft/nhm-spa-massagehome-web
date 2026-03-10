@@ -1,15 +1,15 @@
 "use client";
-import React from "react";
-import { useProfile } from "@/features/user/hooks";
 import {
   FeatureList,
   OrderBoardProfile,
   RegisterPartnerOrAffiliate,
   UserProfileCard,
 } from "@/components/profile-tab";
+import { useProfileCustomer } from "@/features/profile/hooks";
 
 const ProfileScreen = () => {
-  const { user, dashboardData, refreshProfile, isLoading } = useProfile();
+  const { user, dashboardData, refreshProfile, isLoading } =
+    useProfileCustomer();
 
   return (
     <div className="flex min-h-screen w-full flex-col">

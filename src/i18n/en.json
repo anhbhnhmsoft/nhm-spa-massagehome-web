@@ -119,7 +119,8 @@
     "prefix": "Download on the",
     "document": {
       "not_found": "No suitable document found"
-    }
+    },
+    "password_description": "Password must be at least 8 characters long, including uppercase, lowercase, and number."
   },
   "common_success": {
     "save_image_success": "Image saved successfully",
@@ -167,7 +168,8 @@
       "COMPLETED": "Completed",
       "CANCELED": "Cancelled",
       "PAYMENT_FAILED": "Payment Failed",
-      "WAITING_CANCEL": "Waiting Cancel"
+      "WAITING_CANCEL": "Waiting Cancel",
+      "ALL": "All"
     },
     "payment_type": {
       "QR_BANKING": "QR Banking Transfer",
@@ -228,7 +230,7 @@
       "SATURDAY": "Saturday",
       "SUNDAY": "Sunday"
     },
-     "review_application_status": {
+    "review_application_status": {
       "PENDING": "Pending",
       "APPROVED": "Approved",
       "REJECTED": "Rejected"
@@ -290,11 +292,13 @@
     "reset_password_title": "Reset Password",
     "reset_password_description": "Please enter your new password.",
     "btn_reset_password": "Reset Password",
-    "forgot_password": "Forgot Password?",
     "i_agree_to": "I agree to",
     "terms_and_conditions": "Terms of Service",
     "privacy_policy": "Privacy Policy",
     "error_terms_required": "You must agree to the terms to continue",
+   "terms_and_conditions_register_technical": "Terms and conditions for technician registration",
+    "terms_and_conditions_register_agency": "Terms and conditions for agency registration",
+    "forgot_password": "Forgot Password?",
     "error": {
       "phone_required": "Please enter phone number",
       "phone_invalid": "Invalid phone number, please re-enter",
@@ -313,6 +317,7 @@
     },
     "success": {
       "resend_otp": "OTP resent successfully",
+      "verify_otp": "OTP verified successfully",
       "verify_register_otp": "OTP verified successfully",
       "register_success": "Registration successful, welcome to the app!",
       "login_success": "Login successful, welcome to the app!"
@@ -378,10 +383,10 @@
     "take_photo": "Take Photo",
     "choose_from_lib": "Choose from Library",
     "delete_avatar_title": "Delete Avatar",
-    "user_info_title": "Account Info",
-    "edit_info": "Edit Info",
     "delete_avatar_desc": "Are you sure you want to delete your profile picture?",
     "edit_avatar": "Edit profile picture",
+    "user_info_title": "Account Info",
+    "edit_info": "Edit Info",
     "notification": "Notifications",
     "affiliate": "Referral Commission",
     "config_schedule": "Schedule Configuration",
@@ -410,6 +415,14 @@
       "images_min_note": "Minimum 3 and maximum 5 photos",
       "images_warning": "No fake or inappropriate photos. Photos must be clear, showing face, front view, serious, and suitable for work. Personal info (Phone, Social Media, Address...) is strictly prohibited.",
       "id_title": "ID Card (Front & Back)",
+      "id_cccd_title": "Citizen ID",
+    "id_cccd_title_exclude": "Citizen ID (excluding special characters)",
+    "id_cccd_front": "Front side of Citizen ID",
+    "id_cccd_back": "Back side of Citizen ID",
+    "avatar": "Avatar",
+    "field_dob_label": "Date of birth",
+    "real_name": "Full name",
+    "address": "Address",
       "error_agency_id_invalid": "Invalid Agency ID. Please enter a number.",
       "id_front": "Front",
       "id_back": "Back",
@@ -467,6 +480,12 @@
       "bio_placeholder_cn": "Describe yourself in Chinese...",
       "error_nickname_required": "Please enter display name.",
       "error_bio_required": "Please enter your bio (at least {{ min }} characters).",
+      "error_invalid_nickname_length": "Display name must be between {{min}} and {{max}} characters.",
+"error_invalid_experience": "Experience must be between {{min}} and {{max}} years.",
+"error_invalid_dob": "Invalid date of birth.",
+"error_avatar_required": "Please select an avatar.",
+"error_missing_id_front": "Please upload the front side of your Citizen ID.",
+"error_missing_id_back": "Please upload the back side of your Citizen ID.",
       "error_file_invalid": "Please select an image, or the uploaded image is invalid.",
       "alert_images_display_message": "Please add at least {{ min }} images and up to {{ max }} images to display to customers.",
       "error_check_apply_partner": "An error occurred while checking partner application. Please try again later.",
@@ -479,6 +498,8 @@
       "cancel_reason_title": "Registration Cancellation",
       "error_check_application": "An error occurred while checking partner application. Please try again later.",
       "show_application": "Show Application",
+      "invalid_realname_length": "Full name must be between {{ min }} and {{ max }} characters.",
+      "invalid_address": "Please enter your address.",
       "modal_application": {
         "title": "Application Details",
         "status": "Rejected",
@@ -498,7 +519,9 @@
         "cccd_back": "ID Card (Back)",
         "face_with_identity_card": "Photo holding ID Card",
         "certificate": "Certificates",
-        "gallery": "Gallery for Customers"
+        "gallery": "Gallery for Customers",
+        "real_name": "Full Name (matches ID)",
+        "address": "Partner Address"
       }
     },
     "partner_register": {
@@ -556,7 +579,7 @@
       "note": "Note (Optional)",
       "placeholder_note": "Enter note (optional)",
       "withdraw_fee": "Withdrawal Fee",
-       "total_withdraw": "Total Withdrawn"
+      "total_withdraw": "Total Withdrawn"
     },
     "confirm": {
       "delete_withdraw_info": "Are you sure you want to delete?",
@@ -644,15 +667,15 @@
     "booking_empty": "No appointments scheduled for today",
     "booking_empty_2": "You can book appointments at any time",
     "busy_slot": "Already booked",
-    "confirmed": "Calendar confirmed",
     "subtotal": "Subtotal",
     "time_to_go_to_place": "The technician will arrive at your place in about {{ break_time }} minutes",
     "service_name": "Service name",
     "duration": "Duration",
-    "service_price": "Service price",
+    "confirmed": "Calendar confirmed",
     "distance": "Distance to you",
     "distance_price": "Price per km",
     "discount": "Discount",
+    "service_price": "Service price",
     "review": {
       "title": "Review Service",
       "rating": "Satisfaction Level",
@@ -688,6 +711,7 @@
     "is_primary_desc": "Default address will be selected when you book service",
     "save_address": "Save Address",
     "primary": "Default",
+    "primary_address": "Current Address",
     "no_desc": "No note",
     "get_current_location": "Get Current Location",
     "loading": "Saving...",
@@ -738,11 +762,11 @@
     "coupon": "Coupon",
     "discount_price": "Discount Price",
     "enter_cancel_reason": "Enter Cancellation Reason",
+    "cancel_service_reason": "Reason for service cancellation",
     "execution_date": "Execution date",
     "start": "Start",
     "end": "End",
     "final_price": "Final price",
-    "cancel_service_reason": "Reason for service cancellation",
     "customer_notes": "Customer notes",
     "original_price": "Original price",
     "address_notes": "Address notes",
