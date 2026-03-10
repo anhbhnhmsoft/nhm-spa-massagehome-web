@@ -5,7 +5,7 @@ import {
 import { useEffect } from "react";
 import { getMessageError } from "@/lib/utils";
 import { useTranslation } from "react-i18next";
-import useAuthStore from "@/features/auth/store";
+import useAuthStore from "@/features/auth/store/auth-store";
 import useToast from "@/features/app/hooks/use-toast";
 import { useReferralStore } from "@/features/affiliate/store";
 import { useRouter } from "next/navigation";

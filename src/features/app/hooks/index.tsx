@@ -1,18 +1,29 @@
 import { useCallback } from "react";
-import { useRouter } from "next/navigation";
 import { ContractFileType } from "@/features/file/const";
-import useApplicationStore from "@/lib/store";
+import { useDownloadFile } from "@/features/file/hooks/use-mutation";
 
 export const usePreviewPdf = () => {
-  const router = useRouter();
-
-  const setContractType = useApplicationStore((state) => state.setContractType);
+  const { mutate } = useDownloadFile();
   const handlePreviewPdf = useCallback(
     async (type: ContractFileType) => {
-      await setContractType(type);
-      router.push("/term-or-use-pdf");
+      mutate(type, {
+        onSuccess: (data) => {
+          const fileUrl = data.data.file;
+          if (!fileUrl) return;
+
+          const link = document.createElement("a");
+          link.href = fileUrl;
+          link.target = "_blank"; // mở tab mới
+          link.rel = "noopener noreferrer";
+
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+        },
+        onError: (error) => {},
+      });
     },
-    [router, setContractType],
+    [mutate],
   );
 
   return {

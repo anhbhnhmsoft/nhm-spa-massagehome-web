@@ -17,9 +17,9 @@ export default function AuthPageComponent() {
   } = form;
 
   return (
-    <div className="flex min-h-screen w-full items-center justify-center bg-gray-50 p-4 font-inter">
+    <div className="flex min-h-screen w-full  justify-center bg-gray-50 p-4 font-inter">
       {/* Container chính: Card layout tương tự mobile view nhưng rộng hơn trên web */}
-      <main className="flex w-full  flex-col overflow-hidden ">
+      <main className="flex w-full flex-col justify-between px-5 pt-6 pb-8 max-w-[750px] mx-auto">
         {/* --- CONTENT --- */}
         <div className="flex-1 max-w-md mx-auto w-full h-screen">
           {/* Title & Description */}

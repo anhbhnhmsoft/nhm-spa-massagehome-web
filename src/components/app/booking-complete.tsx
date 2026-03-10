@@ -167,14 +167,10 @@ interface Props {
   onClose: () => void;
 }
 
-export default function BookingResultModal({
-  isVisible,
-  bookingId,
-  onClose,
-}: Props) {
+export default function BookingResultModal({ isVisible, onClose }: Props) {
   const { t } = useTranslation();
   const router = useRouter();
-  const { status, data } = useCheckBooking(bookingId);
+  const { status, data } = useCheckBooking();
 
   // Khóa scroll khi modal mở
   useEffect(() => {

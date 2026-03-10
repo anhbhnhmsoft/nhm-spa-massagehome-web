@@ -23,7 +23,7 @@ export const CategoryCard = ({ item }: { item: CategoryItem }) => {
   return (
     <button
       onClick={handlePress}
-      className="group flex w-full flex-row rounded-xl border border-slate-100 bg-white p-3 text-left shadow-sm transition-all hover:border-blue-100 hover:shadow-md active:scale-[0.99]"
+      className="group flex w-full flex-row rounded-xl border border-slate-100 bg-white p-3 text-left shadow-sm transition-all"
     >
       {/* --- PHẦN ẢNH --- */}
       <div className="relative shrink-0">
@@ -64,7 +64,7 @@ export const CategoryCard = ({ item }: { item: CategoryItem }) => {
         </div>
 
         <div className="flex justify-end mt-2">
-          <div className="rounded-lg bg-primary-color-2 px-4 py-1.5 transition-colors group-hover:bg-blue-700">
+          <div className="rounded-lg bg-primary-color-2 px-4 py-1.5 transition-colors ">
             <span className="text-[10px] font-bold uppercase tracking-wider text-white sm:text-xs">
               {t("common.book_now")}
             </span>

@@ -1,10 +1,9 @@
 "use client";
 
 import React, { useState } from "react";
-import { MapPin, Bell, Search, X } from "lucide-react";
+import { MapPin, Bell, Search, ChevronDown } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
-import GradientBackground from "./styles/gradient-background";
 import { ListLocationModal } from "./location";
 import useApplicationStore from "@/lib/store";
 
@@ -16,8 +15,8 @@ type HeaderAppProps = {
 };
 
 export default function Header({
-  showSearch = true,
-  forSearch = "service",
+  showSearch = false,
+  forSearch,
   setTextSearch,
   textSearch,
 }: HeaderAppProps) {
@@ -39,73 +38,57 @@ export default function Header({
 
   return (
     <>
-      <header className="sticky top-0 z-50 w-full">
-        {/* ✅ Gradient wrapper */}
-        <GradientBackground className="mx-auto px-4 py-3 md:px-8 max-w-[1024px]">
-          <div className="mx-auto max-w-[1024px]">
-            {/* Top Bar */}
-            <div className="flex items-center justify-between gap-4 mb-3">
-              {/* Location */}
-              <button
-                onClick={() => setShowLocationModal(true)}
-                className="flex flex-col items-start flex-1 min-w-0 transition-opacity hover:opacity-80"
-              >
-                <span className="text-[10px] md:text-xs font-medium text-blue-200 uppercase tracking-wider">
-                  {t("header_app.location") || "VỊ TRÍ CỦA BẠN"}
-                </span>
-                <div className="flex items-center gap-1 w-full">
-                  <MapPin size={16} className="text-white shrink-0" />
-                  <span className="text-sm md:text-base font-bold text-white truncate">
-                    {locationUser?.address ||
-                      t("header_app.need_location") ||
-                      "Chọn địa chỉ..."}
-                  </span>
-                </div>
-              </button>
+      <header className="w-full bg-white px-4 md:px-6 pb-4 border-b border-gray-200 rounded-b-md">
+        {/* === VỊ TRÍ & THÔNG BÁO === */}
+        <div className="flex items-center justify-between mb-4 gap-2 pt-10 md:pt-6">
+          {/* Location */}
+          <button
+            className="flex items-center flex-1 min-w-0"
+            onClick={() => setShowLocationModal(true)}
+          >
+            <MapPin size={20} className="text-gray-500 shrink-0" />
 
-              {/* Notification */}
-              <button
-                onClick={handleNotificationClick}
-                className="relative p-2 rounded-full hover:bg-white/10 transition"
-              >
-                <Bell size={24} className="text-white" />
-                <span className="absolute top-2 right-2 flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75" />
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500" />
-                </span>
-              </button>
-            </div>
+            <div className="ml-3 flex-1 flex flex-col items-start min-w-0">
+              <span className="text-[11px] md:text-xs text-gray-500 font-medium">
+                {t("header_app.location")}
+              </span>
 
-            {/* Search */}
-            {showSearch && (
-              <div className="w-full mx-auto">
-                <div className="relative h-11 flex items-center rounded-xl bg-white px-3 shadow-md focus-within:ring-2 focus-within:ring-blue-400">
-                  <Search size={20} className="text-slate-400" />
-                  <input
-                    className="ml-2 flex-1 bg-transparent text-sm outline-none"
-                    placeholder={
-                      forSearch === "service"
-                        ? t("header_app.search_placeholder_service") ||
-                          "Tìm kiếm dịch vụ..."
-                        : t("header_app.search_placeholder_massage") ||
-                          "Tìm kiếm massage..."
-                    }
-                    value={textSearch}
-                    onChange={(e) => setTextSearch?.(e.target.value)}
-                  />
-                  {textSearch && (
-                    <button
-                      onClick={() => setTextSearch?.("")}
-                      className="p-1 rounded-full hover:bg-slate-100"
-                    >
-                      <X size={18} className="text-slate-400" />
-                    </button>
-                  )}
-                </div>
+              <div className="flex items-center w-full min-w-0">
+                <span className="text-[14px] md:text-base font-semibold text-gray-900 mr-2 truncate">
+                  {locationUser?.address || t("header_app.need_location")}
+                </span>
+
+                <ChevronDown size={16} className="text-gray-500 shrink-0" />
               </div>
-            )}
+            </div>
+          </button>
+
+          {/* Notification */}
+          <button
+            onClick={handleNotificationClick}
+            className="relative flex items-center justify-center w-10 h-10"
+          >
+            <Bell size={22} className="text-gray-600" />
+          </button>
+        </div>
+
+        {/* === SEARCH BAR === */}
+        {showSearch && (
+          <div className="flex items-center bg-gray-100 border border-gray-200 rounded-xl px-4 h-11">
+            <Search size={18} className="text-gray-400" />
+
+            <input
+              className="flex-1 ml-3 font-medium text-sm text-gray-900 bg-transparent outline-none"
+              placeholder={
+                forSearch === "service"
+                  ? t("header_app.search_placeholder_service")
+                  : t("header_app.search_placeholder_massage")
+              }
+              value={textSearch}
+              onChange={(e) => setTextSearch?.(e.target.value)}
+            />
           </div>
-        </GradientBackground>
+        )}
       </header>
 
       <ListLocationModal

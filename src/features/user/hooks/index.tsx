@@ -8,7 +8,7 @@ import useUserServiceStore, { useKTVSearchStore } from "@/features/user/stores";
 import useApplicationStore from "@/lib/store";
 import { useMutationKtvDetail } from "./use-mutation";
 import { useCheckAuth, useCheckAuthToRedirect } from "@/features/auth/hooks";
-import useAuthStore from "@/features/auth/store";
+import useAuthStore from "@/features/auth/store/auth-store";
 import { useProfileQuery } from "@/features/auth/hooks/use-query";
 import { useRouter } from "next/navigation";
 import useErrorToast from "@/features/app/hooks/use-error-toast";
@@ -116,63 +116,6 @@ export const useSetKtv = () => {
         },
       });
     });
-  };
-};
-
-/**
- * Lấy thông tin ktv và danh sách dịch vụ của ktv đó
- */
-export const useKTVDetail = () => {
-  const ktv = useUserServiceStore((s) => s.ktv);
-  const setKtv = useUserServiceStore((s) => s.setKtv);
-  const { mutate } = useMutationKtvDetail();
-  const handleError = useErrorToast();
-  const router = useRouter();
-  const setLoading = useApplicationStore((s) => s.setLoading);
-
-  const didBack = useRef(false);
-
-  useEffect(() => {
-    if (!ktv && !didBack.current) {
-      didBack.current = true;
-      router.back();
-    }
-  }, [ktv, router]);
-
-  const serviceParams = useMemo(
-    () => ({
-      filter: {
-        user_id: ktv?.id,
-      },
-      page: 1,
-      per_page: 5,
-    }),
-    [ktv?.id],
-  );
-
-  const queryServices = useGetServiceList(serviceParams, !!ktv);
-  const refreshPage = useCallback(() => {
-    if (ktv) {
-      setLoading(true);
-      mutate(ktv.id, {
-        onSuccess: (res) => {
-          setKtv(res.data);
-          queryServices.refetch();
-        },
-        onError: (error) => {
-          handleError(error);
-        },
-        onSettled: () => {
-          setLoading(false);
-        },
-      });
-    }
-  }, [handleError, ktv, mutate, queryServices, setKtv, setLoading]);
-
-  return {
-    detail: ktv as KTVDetail,
-    queryServices,
-    refreshPage,
   };
 };
 

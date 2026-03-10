@@ -3,14 +3,17 @@ import Image from "next/image"; // Dùng Image của Next.js
 import { Clock, ImageOff, User } from "lucide-react"; // Lucide cho Web
 import dayjs from "dayjs";
 import { useTranslation } from "react-i18next";
-import { KTVDetail, KTVWorkSchedule } from "@/features/user/types";
-import { ServiceItem } from "@/features/service/types";
+import {
+  KTVDetail,
+  KTVWorkSchedule,
+  ServiceCategoryItem,
+} from "@/features/user/types";
 import { cn, formatBalance, getCurrentDayKey } from "@/lib/utils";
 import DefaultColor from "@/components/styles/color";
 import StarRating from "../star-rating";
 import Empty from "../emty";
-import { useSetService } from "@/features/service/hooks";
 import { _KTVConfigSchedulesLabel } from "@/lib/const";
+import { TFunction } from "i18next";
 
 // 1. Hiển thị ảnh của KTV với xử lý lỗi ảnh
 export const ImageDisplayCustomer = ({ source }: { source: string }) => {
@@ -132,24 +135,26 @@ export const ReviewFistItem = ({
   );
 };
 
+type PropsServiceCard = {
+  t: TFunction;
+  item: ServiceCategoryItem;
+  setItem: (item: ServiceCategoryItem) => void;
+};
 // 4. Hiển thị thông tin dịch vụ (Card)
-export const ServiceCard = ({ item }: { item: ServiceItem }) => {
-  const { t } = useTranslation();
+export const ServiceCard = ({ t, item, setItem }: PropsServiceCard) => {
   const [imageError, setImageError] = useState(false);
-  const setService = useSetService();
 
   const minPrice = useMemo(() => {
-    const min = item.options.reduce(
+    const min = item.prices.reduce(
       (acc, option) => Math.min(acc, Number(option.price)),
-      Number(item.options[0].price),
+      Number(item.prices[0].price),
     );
     return min.toFixed(2);
-  }, [item.options]);
+  }, [item.prices]);
 
   return (
     <button
-      disabled={!item.is_active}
-      onClick={() => setService(item.id)}
+      onClick={() => setItem(item)}
       className="flex flex-row border-b border-gray-100 pb-4 w-full text-left bg-transparent"
     >
       <div className="relative w-24 h-24 shrink-0 rounded-lg overflow-hidden bg-gray-200">
@@ -181,21 +186,9 @@ export const ServiceCard = ({ item }: { item: ServiceItem }) => {
           <div className="mt-1 flex flex-row items-center justify-between">
             <span className="text-[10px] text-orange-500">
               {t("masseurs_detail.sales_count_item_service", {
-                count: item.bookings_count,
+                count: item.booking_count,
               })}
             </span>
-            <div
-              className={cn("rounded-full px-2 py-1 items-center flex  ", {
-                "bg-primary-color-2": item.is_active,
-                "bg-red-500": !item.is_active,
-              })}
-            >
-              <span className="font-semibold text-[12px] text-white">
-                {item.is_active
-                  ? t("masseurs_detail.available")
-                  : t("masseurs_detail.unavailable")}
-              </span>
-            </div>
           </div>
         </div>
 
@@ -234,7 +227,7 @@ export const ScheduleSection = ({
   if (!schedule) return null;
 
   return (
-    <div className="mt-2 bg-white px-4 py-4">
+    <div className="mt-2 bg-gray-50 px-4 py-4 rounded-lg">
       {/* Header Section */}
       <div className="mb-3 flex flex-row items-center justify-between">
         <div className="flex flex-row items-center gap-2">

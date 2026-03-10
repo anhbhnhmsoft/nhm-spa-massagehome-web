@@ -119,7 +119,8 @@
     "prefix": "Tải về trên",
     "document": {
       "not_found": "Không tìm thấy tài liệu phù hợp"
-    }
+    },
+    "password_description": "Mật khẩu phải có ít nhất 8 ký tự,ít nhất 1 chữ hoa, 1 chữ thường, 1 chữ số."
   },
   "common_success": {
     "save_image_success": "Lưu trữ ảnh thành công",
@@ -167,7 +168,8 @@
       "COMPLETED": "Hoàn thành",
       "CANCELED": "Hủy",
       "PAYMENT_FAILED": "Thanh toán thất bại",
-      "WAITING_CANCEL": "Chờ hủy"
+      "WAITING_CANCEL": "Chờ hủy",
+      "ALL" :"Tất cả"
     },
     "payment_type": {
       "QR_BANKING": "Chuyển khoản QR Banking",
@@ -287,10 +289,16 @@
     "register_description": "Hãy nhập thông tin để giúp chúng tôi xác nhận tài khoản của bạn.",
     "login_title": "Đăng nhập",
     "login_description": "Hãy nhập thông tin để giúp chúng tôi xác nhận tài khoản của bạn.",
+    "reset_password_title": "Đặt lại mật khẩu",
+    "reset_password_description": "Hãy nhập mật khẩu mới của bạn.",
+    "btn_reset_password": "Đặt lại mật khẩu",
     "i_agree_to": "Tôi đồng ý với",
     "terms_and_conditions": "Điều khoản dịch vụ",
     "privacy_policy": "Chính sách bảo mật",
     "error_terms_required": "Bạn phải đồng ý với điều khoản để tiếp tục",
+    "terms_and_conditions_register_technical": "Điều khoản đăng ký kĩ thuật viên",
+    "terms_and_conditions_register_agency": "Điều khoản đăng ký đối tác",
+    "forgot_password": "Quên mật khẩu?",
     "error": {
       "phone_required": "Vui lòng nhập số điện thoại",
       "phone_invalid": "Số điện thoại không hợp lệ, vui lòng nhập lại",
@@ -310,6 +318,7 @@
     },
     "success": {
       "resend_otp": "Gửi lại mã OTP thành công",
+      "verify_otp": "Xác nhận mã OTP thành công",
       "verify_register_otp": "Xác nhận mã OTP thành công",
       "register_success": "Đăng ký thành công, chào mừng bạn đến với ứng dụng!",
       "login_success": "Đăng nhập thành công, chào mừng bạn đến với ứng dụng!"
@@ -407,6 +416,14 @@
       "images_min_note": "Tối thiểu 3 ảnh và tối đa 5 ảnh",
       "images_warning": "Không đăng ảnh ảo, hở hang. Ảnh cần rõ mặt, rõ nét, chính diện, nghiêm túc, phù hợp đi làm. Nghiêm cấm để thông tin cá nhân (Số điện thoại, Trang cá nhân, Địa chỉ chi tiết,...).",
       "id_title": "CCCD / CMND (trước & sau)",
+      "id_cccd_title": "CCCD / CMND (trước & sau & ảnh mặt chụp cùng)",
+      "id_cccd_title_exclude": "CCCD / CMND (trước & sau)",
+      "id_cccd_front": "CCCD/CMND mặt trước",
+      "id_cccd_back": "CCCD/CMND mặt sau",
+      "avatar": "Hình ảnh đại diện",
+      "field_dob_label": "Ngày sinh",
+      "real_name": "Họ và tên (trùng với CCCD)",
+      "address": "Địa chỉ đối tác",
       "error_agency_id_invalid": "Mã Agency không hợp lệ. Vui lòng nhập số.",
       "id_front": "Mặt trước",
       "id_back": "Mặt sau",
@@ -464,6 +481,12 @@
       "bio_placeholder_cn": "Mô tả bản thân bằng Tiếng Trung...",
       "error_nickname_required": "Vui lòng nhập tên hiển thị.",
       "error_bio_required": "Vui lòng nhập giới thiệu bản thân (ít nhất {{ min }} ký tự).",
+      "error_invalid_nickname_length": "Tên hiển thị phải từ {{min}} đến {{max}} ký tự.",
+      "error_invalid_experience": "Kinh nghiệm phải từ {{min}} đến {{max}} năm.",
+      "error_invalid_dob": "Ngày sinh không hợp lệ.",
+      "error_avatar_required": "Vui lòng chọn ảnh đại diện.",
+      "error_missing_id_front": "Vui lòng thêm ảnh CCCD mặt trước.",
+      "error_missing_id_back": "Vui lòng thêm ảnh CCCD mặt sau.",
       "error_file_invalid": "Vui lòng chọn ảnh, hoặc ảnh tải lên không hợp lệ.",
       "alert_images_display_message": "Vui lòng thêm ít nhất {{ min }} ảnh và tối đa {{ max }} ảnh để hiển thị cho khách hàng.",
       "error_check_apply_partner": "Có lỗi xảy ra khi kiểm tra đăng ký đối tác. Vui lòng thử lại sau.",
@@ -476,8 +499,10 @@
       "cancel_reason_title": "Đăng ký của bạn đã bị hủy",
       "error_check_application": "Có lỗi xảy ra khi kiểm tra đơn đăng ký. Vui lòng thử lại sau.",
       "show_application": "Xem lại đơn đăng ký",
+      "invalid_realname_length": "Họ và tên phải có ít nhất {{ min }} ký tự và tối đa {{ max }} ký tự.",
+      "invalid_address": "Địa chỉ không hợp lệ",
       "modal_application": {
-        "title": "Chi tiết đơn đăng ký",
+       "title": "Chi tiết đơn đăng ký",
         "status": "Từ chối",
         "reason": "Lý do",
         "information": "Thông tin",
@@ -495,7 +520,9 @@
         "cccd_back": "CCCD Mặt sau",
         "face_with_identity_card": "Ảnh cầm thẻ cùng CCCD",
         "certificate": "Bằng cấp",
-        "gallery": "Ảnh hiển thị cho Khách hàng"
+        "gallery": "Ảnh hiển thị cho Khách hàng",
+        "real_name": "Họ và tên (trùng với CCCD)",
+        "address": "Địa chỉ đối tác"
       }
     },
     "partner_register": {
@@ -596,7 +623,7 @@
     "service_list": "Danh sách dịch vụ",
     "available": "Sẵn sàng",
     "unavailable": "Tạm ngưng",
-    "sales_count_item_service": "Đã bán {{ count }}",
+    "sales_count_item_service": "Đã phục vụ {{ count }} đơn hàng",
     "price_service_sub": "Chỉ từ",
     "booking_soon": "Lịch hẹn sớm nhất sau {{ time }}",
     "working_hours": "Giờ làm việc",
@@ -641,11 +668,15 @@
     "booking_empty": "Hôm nay KTV chưa có lịch hẹn",
     "booking_empty_2": "Bạn có thể thoải mái chọn giờ",
     "busy_slot": "Đã có khách đặt",
-    "confirmed": "Lịch đã xác nhận",
     "subtotal": "Tổng tiền tạm tính",
+    "time_to_go_to_place": "Kỹ thuật viên sẽ đến tới bạn sau khoảng {{ break_time }} phút",
+    "service_name": "Tên dịch vụ",
+    "duration": "Thời gian",
+    "confirmed": "Lịch đã xác nhận",
     "distance": "Khoảng cách tới bạn",
     "distance_price": "Cước di chuyển / km",
     "discount": "Giảm giá",
+    "service_price": "Giá dịch vụ",
     "review": {
       "title": "Đánh giá dịch vụ",
       "rating": "Mức độ hài lòng",
@@ -744,6 +775,8 @@
     "no_cancel_reason": "Không có lý do hủy",
     "cancel_pending_note": "Yêu cầu hủy sẽ được gửi đến quản trị viên để xét duyệt.",
     "start_error_booking": "Đã xảy ra lỗi khi bắt đầu dịch vụ. Vui lòng thử lại.",
+    "warning_alert_service_booking_confirm": "Bạn đang có 1 dịch vụ đã xác nhận làm vào lúc {{time}}, vui lòng liên hệ với Kĩ thuật viên để xác nhận hoặc liên hệ với tổng đài để chuyển đơn",
+    "warning_alert_service_booking_ongoing": "Bạn đang có 1 dịch vụ đang diễn ra bắt đầu vào lúc {{time}}",
     "notification": {
       "booking_end_title": "Hết giờ làm dịch vụ",
       "booking_end_body": "Thời gian làm dịch vụ đã kết thúc"

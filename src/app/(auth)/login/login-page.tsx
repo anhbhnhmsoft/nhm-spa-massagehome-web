@@ -1,16 +1,15 @@
 "use client";
 
-import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Controller } from "react-hook-form";
 import { useHandleLogin } from "@/features/auth/hooks";
-import { Eye, EyeOff, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { FormInput } from "@/components/ui/form-input";
 
 export default function LoginPage() {
   const { t } = useTranslation();
-  const { form, onSubmit, loading } = useHandleLogin();
-  const [passwordVisible, setPasswordVisible] = useState(false);
+  const { form, onSubmit, onForgotPassword, loading } = useHandleLogin();
 
   const {
     control,
@@ -24,7 +23,7 @@ export default function LoginPage() {
         {/* ===== CONTENT ===== */}
         <div>
           {/* Title */}
-          <h1 className="mb-2 text-2xl font-bold text-gray-900 text-center">
+          <h1 className="mb-2 text-2xl font-bold text-gray-900 text-center ">
             {t("auth.login_title")}
           </h1>
 
@@ -37,48 +36,47 @@ export default function LoginPage() {
             control={control}
             name="password"
             render={({ field: { onChange, onBlur, value } }) => (
-              <div className="space-y-2 max-w-md m-auto">
-                <div className="relative">
-                  <input
-                    type={passwordVisible ? "text" : "password"}
-                    placeholder="**********"
-                    value={value || ""}
-                    onChange={onChange}
-                    onBlur={onBlur}
-                    className={cn(
-                      "h-12 w-full rounded-2xl border bg-white px-4 pr-12 text-base outline-none transition-all",
-                      errors.password
-                        ? "border-red-500"
-                        : "border-gray-200 focus:border-primary-color-2 focus:ring-2 focus:ring-primary-color-2/10",
-                    )}
-                  />
-
-                  <button
-                    type="button"
-                    onClick={() => setPasswordVisible(!passwordVisible)}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400"
-                  >
-                    {passwordVisible ? <EyeOff size={22} /> : <Eye size={22} />}
-                  </button>
-                </div>
-
-                {errors.password && (
-                  <p className="text-sm text-red-500">
-                    {errors.password.message as string}
-                  </p>
-                )}
-              </div>
+              <FormInput
+                id="password"
+                required
+                description={t("common.password_description")}
+                placeholder={t("common.password")}
+                label={t("common.password")}
+                error={errors.password?.message}
+                onBlur={onBlur}
+                onChange={onChange}
+                value={value}
+                type={"password"}
+                isPassword={true}
+              />
             )}
           />
         </div>
 
-        {/* ===== FOOTER BUTTON ===== */}
-        <div className="mt-10">
+        {/* ===== FOOTER BUTTONS ===== */}
+        <div className="flex flex-col gap-4 mt-10">
+          {/* Forgot Password Button */}
+          <div className="flex items-center justify-center">
+            <button
+              onClick={onForgotPassword}
+              disabled={loading}
+              className={cn(
+                "font-semibold transition-all",
+                !loading
+                  ? "text-primary-color-2"
+                  : "text-gray-400 cursor-not-allowed",
+              )}
+            >
+              {t("auth.forgot_password")}
+            </button>
+          </div>
+
+          {/* Continue Button */}
           <button
             onClick={handleSubmit(onSubmit)}
             disabled={loading}
             className={cn(
-              "flex h-14 max-w-xs w-full m-auto mt-20 items-center justify-center rounded-full text-lg font-bold text-white transition-all active:scale-[0.98]",
+              "flex h-14 w-full max-w-lg mx-auto items-center justify-center rounded-full text-lg font-bold text-white transition-all active:scale-[0.98]",
               !loading
                 ? "bg-primary-color-2"
                 : "bg-gray-300 cursor-not-allowed",

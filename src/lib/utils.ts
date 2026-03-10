@@ -5,6 +5,9 @@ import ErrorAPIServer from "./types";
 import { TFunction } from "i18next";
 import dayjs from "dayjs";
 import { CouponItem } from "@/features/service/types";
+import { FieldErrors } from "react-hook-form";
+import { ApplyTechnicalRequest } from "@/features/user/types";
+import { _PartnerFileType } from "@/features/user/const";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -183,4 +186,54 @@ export const calculateDiscountAmount = (
 
   // Đảm bảo số tiền giảm không lớn hơn tổng tiền
   return Math.min(discount, totalPrice);
+};
+
+export const addOrUpdateFile = (
+  currentFiles: any[],
+  type: _PartnerFileType,
+  file: File,
+  preview: string,
+) => {
+  const newFile = { type_upload: type, file, preview };
+  const filtered = currentFiles.filter((f) => f.type_upload !== type);
+  return [...filtered, newFile];
+};
+
+export const removeFileByType = (
+  currentFiles: any[],
+  type: _PartnerFileType,
+) => {
+  return currentFiles.filter((f) => f.type_upload !== type);
+};
+
+export const appendFile = (
+  currentFiles: any[],
+  type: _PartnerFileType,
+  file: File,
+  preview: string,
+) => {
+  return [...currentFiles, { type_upload: type, file, preview }];
+};
+
+export const removeSpecificFile = (currentFiles: any[], itemToRemove: any) => {
+  return currentFiles.filter((f) => f !== itemToRemove);
+};
+
+export const updateSpecificFile = (
+  currentFiles: any[],
+  itemToUpdate: any,
+  file: File,
+  preview: string,
+) => {
+  return currentFiles.map((f) =>
+    f === itemToUpdate ? { ...f, file, preview } : f,
+  );
+};
+
+export const getErrorsFileType = (
+  errors: FieldErrors<ApplyTechnicalRequest>,
+  type: _PartnerFileType,
+) => {
+  const fileUploadErrors = errors.file_uploads as any;
+  return fileUploadErrors?.[type]?.message as string | undefined;
 };

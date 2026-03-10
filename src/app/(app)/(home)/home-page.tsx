@@ -30,7 +30,7 @@ export default function UserDashboard() {
     <div className="min-h-screen  pb-24 ">
       <main className="mx-auto w-full ">
         {/* --- 1. BANNER --- */}
-        <section className="relative w-full overflow-hidden md:h-[50vh] lg:rounded-b-[40px]">
+        <section className="relative w-full overflow-hidden md:h-[50vh] ">
           <button
             className="absolute left-4 top-4 z-10 pointer-events-auto flex items-center gap-2 rounded-full border border-white/20 bg-black/40 px-4 py-2 backdrop-blur-md shadow-lg transition-transform active:scale-95"
             onClick={() => redirectAuth(() => setShowLocationModal(true))}
@@ -45,18 +45,18 @@ export default function UserDashboard() {
         </section>
 
         {/* --- 2. QUICK ACTIONS (Nổi lên trên banner) --- */}
-        <div className="mt-4">
+        <div className="mt-2 md:mt-0">
           <InviteSection />
         </div>
         <AppDownloadSection />
 
         {/* --- 3. TECHNICIANS SECTION --- */}
-        <section className="mt-8 px-4 lg:px-8">
+        <section className="mt-4 md:mt-2 px-4 lg:px-8">
           <KTVSection queryKTV={queryKTV} />
         </section>
 
         {/* --- 4. SERVICES SECTION --- */}
-        <section className="mt-8 px-4 lg:px-8">
+        <section className="mt-2 md:mt-2 px-4 lg:px-8">
           <CategorySection queryCategory={queryCategory} />
         </section>
         <ListLocationModal

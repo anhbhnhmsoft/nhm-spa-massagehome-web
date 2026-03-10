@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import { Camera, User as UserIcon, ChevronLeft } from "lucide-react";
 import dayjs from "dayjs";
-import useAuthStore from "@/features/auth/store";
+import useAuthStore from "@/features/auth/store/auth-store";
 import { _Gender, _GenderMap } from "@/features/auth/const";
 import { useChangeAvatar } from "@/features/auth/hooks";
 

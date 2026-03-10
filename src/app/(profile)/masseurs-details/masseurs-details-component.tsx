@@ -8,11 +8,9 @@ import useCalculateDistance from "@/features/app/hooks/use-calculate-distance";
 import {
   calculatePriceDistance,
   formatBalance,
-  formatDistance,
   getCurrentDayKey,
 } from "@/lib/utils";
 import { _GenderMap } from "@/features/auth/const";
-import { useKTVDetail } from "@/features/user/hooks";
 import { useGetRoomChat } from "@/features/chat/hooks";
 import {
   AvatarKTV,
@@ -24,13 +22,24 @@ import {
 import Empty from "@/components/emty";
 import ReviewListModal from "@/components/app/list-reviews";
 import { useRouter } from "next/navigation";
+import { useDetailKtv } from "@/features/user/hooks/use-detail-ktv";
+import ServicesModal from "@/components/app/services-bottom-sheet";
 dayjs.extend(isBetween);
 
 const MasseurDetailScreen = () => {
   const { t } = useTranslation();
   const router = useRouter();
 
-  const { detail, queryServices } = useKTVDetail();
+  const {
+    detail,
+    refreshPage,
+    loading,
+    isServiceModalVisible,
+    serviceData,
+    handleOpenServiceSheet,
+    handleDismissServiceSheet,
+    handlePrepareBooking,
+  } = useDetailKtv();
 
   // Trạng thái cho Carousel (Web)
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -39,9 +48,6 @@ const MasseurDetailScreen = () => {
 
   const calculateDistance = useCalculateDistance();
   const getRoomChat = useGetRoomChat();
-
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
-    queryServices;
 
   // Logic tính khoảng cách (Giữ nguyên)
   const distance = useMemo(() => {
@@ -79,12 +85,11 @@ const MasseurDetailScreen = () => {
     const end = dayjs(todayConfig.end_time, "HH:mm");
     return now.isBetween(start, end, null, "[]");
   }, [detail, currentDayKey]);
-
   if (!detail) return null;
 
   return (
-    <div className="min-h-screen w-full bg-[#F8F9FA] ">
-      <div className="mx-auto w-full bg-white shadow-lg min-h-screen relative">
+    <div className="min-h-screen w-full  bg-[#f4f4f4] ">
+      <div className="mx-auto w-full  bg-[#f4f4f4] shadow-lg min-h-screen relative">
         {/* --- HEADER CAROUSEL (Web Version) --- */}
         <div className="relative w-full aspect-[1/1.2] bg-gray-200">
           {/* Đơn giản hóa Carousel bằng cách hiển thị ảnh hiện tại */}
@@ -103,7 +108,7 @@ const MasseurDetailScreen = () => {
                     prev > 0 ? prev - 1 : detail.display_image.length - 1,
                   )
                 }
-                className="bg-white/50 p-1 rounded-full shadow-sm"
+                className="bg-white/50 p-1 rounded-full"
               >
                 <ChevronLeft size={20} />
               </button>
@@ -113,7 +118,7 @@ const MasseurDetailScreen = () => {
                     prev < detail.display_image.length - 1 ? prev + 1 : 0,
                   )
                 }
-                className="bg-white/50 p-1 rounded-full shadow-sm"
+                className="bg-white/50 p-1 rounded-full"
               >
                 <ChevronRight size={20} />
               </button>
@@ -132,13 +137,13 @@ const MasseurDetailScreen = () => {
           <div className="absolute top-10 left-4 right-4 flex justify-between">
             <button
               onClick={() => router.back()}
-              className="bg-white/80 p-2 rounded-full shadow-md"
+              className="bg-white/80 p-2 rounded-full"
             >
               <ChevronLeft size={20} className="text-[#your-primary-color]" />
             </button>
             <button
               onClick={() => getRoomChat({ user_id: detail.id })}
-              className="bg-white/80 p-2 rounded-full shadow-md"
+              className="bg-white/80 p-2 rounded-full"
             >
               <MessageCircle size={20} className="text-[#your-primary-color]" />
             </button>
@@ -146,7 +151,7 @@ const MasseurDetailScreen = () => {
         </div>
 
         {/* --- INFO SECTION --- */}
-        <div className="relative -mt-6 rounded-t-[32px] bg-white px-4 pt-6 pb-6 shadow-sm z-10">
+        <div className="relative -mt-6 rounded-t-[32px] bg-gray-50 rounded-b-lg px-4 pt-6 pb-6  z-10">
           <div className="flex flex-row items-center gap-4">
             <AvatarKTV source={detail.profile.avatar_url} />
             <div>
@@ -235,40 +240,33 @@ const MasseurDetailScreen = () => {
         </div>
 
         {/* --- DANH SÁCH DỊCH VỤ --- */}
-        <div className="mt-2 bg-white px-4 pt-5 pb-10">
+        <div className="mt-4 bg-gray-50 rounded-lg px-4 pt-5 pb-10">
           <h2 className="mb-5 border-l-4 border-[#your-primary-color] pl-2 font-bold text-lg text-gray-800">
             {t("masseurs_detail.service_list")}
           </h2>
 
           <div className="space-y-4">
-            {data && data.length > 0 ? (
-              data.map((item, index) => (
+            {detail && detail.service_categories.length > 0 ? (
+              detail.service_categories.map((item, index) => (
                 <div
                   key={`${item.id}-${index}`}
                   className="border-b border-gray-50 last:border-0 pb-2"
                 >
-                  <ServiceCard item={item} />
+                  <ServiceCard
+                    item={item}
+                    t={t}
+                    setItem={handleOpenServiceSheet}
+                  />
                 </div>
               ))
             ) : (
-              <Empty className="bg-white" />
+              <Empty className="bg-gray-50" />
             )}
           </div>
-
-          {/* Load more button (Thay thế cho onEndReached) */}
-          {hasNextPage && (
-            <button
-              onClick={() => fetchNextPage()}
-              disabled={isFetchingNextPage}
-              className="mt-4 w-full py-2 text-sm text-[#your-primary-color] font-medium"
-            >
-              {isFetchingNextPage ? "Loading..." : t("common.see_more")}
-            </button>
-          )}
         </div>
         {/* Lịch làm việc */}
         {detail.schedule && (
-          <div className="mt-2">
+          <div className="mt-2 bg-gray-50 rounded-lg">
             <ScheduleSection
               schedule={detail.schedule}
               isOnlineRealtime={isOnlineRealtime}
@@ -277,7 +275,7 @@ const MasseurDetailScreen = () => {
         )}
 
         {/* --- Review Section --- */}
-        <div className="mt-2 bg-white p-4">
+        <div className="mt-2 bg-gray-50 rounded-t-lg p-4">
           <h2 className="font-bold text-base text-gray-800 mb-3">
             {t("masseurs_detail.review_by_customer")}
           </h2>
@@ -308,6 +306,14 @@ const MasseurDetailScreen = () => {
         isVisible={showReviewList}
         onClose={() => setShowReviewList(false)}
         params={{ user_id: detail.id }}
+      />
+
+      <ServicesModal
+        isVisible={isServiceModalVisible}
+        serviceData={serviceData}
+        onDismiss={handleDismissServiceSheet}
+        handlePrepareBooking={handlePrepareBooking}
+        t={t}
       />
     </div>
   );

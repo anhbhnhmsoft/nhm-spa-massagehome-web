@@ -10,7 +10,7 @@ export function proxy(req: NextRequest) {
     "/verify-otp",
     "/auth",
     "/welcome",
-    ,
+    "/reset-password",
   ];
   const publicRoutes = ["/", "/term-or-use-pdf", ...authRoutes];
   if (

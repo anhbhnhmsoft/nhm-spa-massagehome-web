@@ -98,6 +98,13 @@ export default function FullScreenLoading({ loading, whiteBg }: Props) {
           priority
         />
       </motion.div>
+
+      {/* Loading text */}
+      <div className="absolute bottom-10 text-center">
+        <p className="text-blue-600 font-bold text-lg uppercase opacity-80">
+          Loading...
+        </p>
+      </div>
     </div>
   );
 }

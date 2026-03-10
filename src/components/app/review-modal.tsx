@@ -10,7 +10,7 @@ interface ReviewModalProps {
   isVisible: boolean;
   onClose: () => void;
   onSuccess: () => void;
-  serviceBookingId: string;
+  serviceBookingId: string | undefined;
 }
 
 export const ReviewModal = ({

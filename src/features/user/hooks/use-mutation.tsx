@@ -1,6 +1,5 @@
-import { useMutation } from '@tanstack/react-query';
-import userApi from '@/features/user/api';
-import { ApplyPartnerRequest, ApplyPartnerResponse } from '@/features/user/types';
+import { useMutation } from "@tanstack/react-query";
+import userApi from "@/features/user/api";
 
 export const useMutationKtvDetail = () => {
   return useMutation({
@@ -11,5 +10,17 @@ export const useMutationKtvDetail = () => {
 export const useMutationApplyPartner = () => {
   return useMutation({
     mutationFn: (payload: FormData) => userApi.applyPartner(payload),
+  });
+};
+
+export const useApplyTechnicalRequest = () => {
+  return useMutation({
+    mutationFn: (payload: FormData) => userApi.applyTechnical(payload),
+  });
+};
+
+export const useApplyAgencyRequest = () => {
+  return useMutation({
+    mutationFn: (payload: FormData) => userApi.applyAgency(payload),
   });
 };
