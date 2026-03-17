@@ -803,7 +803,11 @@
     "error_join_room": "加入聊天室出错",
     "online": "在线",
     "offline": "离线",
-    "placeholder": "发送消息..."
+    "placeholder": "发送消息...",
+    "view_translation": "查看翻译",
+    "translating": "正在翻译...",
+    "hide_translation": "隐藏翻译",
+    "change_language": "更改语言"
   },
   "review": {
     "all_reviews": "所有评价",

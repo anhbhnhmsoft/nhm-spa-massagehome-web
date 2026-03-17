@@ -804,7 +804,10 @@
     "error_join_room": "Lỗi khi tham gia phòng chat",
     "online": "Online",
     "offline": "Offline",
-    "placeholder": "Gửi tin nhắn..."
+    "placeholder": "Gửi tin nhắn...",
+    "view_translation": "Xem bản dịch",
+    "translating": "Đang dịch...",
+    "hide_translation": "Ẩn bản dịch"
   },
   "review": {
     "all_reviews": "Tất cả đánh giá",

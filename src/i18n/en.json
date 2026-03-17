@@ -803,7 +803,11 @@
     "error_join_room": "Error joining chat room",
     "online": "Online",
     "offline": "Offline",
-    "placeholder": "Send a message..."
+    "placeholder": "Send a message...",
+    "view_translation": "View translation",
+    "translating": "Translating...",
+    "hide_translation": "Hide translation",
+    "change_language": "Change language"
   },
   "review": {
     "all_reviews": "All Reviews",

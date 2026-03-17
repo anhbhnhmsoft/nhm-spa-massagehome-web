@@ -2,6 +2,7 @@ import {
   useMutationGetRoomId,
   useMutationSeenMessages,
   useMutationSendMessage,
+  useMutationTranslateMessage,
 } from "@/features/chat/hooks/use-mutation";
 import useChatStore from "@/features/chat/stores";
 import useApplicationStore from "@/lib/store";
@@ -29,6 +30,7 @@ import { useTranslation } from "react-i18next";
 import useToast from "@/features/app/hooks/use-toast";
 import { _ChatConstant } from "@/features/chat/consts";
 import { useRouter } from "next/navigation";
+import { _LanguageCode } from "@/lib/const";
 
 // Hook để lấy thông tin phòng chat
 export const useGetRoomChat = () => {
@@ -81,12 +83,21 @@ export const useChat = (useFor: "ktv" | "customer") => {
   const room = useChatStore((state) => state.room);
   const token = useAuthStore((state) => state.token);
   const user = useAuthStore((state) => state.user);
+
   const { mutate: sendMessage } = useMutationSendMessage();
   const [joinStatus, setJoinStatus] = useState<
     "pending" | "joining" | "joined" | "error"
   >("pending");
   // Trạng thái trực tuyến của đối phương
   const [isPartnerOnline, setIsPartnerOnline] = useState(false);
+
+  // state dich
+  const [selectedItem, setSelectedItem] = useState<PayloadNewMessage | null>(
+    null,
+  );
+  const defaultLang = useApplicationStore((s) => s.language);
+  const [targetLang, setTargetLang] = useState<_LanguageCode>(defaultLang);
+  const [modalLangVisible, setModalLangVisible] = useState(false);
 
   const historyQuery = useInfiniteQueryListMessage(
     {
@@ -104,41 +115,34 @@ export const useChat = (useFor: "ktv" | "customer") => {
 
   // Cập nhật cache tin nhắn khi nhận được tin nhắn mới
   const updateCache = useCallback(
-    (msg: PayloadNewMessage) => {
+    (msg: Partial<PayloadNewMessage> & { id: string; temp_id?: string }) => {
       if (!room?.id) return;
-
       queryClient.setQueriesData<InfiniteData<ListMessageResponse>>(
         { queryKey: ["chatApi-listMessages", room.id] },
-        (oldData) => {
-          return produce(oldData, (draft) => {
-            if (!draft?.pages?.length) return;
-            const firstPage = draft.pages[0];
-            const messages = firstPage.data?.data;
-            if (!messages) return;
-            // 1. Tìm tin nhắn: Ưu tiên tìm theo temp_id trước, sau đó mới tìm theo id thật
-            const index = messages.findIndex((m) => {
-              const matchTempId = !!(msg.temp_id && m.temp_id === msg.temp_id);
-              const matchRealId = !!(msg.id && m.id === msg.id);
-              return matchTempId || matchRealId;
-            });
+        (old) =>
+          produce(old, (draft) => {
+            const msgs = draft?.pages?.[0]?.data?.data;
+            if (!msgs) return;
 
-            // 2. Cập nhật tin nhắn nếu tìm thấy
-            if (index !== -1) {
-              messages[index] = {
-                ...messages[index],
+            const idx = msgs.findIndex(
+              (m) =>
+                (msg.temp_id && m.temp_id === msg.temp_id) ||
+                (msg.id && m.id === msg.id),
+            );
+
+            if (idx === -1) {
+              msgs.unshift({
                 ...msg,
-                id: msg.id || messages[index].id,
-                temp_id: msg.temp_id || messages[index].temp_id,
-                status_sent: msg.status_sent || "sent",
-              };
+                status_sent: msg.status_sent ?? "sent",
+              } as PayloadNewMessage);
             } else {
-              messages.unshift({
+              msgs[idx] = {
+                ...msgs[idx],
                 ...msg,
-                status_sent: msg.status_sent || "sent",
-              });
+                status_sent: msg.status_sent ?? msgs[idx].status_sent,
+              };
             }
-          });
-        },
+          }),
       );
     },
     [room],
@@ -179,6 +183,73 @@ export const useChat = (useFor: "ktv" | "customer") => {
       },
     );
   };
+
+  const { mutate: translateMutate, isPending } = useMutationTranslateMessage();
+
+  const handleTranslateMessage = useCallback(
+    (item: PayloadNewMessage, lang?: _LanguageCode) => {
+      // set loading riêng cho message
+      updateCache({
+        id: item.id,
+        isTranslating: true,
+      });
+
+      translateMutate(
+        {
+          message_id: item.id,
+          lang: lang || targetLang,
+        },
+        {
+          onSuccess: ({ data }) => {
+            updateCache({
+              id: item.id,
+              translated_content: data.translate,
+              isTranslating: false,
+            });
+          },
+          onError: () => {
+            updateCache({
+              id: item.id,
+              isTranslating: false,
+            });
+            errorToast({ message: t("chat.error_translate") });
+          },
+        },
+      );
+    },
+    [updateCache, translateMutate, targetLang, errorToast, t],
+  );
+
+  const onHideTranslation = useCallback(
+    (id: string) => {
+      updateCache({
+        id,
+        translated_content: null,
+        isTranslating: false,
+      });
+    },
+    [updateCache],
+  );
+
+  const handleCloseModalLang = useCallback(() => {
+    setModalLangVisible(false);
+  }, []);
+
+  const onChangeLanguage = useCallback((item: PayloadNewMessage) => {
+    setSelectedItem(item);
+    setModalLangVisible(true);
+  }, []);
+
+  const handleEditLanguage = useCallback(
+    (lang: _LanguageCode) => {
+      setTargetLang(lang);
+      setModalLangVisible(false);
+      if (selectedItem) {
+        handleTranslateMessage(selectedItem, lang);
+      }
+    },
+    [handleTranslateMessage, selectedItem],
+  );
 
   // Lắng nghe sự kiện khi room hoặc token thay đổi
   useEffect(() => {
@@ -271,6 +342,16 @@ export const useChat = (useFor: "ktv" | "customer") => {
     user,
     room,
     isPartnerOnline,
+    handleTranslateMessage,
+    selectedItem,
+    setTargetLang,
+    isTranslating: isPending,
+    onHideTranslation,
+    modalLangVisible,
+    handleCloseModalLang,
+    onChangeLanguage,
+    targetLang,
+    handleEditLanguage,
   };
 };
 
