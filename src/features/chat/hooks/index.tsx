@@ -92,13 +92,6 @@ export const useChat = (useFor: "ktv" | "customer") => {
   const [isPartnerOnline, setIsPartnerOnline] = useState(false);
 
   // state dich
-  const [selectedItem, setSelectedItem] = useState<PayloadNewMessage | null>(
-    null,
-  );
-  const defaultLang = useApplicationStore((s) => s.language);
-  const [targetLang, setTargetLang] = useState<_LanguageCode>(defaultLang);
-  const [modalLangVisible, setModalLangVisible] = useState(false);
-
   const historyQuery = useInfiniteQueryListMessage(
     {
       filter: {},
@@ -183,73 +176,6 @@ export const useChat = (useFor: "ktv" | "customer") => {
       },
     );
   };
-
-  const { mutate: translateMutate, isPending } = useMutationTranslateMessage();
-
-  const handleTranslateMessage = useCallback(
-    (item: PayloadNewMessage, lang?: _LanguageCode) => {
-      // set loading riêng cho message
-      updateCache({
-        id: item.id,
-        isTranslating: true,
-      });
-
-      translateMutate(
-        {
-          message_id: item.id,
-          lang: lang || targetLang,
-        },
-        {
-          onSuccess: ({ data }) => {
-            updateCache({
-              id: item.id,
-              translated_content: data.translate,
-              isTranslating: false,
-            });
-          },
-          onError: () => {
-            updateCache({
-              id: item.id,
-              isTranslating: false,
-            });
-            errorToast({ message: t("chat.error_translate") });
-          },
-        },
-      );
-    },
-    [updateCache, translateMutate, targetLang, errorToast, t],
-  );
-
-  const onHideTranslation = useCallback(
-    (id: string) => {
-      updateCache({
-        id,
-        translated_content: null,
-        isTranslating: false,
-      });
-    },
-    [updateCache],
-  );
-
-  const handleCloseModalLang = useCallback(() => {
-    setModalLangVisible(false);
-  }, []);
-
-  const onChangeLanguage = useCallback((item: PayloadNewMessage) => {
-    setSelectedItem(item);
-    setModalLangVisible(true);
-  }, []);
-
-  const handleEditLanguage = useCallback(
-    (lang: _LanguageCode) => {
-      setTargetLang(lang);
-      setModalLangVisible(false);
-      if (selectedItem) {
-        handleTranslateMessage(selectedItem, lang);
-      }
-    },
-    [handleTranslateMessage, selectedItem],
-  );
 
   // Lắng nghe sự kiện khi room hoặc token thay đổi
   useEffect(() => {
@@ -342,16 +268,6 @@ export const useChat = (useFor: "ktv" | "customer") => {
     user,
     room,
     isPartnerOnline,
-    handleTranslateMessage,
-    selectedItem,
-    setTargetLang,
-    isTranslating: isPending,
-    onHideTranslation,
-    modalLangVisible,
-    handleCloseModalLang,
-    onChangeLanguage,
-    targetLang,
-    handleEditLanguage,
   };
 };
 

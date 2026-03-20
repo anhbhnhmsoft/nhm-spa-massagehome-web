@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState, useEffect, useCallback } from "react";
 import { PayloadNewMessage } from "@/features/chat/types";
 import { cn } from "@/lib/utils";
 import {
@@ -17,8 +17,8 @@ import { useRouter } from "next/navigation";
 import { useChat } from "@/features/chat/hooks";
 import SelectLanguageTranslate from "./select-language-tranlate";
 import { TFunction } from "i18next";
+import { useChatTranslation } from "@/features/chat/hooks/use-chat-translation";
 
-// --- COMPONENT: TIN NHẮN ĐƠN LẺ ---
 const MessageItem = ({
   item,
   currentUserId,
@@ -64,13 +64,29 @@ const MessageItem = ({
           </button>
         )}
 
-        {/* Đang dịch */}
+        {/* Loading spinner khi đang dịch */}
         {item.isTranslating && (
-          <p className="text-xs mt-1 opacity-70">{t("chat.translating")}</p>
+          <div className="flex items-center gap-1.5 mt-2">
+            <Loader2
+              size={12}
+              className={cn(
+                "animate-spin",
+                isMe ? "text-blue-200" : "text-gray-400",
+              )}
+            />
+            <span
+              className={cn(
+                "text-xs",
+                isMe ? "text-blue-200" : "text-gray-400",
+              )}
+            >
+              {t("chat.translating")}
+            </span>
+          </div>
         )}
 
         {/* Bản dịch */}
-        {item.translated_content && (
+        {item.translated_content && !item.isTranslating && (
           <div className="mt-2 pt-2 border-t border-white/20">
             <p
               className={cn(
@@ -81,9 +97,7 @@ const MessageItem = ({
               — {item.translated_content}
             </p>
 
-            {/* ACTIONS */}
             <div className="flex items-center justify-between mt-1">
-              {/* Ẩn bản dịch */}
               <button
                 onClick={() => onHideTranslation(item.id)}
                 className="text-xs underline opacity-70"
@@ -91,10 +105,10 @@ const MessageItem = ({
                 {t("chat.hide_translation")}
               </button>
 
-              {/* Icon cài đặt đổi ngôn ngữ */}
               <button
                 onClick={() => onChangeLanguage(item)}
                 className="p-1 rounded-full hover:bg-black/10"
+                title={t("chat.change_language")}
               >
                 <Settings size={14} />
               </button>
@@ -129,7 +143,6 @@ const MessageItem = ({
 };
 MessageItem.displayName = "MessageItem";
 
-// --- MAIN COMPONENT: MÀN HÌNH CHAT ---
 export default function ChatViewScreen({
   useFor,
 }: {
@@ -140,30 +153,47 @@ export default function ChatViewScreen({
   const [inputText, setInputText] = useState("");
 
   const scrollRef = useRef<HTMLDivElement>(null);
-  const {
-    messages,
-    submitMessage,
-    joinStatus,
-    historyQuery,
-    user,
-    room,
-    handleTranslateMessage,
-    onHideTranslation,
-    modalLangVisible,
-    handleCloseModalLang,
-    onChangeLanguage,
-    targetLang,
-    handleEditLanguage,
-  } = useChat(useFor);
 
-  // 1. Tự động cuộn xuống cuối khi có tin nhắn mới
+  const prevMessageCountRef = useRef(0);
+  const prevScrollHeightRef = useRef(0);
+
+  const { messages, submitMessage, joinStatus, historyQuery, user, room } =
+    useChat(useFor);
+
+  const {
+    targetLang,
+    modalLangVisible,
+    handleTranslateMessage,
+    handleChangeLanguageForMessage,
+    handleHideTranslation,
+    handleChangeTargetLang,
+    handleCloseModalLang,
+  } = useChatTranslation();
+
   useEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    const currentCount = messages.length;
+    const prevCount = prevMessageCountRef.current;
+
+    if (currentCount > prevCount) {
+      if (scrollRef.current) {
+        scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+      }
     }
+
+    prevMessageCountRef.current = currentCount;
   }, [messages]);
 
-  // 2. Xử lý gửi tin nhắn
+  useEffect(() => {
+    if (historyQuery.isFetchingNextPage) {
+      prevScrollHeightRef.current = scrollRef.current?.scrollHeight ?? 0;
+    } else if (prevScrollHeightRef.current > 0 && scrollRef.current) {
+      const newScrollHeight = scrollRef.current.scrollHeight;
+      scrollRef.current.scrollTop =
+        newScrollHeight - prevScrollHeightRef.current;
+      prevScrollHeightRef.current = 0;
+    }
+  }, [historyQuery.isFetchingNextPage]);
+
   const handleSend = (e?: React.FormEvent) => {
     e?.preventDefault();
     if (!inputText.trim()) return;
@@ -171,7 +201,6 @@ export default function ChatViewScreen({
     setInputText("");
   };
 
-  // 3. Xử lý tải thêm tin nhắn cũ khi cuộn lên đỉnh (Infinite Scroll)
   const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
     const { scrollTop } = e.currentTarget;
     if (
@@ -183,7 +212,6 @@ export default function ChatViewScreen({
     }
   };
 
-  // 4. Màn hình Loading khi đang kết nối
   if (
     joinStatus === "joining" ||
     (joinStatus === "pending" && historyQuery.isLoading)
@@ -201,7 +229,7 @@ export default function ChatViewScreen({
   return (
     <>
       <div className="flex flex-col h-screen w-full max-w-4xl mx-auto bg-white border-x shadow-lg">
-        {/* --- HEADER --- */}
+        {/* HEADER */}
         <header className="flex items-center p-4 border-b bg-white sticky top-0 z-20 shadow-sm">
           <button
             onClick={() => router.back()}
@@ -216,13 +244,12 @@ export default function ChatViewScreen({
           </div>
         </header>
 
-        {/* --- MESSAGE LIST (Scroll xuôi) --- */}
+        {/* MESSAGE LIST */}
         <div
           ref={scrollRef}
           className="flex-1 overflow-y-auto bg-gray-50/50 flex flex-col p-2 md:p-4"
           onScroll={handleScroll}
         >
-          {/* Loading khi tải tin nhắn cũ (hiện ở trên cùng) */}
           {historyQuery.isFetchingNextPage && (
             <div className="py-4 flex justify-center w-full">
               <Loader2 className="w-6 h-6 animate-spin text-blue-500" />
@@ -230,22 +257,21 @@ export default function ChatViewScreen({
           )}
 
           <div className="mt-auto">
-            {/* Đẩy tin nhắn xuống đáy nếu danh sách còn ngắn */}
             {displayMessages.map((msg) => (
               <MessageItem
                 key={msg.temp_id || msg.id}
                 item={msg}
                 currentUserId={user?.id || ""}
                 onTranslate={handleTranslateMessage}
-                onHideTranslation={onHideTranslation}
-                onChangeLanguage={onChangeLanguage}
+                onHideTranslation={handleHideTranslation}
+                onChangeLanguage={handleChangeLanguageForMessage}
                 t={t}
               />
             ))}
           </div>
         </div>
 
-        {/* --- INPUT BAR --- */}
+        {/* INPUT BAR */}
         <footer className="p-4 bg-white border-t border-gray-100">
           <form
             onSubmit={handleSend}
@@ -285,11 +311,12 @@ export default function ChatViewScreen({
           </form>
         </footer>
       </div>
+
       <SelectLanguageTranslate
         visible={modalLangVisible}
         onClose={handleCloseModalLang}
         selectedLang={targetLang}
-        setLanguage={handleEditLanguage}
+        setLanguage={handleChangeTargetLang}
       />
     </>
   );

@@ -9,7 +9,7 @@ import { _LanguageCode, _LanguagesMap } from "@/lib/const";
 type SelectLanguageProps = {
   visible: boolean;
   onClose: () => void;
-  selectedLang: _LanguageCode;
+  selectedLang: _LanguageCode | null;
   setLanguage: (lang: _LanguageCode) => void;
 };
 
