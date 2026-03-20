@@ -835,7 +835,11 @@
     "total_reviews": "共 {{ count }} 条评论",
     "no_reviews": "暂无评价。",
     "hidden_user": "匿名用户",
-    "no_comment": "无评论。"
+    "no_comment": "无评论。",
+    "translate": "查看翻译",
+    "translating": "正在翻译...",
+    "hide_translation": "隐藏翻译",
+    "translation": "翻译"
   },
   "ktv": {
     "index": {

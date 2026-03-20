@@ -835,7 +835,11 @@
     "total_reviews": "Tổng cộng {{ count }} nhận xét",
     "no_reviews": "Chưa có đánh giá nào.",
     "hidden_user": "Người dùng ẩn danh",
-    "no_comment": "Không có bình luận."
+    "no_comment": "Không có bình luận.",
+    "translate": "Xem bản dịch",
+    "translating": "Đang dịch...",
+    "hide_translation": "Ẩn bản dịch",
+    "translation": "Bản dịch"
   },
   "ktv": {
     "index": {

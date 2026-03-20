@@ -32,8 +32,6 @@ const MasseurDetailScreen = () => {
 
   const {
     detail,
-    refreshPage,
-    loading,
     isServiceModalVisible,
     serviceData,
     handleOpenServiceSheet,
@@ -284,8 +282,13 @@ const MasseurDetailScreen = () => {
               {t("masseurs_detail.review_disclaimer")}
             </p>
           </div>
-
-          <ReviewFistItem item={detail.first_review} />
+          {detail.recent_reviews.length > 0 ? (
+            detail.recent_reviews.map((item, index) => (
+              <ReviewFistItem key={item.id ?? `review-${index}`} item={item} />
+            ))
+          ) : (
+            <Empty />
+          )}
 
           {detail.review_count > 1 && (
             <button

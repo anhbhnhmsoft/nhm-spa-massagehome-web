@@ -87,54 +87,56 @@ export const AvatarKTV = ({ source }: { source: string | null }) => {
 export const ReviewFistItem = ({
   item,
 }: {
-  item: KTVDetail["first_review"];
+  item: KTVDetail["recent_reviews"][0] | null;
 }) => {
+  const { t } = useTranslation();
   const [imageError, setImageError] = useState(false);
+
+  const avatarUrl = useMemo(() => item?.review_by?.avatar_url, [item]);
+  if (!item) return null; // ✅ chặn null ngay từ đầu
 
   return (
     <div className="mt-1 flex flex-row items-center justify-center w-full">
-      {item ? (
-        <>
-          <div className="relative w-8 h-8 shrink-0 overflow-hidden rounded-full">
-            {item.review_by.avatar_url && !imageError ? (
-              <Image
-                src={item.review_by.avatar_url}
-                alt="Reviewer"
-                fill
-                className="object-cover"
-                onError={() => setImageError(true)}
-              />
-            ) : (
-              <div
-                className="w-full h-full flex items-center justify-center"
-                style={{ backgroundColor: DefaultColor.slate[200] }}
-              >
-                <User size={14} className="text-slate-400" />
-              </div>
-            )}
+      <div className="relative w-8 h-8 shrink-0 overflow-hidden rounded-full">
+        {avatarUrl && !imageError ? (
+          <Image
+            src={avatarUrl}
+            alt="Reviewer"
+            fill
+            className="object-cover"
+            onError={() => setImageError(true)}
+          />
+        ) : (
+          <div
+            className="w-full h-full flex items-center justify-center"
+            style={{ backgroundColor: DefaultColor.slate[200] }}
+          >
+            <User size={14} className="text-slate-400" />
           </div>
-          <div className="ml-3 flex-1 flex flex-col gap-2">
-            <div className="flex flex-row justify-between">
-              <span className="font-bold text-xs text-gray-700">
-                {item.review_by.name}
-              </span>
-              <span className="text-[10px] text-gray-400">
-                {dayjs(item.created_at).format("DD/MM/YYYY")}
-              </span>
-            </div>
-            <StarRating rating={item.rating} size={10} />
-            <p className="mb-2 text-xs text-gray-600 line-clamp-2">
-              {item.comment}
-            </p>
-          </div>
-        </>
-      ) : (
-        <Empty />
-      )}
+        )}
+      </div>
+
+      <div className="ml-3 flex-1 flex flex-col gap-2">
+        <div className="flex flex-row justify-between">
+          <span className="font-bold text-xs text-gray-700">
+            {item.review_by?.name
+              ? item.review_by.name
+              : t("review.hidden_user")}
+          </span>
+          <span className="text-[10px] text-gray-400">
+            {dayjs(item.created_at).format("DD/MM/YYYY")}
+          </span>
+        </div>
+
+        <StarRating rating={item.rating} size={10} />
+
+        <p className="mb-2 text-xs text-gray-600 line-clamp-2">
+          {item.comment || t("review.no_comment")}
+        </p>
+      </div>
     </div>
   );
 };
-
 type PropsServiceCard = {
   t: TFunction;
   item: ServiceCategoryItem;
