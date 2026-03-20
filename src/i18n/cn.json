@@ -177,7 +177,8 @@
       "QR_BANKING": "银行扫码转账",
       "ZALO_PAY": "Zalo Pay",
       "MOMO_PAY": "Momo Pay",
-      "WECHAT_PAY": "Wechat Pay"
+      "WECHAT_PAY": "Wechat Pay",
+      "ALI_PAY": "支付宝付款"
     },
     "transaction_type": {
       "DEPOSIT_QR_CODE": "二维码银行充值",
@@ -191,7 +192,8 @@
       "RETRIEVE_PAYMENT_REFUND_KTV": "提取退款",
       "REFERRAL_KTV": "推荐给技师",
       "REFERRAL_INVITE_KTV_REWARD": "技师注册推荐佣金",
-      "DEPOSIT_WECHAT_PAY": "Wechat Pay 充值"
+      "DEPOSIT_WECHAT_PAY": "Wechat Pay 充值",
+      "DEPOSIT_ALI_PAY": "通过支付宝充值"
     },
     "transaction_status": {
       "PENDING": "处理中",
@@ -591,6 +593,7 @@
     "note_important": "请务必填写正确的转账备注",
     "processing_transaction": "微信支付正在处理中，系统确认可能需要 15–30 分钟",
     "exchange_rate_wechat_pay": "换算为 {{priceCny}} 人民币",
+    "alipay_scan_instruction": "请使用支付宝扫描二维码完成付款",
     "withdraw": {
       "title_modal": "选择提现账户",
       "add_new_account": "关联新账户",

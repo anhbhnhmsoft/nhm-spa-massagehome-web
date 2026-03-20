@@ -17,6 +17,7 @@ import { useWalletStore } from "@/features/payment/stores";
 import useApplicationStore from "@/lib/store";
 import useErrorToast from "@/features/app/hooks/use-error-toast";
 import {
+  AlipayData,
   ConfigPaymentItem,
   CreateWithdrawInfoRequest,
   DepositRequest,
@@ -35,6 +36,7 @@ import { useGetCouponUserList } from "@/features/service/hooks";
 import { getMessageError } from "@/lib/utils";
 import { _UserRole } from "@/features/auth/const";
 import { useRouter } from "next/navigation";
+import { ca } from "zod/v4/locales";
 
 /**
  * Hook dùng cho màn danh sách giao dịch
@@ -183,6 +185,10 @@ export const useDeposit = () => {
   // State lưu trữ dữ liệu QRWechatData khi nạp tiền qua Wechat Pay
   const setQrWechatData = useWalletStore((state) => state.setQrWechatData);
   const [visibleModalWechat, setVisibleModalWechat] = useState<boolean>(false);
+  // State lưu trữ dữ liệu AlipayData khi nạp tiền qua Alipay
+  const setAlipayData = useWalletStore((state) => state.setAlipayData);
+  const [visibleModalAlipay, setVisibleModalAlipay] = useState<boolean>(false);
+
   // Mutate function dùng để gọi API nạp tiền
   const { mutate: mutateDeposit } = useDepositMutation();
 
@@ -243,6 +249,11 @@ export const useDeposit = () => {
             setQrWechatData(qrWechatData);
             setVisibleModalWechat(true);
             break;
+          case _PaymentType.ALI_PAY:
+            const alipayData = resData.data_payment as AlipayData;
+            setAlipayData(alipayData);
+            setVisibleModalAlipay(true);
+            break;
           default:
             break;
         }
@@ -268,12 +279,20 @@ export const useDeposit = () => {
     setQrWechatData(null);
     router.back();
   }, [router, setQrWechatData]);
+
+  const handleCloseAlipay = useCallback(() => {
+    setVisibleModalAlipay(false);
+    setAlipayData(null);
+    router.back();
+  }, [router, setAlipayData]);
   return {
     configPayment: configPayment as ConfigPaymentItem,
     form,
     submitDeposit,
     visibleModalWechat,
     handleCloseWechat,
+    visibleModalAlipay,
+    handleCloseAlipay,
   };
 };
 

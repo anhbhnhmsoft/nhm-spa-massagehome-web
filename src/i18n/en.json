@@ -177,7 +177,8 @@
       "QR_BANKING": "QR Banking Transfer",
       "ZALO_PAY": "Zalo Pay",
       "MOMO_PAY": "Momo Pay",
-      "WECHAT_PAY": "WeChat Pay"
+      "WECHAT_PAY": "WeChat Pay",
+      "ALI_PAY": "Alipay Payment"
     },
     "transaction_type": {
       "DEPOSIT_QR_CODE": "Deposit via QR Banking",
@@ -191,7 +192,8 @@
       "RETRIEVE_PAYMENT_REFUND_KTV": "Retrieve Payment Refund KTV",
       "REFERRAL_KTV": "Referral KTV",
       "REFERRAL_INVITE_KTV_REWARD": "Referral Invite KTV Reward",
-      "DEPOSIT_WECHAT_PAY": "Deposit via Wechat Pay"
+      "DEPOSIT_WECHAT_PAY": "Deposit via Wechat Pay",
+      "DEPOSIT_ALI_PAY": "Deposit via Alipay"
     },
     "transaction_status": {
       "PENDING": "Pending",
@@ -591,6 +593,7 @@
     "note_important": "Please enter this note exactly as shown",
     "processing_transaction": "WeChat payment is being processed. This may take 15–30 minutes to complete",
     "exchange_rate_wechat_pay": "Converted to {{priceCny}} CNY",
+    "alipay_scan_instruction": "Use the Alipay app to scan the QR code and complete the payment",
     "withdraw": {
       "title_modal": "Select Withdrawal Account",
       "add_new_account": "Link New Account",

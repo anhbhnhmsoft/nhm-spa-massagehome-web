@@ -46,6 +46,7 @@ export type ConfigPaymentItem = {
     zalopay: boolean; // Cho phép nạp qua ZaloPay
     momo: boolean; // Cho phép nạp qua Momo
     wechatpay: boolean; // Cho phép nạp qua WechatPay
+    alipay: boolean; // Cho phép nạp qua Alipay
   };
 };
 
@@ -59,7 +60,7 @@ export type DepositRequest = {
 export type DepositItem = {
   transaction_id: string;
   payment_type: _PaymentType;
-  data_payment: QRBankData | QRWechatData; // Tùy vào payment_type, có thể là QRBankData hoặc ZaloPayData hoặc MomoPayData
+  data_payment: QRBankData | QRWechatData | AlipayData; // Tùy vào payment_type, có thể là QRBankData hoặc ZaloPayData hoặc MomoPayData
 };
 
 export type QRBankData = {
@@ -80,6 +81,13 @@ export interface QRWechatData {
   exchange_rate: string;
 }
 
+export interface AlipayData {
+  qr_image: string;
+  amount: string;
+  description: string;
+  amount_cny: number;
+  exchange_rate: string;
+}
 export type DepositResponse = ResponseDataSuccessType<DepositItem>;
 
 export type CheckTransactionRequest = {

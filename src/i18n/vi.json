@@ -177,7 +177,8 @@
       "QR_BANKING": "Chuyển khoản QR Banking",
       "ZALO_PAY": "Thanh toán Zalo Pay",
       "MOMO_PAY": "Thanh toán Momo Pay",
-      "WECHAT_PAY": "Thanh toán Wechat Pay"
+      "WECHAT_PAY": "Thanh toán Wechat Pay",
+      "ALI_PAY": "Thanh toán Alipay"
     },
     "transaction_type": {
       "DEPOSIT_QR_CODE": "Nạp tiền qua QR Banking",
@@ -191,7 +192,9 @@
       "RETRIEVE_PAYMENT_REFUND_KTV": "Thu hồi tiền thanh toán cho KTV khi hủy booking",
       "REFERRAL_KTV": "Hoa hồng từ kĩ thuật viên",
       "REFERRAL_INVITE_KTV_REWARD": "Hoa hồng từ kĩ thuật viên khi đăng ký",
-      "DEPOSIT_WECHAT_PAY": "Nạp tiền qua Wechat Pay"
+      "DEPOSIT_WECHAT_PAY": "Nạp tiền qua Wechat Pay",
+      "DEPOSIT_ALI_PAY": "Nạp tiền qua Alipay"
+
     },
     "transaction_status": {
       "PENDING": "Chờ xử lý",
@@ -592,6 +595,7 @@
     "note_important": "Vui lòng nhập chính xác nội dung này",
     "processing_transaction": "Hệ thống đang xử lý thanh toán WeChat. Quá trình này có thể mất từ 15–30 phút",
     "exchange_rate_wechat_pay": "Quy đổi thành {{priceCny}} CNY",
+    "alipay_scan_instruction": "Dùng ứng dụng Alipay để quét mã QR và hoàn tất thanh toán",
     "withdraw": {
       "title_modal": "Chọn tài khoản rút tiền",
       "add_new_account": "Liên kết tài khoản mới",

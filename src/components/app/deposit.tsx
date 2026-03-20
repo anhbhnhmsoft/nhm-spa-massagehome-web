@@ -26,7 +26,7 @@ import useCopyClipboard from "@/features/app/hooks/use-copy-clipboard";
 import useSaveFileImage from "@/features/app/hooks/use-save-image";
 import { useWalletStore } from "@/features/payment/stores";
 import { _UserRole } from "@/features/auth/const";
-import { QRWechatData } from "@/features/payment/types";
+import { AlipayData, QRWechatData } from "@/features/payment/types";
 import HeaderBack from "../header-back";
 
 export default function Deposit({ useFor }: { useFor: _UserRole }) {
@@ -37,6 +37,8 @@ export default function Deposit({ useFor }: { useFor: _UserRole }) {
     submitDeposit,
     visibleModalWechat,
     handleCloseWechat,
+    visibleModalAlipay,
+    handleCloseAlipay,
   } = useDeposit();
 
   const {
@@ -53,7 +55,8 @@ export default function Deposit({ useFor }: { useFor: _UserRole }) {
   const exchangePriceCny = useMemo(() => {
     if (
       !configPayment?.exchange_rate_vnd_cny ||
-      watchedPayment !== _PaymentType.WECHAT_PAY ||
+      (watchedPayment !== _PaymentType.WECHAT_PAY &&
+        watchedPayment !== _PaymentType.ALI_PAY) ||
       !watchedAmount
     ) {
       return 0;
@@ -115,7 +118,8 @@ export default function Deposit({ useFor }: { useFor: _UserRole }) {
               </button>
             ))}
           </div>
-          {watchedPayment === _PaymentType.WECHAT_PAY && (
+          {(watchedPayment === _PaymentType.WECHAT_PAY ||
+            watchedPayment === _PaymentType.ALI_PAY) && (
             <p className="mt-2 text-xs text-gray-500">
               {t("payment.exchange_rate_wechat_pay", {
                 priceCny: formatBalance(exchangePriceCny),
@@ -143,6 +147,8 @@ export default function Deposit({ useFor }: { useFor: _UserRole }) {
                   disabled = !configPayment?.allow_payment?.zalopay;
                 else if (method.id === _PaymentType.WECHAT_PAY)
                   disabled = !configPayment?.allow_payment?.wechatpay;
+                else if (method.id === _PaymentType.ALI_PAY)
+                  disabled = !configPayment?.allow_payment?.alipay;
 
                 return (
                   <button
@@ -182,6 +188,15 @@ export default function Deposit({ useFor }: { useFor: _UserRole }) {
                         <Image
                           src="/assets/icon/wechat.png"
                           alt="WeChat"
+                          width={48}
+                          height={48}
+                          className="h-full w-full object-cover"
+                        />
+                      )}
+                      {method.id === _PaymentType.ALI_PAY && (
+                        <Image
+                          src="/assets/icon/alipay.png"
+                          alt="Alipay"
                           width={48}
                           height={48}
                           className="h-full w-full object-cover"
@@ -238,7 +253,8 @@ export default function Deposit({ useFor }: { useFor: _UserRole }) {
             </p>
 
             <div className="flex items-baseline gap-1 sm:gap-2">
-              {watchedPayment === _PaymentType.WECHAT_PAY && (
+              {(watchedPayment === _PaymentType.WECHAT_PAY ||
+                watchedPayment === _PaymentType.ALI_PAY) && (
                 <span className="text-[11px] sm:text-xs text-gray-500">
                   ({formatBalance(exchangePriceCny)} CNY)
                 </span>
@@ -277,6 +293,10 @@ export default function Deposit({ useFor }: { useFor: _UserRole }) {
       <WeChatPaymentModal
         visible={visibleModalWechat}
         onClose={handleCloseWechat}
+      />
+      <AliPaymentModal
+        visible={visibleModalAlipay}
+        onClose={handleCloseAlipay}
       />
     </div>
   );
@@ -491,7 +511,111 @@ const WeChatPaymentModal = ({
     </div>
   );
 };
+const AliPaymentModal = ({
+  visible,
+  onClose,
+}: {
+  visible: boolean;
+  onClose: () => void;
+}) => {
+  const { t } = useTranslation();
+  const alipayData = useWalletStore((state) => state.alipayData);
+  const copyToClipboard = useCopyClipboard();
+  const { downloadImageByLink } = useSaveFileImage();
 
+  if (!visible || !alipayData) return null;
+  const { qr_image, amount, description, amount_cny } =
+    alipayData as AlipayData;
+  return (
+    <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm px-0 sm:px-4">
+      <div className="w-full max-w-[750px] bg-white shadow-2xl rounded-t-[32px] sm:rounded-[32px] mx-auto">
+        <div className="flex items-center justify-between border-b p-5 sm:p-6">
+          <div className="flex items-center gap-3">
+            <div className="relative flex h-10 w-10 items-center justify-center rounded-xl bg-[#1677FF]">
+              <Image
+                src="/assets/icon/alipay.png"
+                alt="AliPay Logo"
+                width={24}
+                height={24}
+                className="brightness-0 invert"
+              />
+            </div>
+            <h3 className="text-xl font-bold">AliPay</h3>
+          </div>
+          <button
+            onClick={onClose}
+            className="rounded-full bg-gray-100 p-2 hover:bg-gray-200 transition-colors"
+          >
+            <X size={20} />
+          </button>
+        </div>
+
+        <div className="max-h-[75vh] overflow-y-auto p-8">
+          <div className="flex flex-col items-center">
+            <div className="relative mb-6 rounded-[2rem] border-8 border-[#1677FF]/10 bg-white p-2">
+              <Image
+                src={qr_image}
+                alt="AliPay QR Code"
+                width={224}
+                height={224}
+                className="object-contain"
+                unoptimized
+              />
+            </div>
+            <button
+              onClick={() => downloadImageByLink(qr_image, "alipay-qr")}
+              className="flex items-center gap-2 rounded-full bg-[#1677FF]/10 px-8 py-3 font-bold text-[#1677FF] hover:bg-[#1677FF]/20 transition-colors"
+            >
+              <Download size={20} /> {t("common.save_qr_code")}
+            </button>
+            <p className="mt-4 text-center text-sm text-gray-500 px-10">
+              {t("payment.alipay_scan_instruction")}
+            </p>
+          </div>
+
+          <div className="mt-8 space-y-4 rounded-2xl bg-gray-50 p-6">
+            <div className="flex items-center justify-between border-b border-gray-200 pb-4">
+              <div>
+                <p className="mb-1 text-xs uppercase tracking-wider text-gray-500">
+                  {t("payment.amount")}
+                </p>
+
+                <p className="mb-2 text-2xl font-bold text-gray-900">
+                  {formatBalance(amount_cny)}
+                  <span className="text-sm font-medium"> CNY</span>
+                </p>
+
+                <p className="text-sm font-bold text-slate-500">
+                  {formatBalance(amount)} {t("common.currency")}
+                </p>
+              </div>
+
+              <CircleDollarSign size={28} color="#1677FF" />
+            </div>
+
+            <div className="pt-2">
+              <p className="text-xs text-gray-500 uppercase tracking-wider mb-2">
+                {t("payment.transfer_note")}
+              </p>
+              <div className="flex items-center justify-between rounded-xl border border-dashed border-gray-300 bg-white p-4">
+                <span className="font-bold text-red-600">{description}</span>
+                <button
+                  onClick={() => copyToClipboard(description)}
+                  className="p-2 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+                >
+                  <Copy size={18} />
+                </button>
+              </div>
+              <p className="mt-2 text-xs italic text-red-400">
+                *{t("payment.note_important")}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
 const DetailRow = ({ label, value, highlight, onCopy }: any) => (
   <div className="flex items-center justify-between border-b border-gray-200 pb-3">
     <div className="flex-1">
