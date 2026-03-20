@@ -5,6 +5,8 @@ export const _SocketURL =
 import VietnamFlag from "public/assets/icon/vietnam-flag.png";
 import EngFlag from "public/assets/icon/eng-flag.png";
 import ChinaFlag from "public/assets/icon/china-flag.png";
+import JapanFlag from "public/assets/icon/japan-flag.png";
+import KoreaFlag from "public/assets/icon/korea-flag.png";
 import { StaticImageData } from "next/image";
 
 export const _TIME_OUT_LOADING_SCREEN_LAYOUT = 2000; // time out loading screen layout
@@ -15,12 +17,16 @@ export enum _LanguageCode {
   VI = "vi",
   EN = "en",
   CN = "cn",
+  JP = "jp",
+  KR = "kr",
 }
 
 export const _LanguagesMap = [
   { code: _LanguageCode.VI, label: "Tiếng Việt", icon: VietnamFlag },
   { code: _LanguageCode.EN, label: "English", icon: EngFlag },
   { code: _LanguageCode.CN, label: "中国语", icon: ChinaFlag },
+  { code: _LanguageCode.JP, label: "日本語", icon: JapanFlag },
+  { code: _LanguageCode.KR, label: "한국어", icon: KoreaFlag },
 ] as ReadonlyArray<{
   code: _LanguageCode;
   label: string;

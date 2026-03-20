@@ -5,6 +5,8 @@ import { initReactI18next } from "react-i18next";
 import vi from "@/i18n/vi.json";
 import en from "@/i18n/en.json";
 import cn from "@/i18n/cn.json";
+import jp from "@/i18n/jp.json";
+import kr from "@/i18n/kr.json";
 
 import { _LanguageCode } from "@/lib/const";
 import { checkLanguage } from "@/lib/utils";
@@ -16,6 +18,8 @@ const resources = {
   vi: { translation: vi },
   en: { translation: en },
   cn: { translation: cn },
+  jp: { translation: jp },
+  kr: { translation: kr },
 };
 
 export const initI18n = async () => {

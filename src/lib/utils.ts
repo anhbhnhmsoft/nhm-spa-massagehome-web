@@ -13,9 +13,13 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 export const checkLanguage = (lang: string) => {
-  return [_LanguageCode.EN, _LanguageCode.VI, _LanguageCode.CN].includes(
-    lang as _LanguageCode,
-  );
+  return [
+    _LanguageCode.EN,
+    _LanguageCode.VI,
+    _LanguageCode.CN,
+    _LanguageCode.JP,
+    _LanguageCode.KR,
+  ].includes(lang as _LanguageCode);
 };
 
 // nhân bản list ở home page
