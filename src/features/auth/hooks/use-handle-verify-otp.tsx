@@ -16,6 +16,7 @@ import dayjs from "dayjs";
 
 import { useRouter } from "next/navigation";
 import { useFormAuthStore } from "../store/form-auth-store";
+import { _TypeAuthenticate } from "../const";
 
 /**
  * Hàm để xác thực OTP
@@ -28,8 +29,9 @@ export const useHandleVerifyOtp = () => {
   // handle success toast khi gọi API thành công
   const { success: successToast, error: errorToast } = useToast();
 
-  // set phone_authen vào auth store khi submit form
-  const phone = useFormAuthStore((state) => state.phone_authenticate);
+  // lấy username_authenticate và type_authenticate từ auth store khi submit form
+  const username = useFormAuthStore((state) => state.username_authenticate);
+  const typeAuthenticate = useFormAuthStore((state) => state.type_authenticate);
 
   const caseVerifyOtp = useFormAuthStore((state) => state.case_verify_otp);
 
@@ -50,12 +52,29 @@ export const useHandleVerifyOtp = () => {
     mode: "onChange",
     resolver: zodResolver(
       z.object({
-        phone: z
+        username: z
           .string()
-          .min(1, { error: t("auth.error.phone_required") })
-          .regex(/^[0-9]+$/, { error: t("auth.error.phone_invalid") })
-          .min(9, { error: t("auth.error.phone_min") })
-          .max(12, { error: t("auth.error.phone_max") }),
+          .min(1, { message: t("auth.error.username_required") })
+          .superRefine((val, ctx) => {
+            const typeAuth = typeAuthenticate || _TypeAuthenticate.PHONE;
+
+            if (typeAuth === _TypeAuthenticate.PHONE) {
+              if (!/^[0-9]{9,12}$/.test(val)) {
+                ctx.addIssue({
+                  code: "custom",
+                  message: t("auth.error.phone_invalid"),
+                });
+              }
+            } else if (typeAuth === _TypeAuthenticate.EMAIL) {
+              if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)) {
+                ctx.addIssue({
+                  code: "custom",
+                  message: t("auth.error.email_invalid"),
+                });
+              }
+            }
+          }),
+        type_authenticate: z.enum(_TypeAuthenticate),
         otp: z
           .string()
           .min(1, { error: t("auth.error.otp_required") })
@@ -65,17 +84,21 @@ export const useHandleVerifyOtp = () => {
       }),
     ),
     defaultValues: {
-      phone: "",
+      username: "",
+      type_authenticate: _TypeAuthenticate.PHONE,
       otp: "",
     },
   });
 
-  // set phone_authen vào form khi submit form
+  // set username_authenticate vào form khi mount hoặc khi nó thay đổi
   useEffect(() => {
-    if (phone) {
-      form.setValue("phone", phone);
+    if (username) {
+      form.setValue("username", username);
     }
-  }, [form, phone]);
+    if (typeAuthenticate) {
+      form.setValue("type_authenticate", typeAuthenticate);
+    }
+  }, [form, username, typeAuthenticate]);
 
   // handle submit form
   const onSubmit = useCallback(
@@ -115,10 +138,11 @@ export const useHandleVerifyOtp = () => {
   );
 
   return {
-    phone,
     form,
     onSubmit,
     loading: loadingVerifyOTPRegister || loadingVerifyOTPForgotPassword,
+    typeAuthenticate,
+    username,
   };
 };
 
@@ -131,7 +155,8 @@ export const useHandleResendOtp = () => {
   const handleError = useErrorToast();
 
   // Form state
-  const phone = useFormAuthStore((state) => state.phone_authenticate);
+  const username = useFormAuthStore((state) => state.username_authenticate);
+  const typeAuthenticate = useFormAuthStore((state) => state.type_authenticate);
   const lastSentAt = useFormAuthStore((state) => state.last_sent_at);
   const retryAfterSeconds = useFormAuthStore(
     (state) => state.retry_after_seconds,
@@ -190,16 +215,18 @@ export const useHandleResendOtp = () => {
 
   // handle resend OTP
   const resendOTP = useCallback(async () => {
-    if (!phone || !caseVerifyOtp || secondsLeft > 0) return;
+    if (!username || !caseVerifyOtp || secondsLeft > 0) return;
     try {
       let response: ResendOTPResponse | undefined;
+      const payload = { username, type_authenticate: typeAuthenticate };
+
       // 2. Chỉ switch để chọn API cần gọi
       switch (caseVerifyOtp) {
         case "register":
-          response = await resendOTPRegister({ phone });
+          response = await resendOTPRegister(payload);
           break;
         case "forgot_password":
-          response = await resendOTPForgotPassword({ phone });
+          response = await resendOTPForgotPassword(payload);
           break;
         default:
           errorToast({ message: t("common_error.unknown_error") });
@@ -220,7 +247,8 @@ export const useHandleResendOtp = () => {
       handleError(error);
     }
   }, [
-    phone,
+    username,
+    typeAuthenticate,
     caseVerifyOtp,
     secondsLeft,
     successToast,
