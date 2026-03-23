@@ -5,7 +5,8 @@ import { ResponseDataSuccessType } from "@/lib/types";
 export type User = {
   id: string;
   name: string;
-  phone: string;
+  phone?: string;
+  email?: string;
   disabled: boolean;
   role: _UserRole;
   referral_code: string;

@@ -74,8 +74,8 @@ export default function UserProfilePage() {
                 value={user.name || t("common.unknown")}
               />
               <InfoItem
-                label={t("common.phone")}
-                value={user.phone || t("common.unknown")}
+                label={user.phone ? t("common.phone") : t("common.email")}
+                value={user.phone || user.email || t("common.unknown")}
               />
               <InfoItem
                 label={t("common.gender")}
