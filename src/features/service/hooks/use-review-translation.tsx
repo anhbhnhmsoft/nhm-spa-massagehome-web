@@ -38,7 +38,7 @@ export function useReviewTranslation(params: ListReviewRequest) {
                 (item: ReviewItem) => item.id === reviewId,
               );
               if (review) {
-                (review as any).isTranslating = loading;
+                review.isTranslating = loading;
                 break;
               }
             }
@@ -64,7 +64,7 @@ export function useReviewTranslation(params: ListReviewRequest) {
               if (review) {
                 review.translated_comment = translated;
                 review.target_lang_translated = lang;
-                (review as any).isTranslating = false;
+                review.isTranslating = false;
                 break;
               }
             }

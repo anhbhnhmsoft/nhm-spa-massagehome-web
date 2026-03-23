@@ -119,6 +119,7 @@
     "total": "合計",
     "nickname": "ニックネーム",
     "prefix": "ダウンロード",
+    "load_more": "もっと見る",
     "document": {
       "not_found": "該当するドキュメントが見つかりません"
     },

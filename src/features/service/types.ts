@@ -157,6 +157,7 @@ export type ReviewItem = {
   target_lang_translated?: _LanguageCode;
   hidden: boolean; // Có ẩn không
   review_at: string; // Thời gian đánh giá
+  isTranslating: boolean; // Đang dịch hay không
   reviewer: {
     id: string; // ID user đánh giá
     avatar: string | null; // Hình ảnh user đánh giá

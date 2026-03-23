@@ -8,6 +8,7 @@ import { useTranslation } from "react-i18next";
 import { CategoryCard, CategorySkeletonCard } from "@/components/category-card";
 import Empty from "@/components/emty";
 import { RotateCw } from "lucide-react";
+import { CategoryItem } from "@/features/service/types";
 
 export default function ServicesPageComponent() {
   const { t } = useTranslation();
@@ -111,7 +112,7 @@ export default function ServicesPageComponent() {
             ))
           ) : data && data.length > 0 ? (
             <>
-              {data.map((item: any, index: number) => (
+              {data.map((item: CategoryItem, index: number) => (
                 <CategoryCard item={item} key={`${item.id}-${index}`} />
               ))}
 

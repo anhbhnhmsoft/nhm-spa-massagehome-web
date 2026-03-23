@@ -2,7 +2,6 @@ import {
   useMutationGetRoomId,
   useMutationSeenMessages,
   useMutationSendMessage,
-  useMutationTranslateMessage,
 } from "@/features/chat/hooks/use-mutation";
 import useChatStore from "@/features/chat/stores";
 import useApplicationStore from "@/lib/store";
@@ -30,7 +29,6 @@ import { useTranslation } from "react-i18next";
 import useToast from "@/features/app/hooks/use-toast";
 import { _ChatConstant } from "@/features/chat/consts";
 import { useRouter } from "next/navigation";
-import { _LanguageCode } from "@/lib/const";
 
 // Hook để lấy thông tin phòng chat
 export const useGetRoomChat = () => {
@@ -169,7 +167,7 @@ export const useChat = (useFor: "ktv" | "customer") => {
           // Cập nhật tin Optimistic thành tin thật khi nhận phản hồi thành công
           updateCache({ ...tempMsg, status_sent: "sent" });
         },
-        onError: (error: any) => {
+        onError: () => {
           // Cập nhật tin Optimistic thành tin thất bại khi nhận phản hồi thất bại
           updateCache({ ...tempMsg, status_sent: "failed" });
         },

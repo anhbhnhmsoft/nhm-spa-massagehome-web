@@ -119,6 +119,7 @@
     "total": "합계",
     "nickname": "별명",
     "prefix": "다운로드",
+    "load_more": "더 보기",
     "document": {
       "not_found": "적합한 문서를 찾을 수 없습니다"
     },

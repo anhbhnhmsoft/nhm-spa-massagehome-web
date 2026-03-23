@@ -150,7 +150,7 @@ const Review = React.memo(
                   borderColor: "#E5E7EB",
                 }}
               >
-                {(item as any).isTranslating ? (
+                {item.isTranslating ? (
                   <Loader2 size={12} className="animate-spin" />
                 ) : (
                   <Languages size={12} />

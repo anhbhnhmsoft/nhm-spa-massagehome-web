@@ -11,7 +11,6 @@ import {
 import { cn, formatBalance, getCurrentDayKey } from "@/lib/utils";
 import DefaultColor from "@/components/styles/color";
 import StarRating from "../star-rating";
-import Empty from "../emty";
 import { _KTVConfigSchedulesLabel } from "@/lib/const";
 import { TFunction } from "i18next";
 

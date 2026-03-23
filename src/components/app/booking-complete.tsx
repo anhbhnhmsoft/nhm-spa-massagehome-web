@@ -16,9 +16,10 @@ import { useRouter } from "next/navigation";
 import { formatBalance } from "@/lib/utils";
 import { useCheckBooking } from "@/features/booking/hooks";
 import { BookingCheckItem } from "@/features/booking/types";
+import { TFunction } from "i18next";
 
 // Render: Trạng thái Đang Xử Lý
-const Processing = ({ t }: { t: any }) => (
+const Processing = ({ t }: { t: TFunction }) => (
   <div className="flex flex-col items-center justify-center min-h-[400px] px-8 text-center">
     <div className="mb-6">
       <Loader2 className="h-12 w-12 animate-spin text-blue-600" />
@@ -38,7 +39,7 @@ const Success = ({
   bookingData,
   onGoHome,
 }: {
-  t: any;
+  t: TFunction;
   bookingData: BookingCheckItem;
   onGoHome: () => void;
 }) => (
@@ -137,7 +138,7 @@ const InfoRow = ({
 );
 
 // Render: Trạng thái Thất bại
-const Failed = ({ t, onGoHome }: { t: any; onGoHome: () => void }) => (
+const Failed = ({ t, onGoHome }: { t: TFunction; onGoHome: () => void }) => (
   <div className="flex flex-col items-center px-6 pt-12 text-center h-full">
     <div className="mb-6 rounded-full bg-red-50 p-6">
       <XCircle className="h-16 w-16 text-red-500" strokeWidth={1.5} />

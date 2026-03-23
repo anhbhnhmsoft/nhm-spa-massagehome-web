@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 
 import Link from "next/link";
 import { useTranslation } from "react-i18next";
@@ -11,7 +11,6 @@ import { useListBannerQuery } from "@/features/commercial/hooks/use-query";
 import { Skeleton } from "../skeleton";
 import { useGetListKTVHomepage } from "@/features/user/hooks";
 import { KTVHomePageCard } from "@/components/ktv-card";
-import { normalizeListToLength } from "@/lib/utils";
 import { useGetCategoryList } from "@/features/service/hooks";
 import { CategoryCard, CategorySkeletonCard } from "../category-card";
 import Empty from "../emty";
@@ -155,7 +154,7 @@ export function KTVSection({
     {
       align: "start",
       loop: true,
-      dragFree: false, // QUAN TRỌNG → snap theo page
+      dragFree: false,
     },
     [
       Autoplay({
@@ -164,14 +163,6 @@ export function KTVSection({
       }),
     ],
   );
-
-  const displayList = useMemo(() => {
-    if (!ktvList || ktvList.length === 0) return [];
-
-    return ktvList.length >= 8
-      ? ktvList.slice(0, 8)
-      : normalizeListToLength(ktvList, 8);
-  }, [ktvList]);
   // Loading
   if (isLoading || !ktvList) {
     return (
@@ -211,7 +202,7 @@ export function KTVSection({
       {/* Embla Carousel */}
       <div className="overflow-hidden" ref={emblaRef}>
         <div className="flex">
-          {displayList.map((ktv, index) => (
+          {ktvList.map((ktv, index) => (
             <div
               key={`${ktv.id}-${index}`}
               className="shrink-0 w-1/3 sm:w-1/6 px-1"

@@ -17,6 +17,7 @@ import dayjs from "dayjs";
 import {
   useCreateInfoWithdraw,
   useRequestWithdraw,
+  useWallet,
   useWithdrawInfo,
 } from "@/features/payment/hooks";
 import {
@@ -31,6 +32,7 @@ import { Controller } from "react-hook-form";
 import { ListTransactionItem } from "@/features/payment/types";
 import { CouponUserItem } from "@/features/service/types";
 import SelectModal from "../select-modal";
+import { TFunction } from "i18next";
 
 type WithdrawModalProps = {
   isVisible: boolean;
@@ -78,7 +80,7 @@ export const WithdrawModal = ({ isVisible, onClose }: WithdrawModalProps) => {
                 <p>{t("payment.withdraw.no_account")}</p>
               </div>
             ) : (
-              queryListInfoWithdraw.data?.map((item: any) => (
+              queryListInfoWithdraw.data?.map((item) => (
                 <div
                   key={item.id}
                   onClick={() => setIdChoose(item.id)}
@@ -201,7 +203,7 @@ const CreateInfoWithdrawModal: FC<CreateInfoWithdrawModalProps> = ({
               onClick={() => setOpenSelectBank(true)}
               className={cn(
                 "flex w-full items-center justify-between rounded-xl border bg-gray-50 p-3.5 outline-none transition-all",
-                (errors.config as any)?.bank_bin
+                errors.config?.bank_bin
                   ? "border-red-500"
                   : "border-gray-200 focus:border-primary-color-2",
               )}
@@ -220,7 +222,7 @@ const CreateInfoWithdrawModal: FC<CreateInfoWithdrawModalProps> = ({
             <SelectModal
               isVisible={openSelectBank}
               onClose={() => setOpenSelectBank(false)}
-              onSelect={(item: any) => {
+              onSelect={(item) => {
                 setValue("config.bank_bin", item.value);
                 setValue("config.bank_name", item.label);
                 setOpenSelectBank(false);
@@ -243,7 +245,7 @@ const CreateInfoWithdrawModal: FC<CreateInfoWithdrawModalProps> = ({
                   {...field}
                   className={cn(
                     "w-full rounded-xl border bg-gray-50 p-3.5 text-gray-800 outline-none transition-all",
-                    (errors.config as any)?.bank_account
+                    errors.config?.bank_account
                       ? "border-red-500 bg-red-50"
                       : "border-gray-200 focus:border-primary-color-2",
                   )}
@@ -251,9 +253,9 @@ const CreateInfoWithdrawModal: FC<CreateInfoWithdrawModalProps> = ({
                 />
               )}
             />
-            {(errors.config as any)?.bank_account && (
+            {errors.config?.bank_account && (
               <p className="ml-1 mt-1 text-xs text-red-500">
-                {(errors.config as any).bank_account.message}
+                {errors.config.bank_account.message}
               </p>
             )}
           </div>
@@ -271,7 +273,7 @@ const CreateInfoWithdrawModal: FC<CreateInfoWithdrawModalProps> = ({
                   {...field}
                   className={cn(
                     "w-full rounded-xl border bg-gray-50 p-3.5 text-gray-800 outline-none transition-all",
-                    (errors.config as any)?.bank_holder
+                    errors.config?.bank_holder
                       ? "border-red-500 bg-red-50"
                       : "border-gray-200 focus:border-primary-color-2",
                   )}
@@ -456,6 +458,16 @@ const CreateWithdrawTicketModal = ({
     </div>
   );
 };
+
+type HeaderWalletProps = {
+  queryWallet: ReturnType<typeof useWallet>["queryWallet"];
+  setTab?: ReturnType<typeof useWallet>["setTab"];
+  tab?: ReturnType<typeof useWallet>["tab"];
+  t: TFunction;
+  goToDepositScreen: ReturnType<typeof useWallet>["goToDepositScreen"];
+  setVisibleWithdraw: (visibleWithdraw: boolean) => void;
+};
+
 export const HeaderWallet = ({
   queryWallet,
   setTab,
@@ -463,7 +475,7 @@ export const HeaderWallet = ({
   t,
   goToDepositScreen,
   setVisibleWithdraw,
-}: any) => {
+}: HeaderWalletProps) => {
   return (
     <div className="w-full">
       {/* Thẻ Wallet Gradient */}
@@ -549,7 +561,6 @@ export const HeaderWallet = ({
 export const TransactionItem = ({ item }: { item: ListTransactionItem }) => {
   const { t } = useTranslation();
   const isInType = _TransactionInType.includes(item.type);
-  const isOutType = _TransactionOutType.includes(item.type);
 
   return (
     <div className="flex items-center justify-between rounded-xl border border-slate-200 bg-white p-4 shadow-sm hover:border-slate-300 transition-colors">

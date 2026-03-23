@@ -27,7 +27,7 @@ const buildFormData = (data: ApplyAgencyRequest): FormData => {
       );
 
       if (item.file) {
-        formData.append(`file_uploads[${index}][file]`, item.file as any);
+        formData.append(`file_uploads[${index}][file]`, item.file);
       }
     });
   }

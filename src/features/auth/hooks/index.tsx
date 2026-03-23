@@ -532,14 +532,6 @@ export const useSetLanguageUser = (onClose?: () => void) => {
   };
 };
 
-// /**
-//  * Hook để kiểm tra xem user có đang hoạt động hay không
-//  */
-// export const useHeartbeat = () => {
-//   const status = useAuthStore((state) => state.status);
-//   useHeartbeatQuery(status === _AuthStatus.AUTHORIZED);
-// };
-
 /**
  * Xử lý thay đổi avatar
  */
@@ -841,14 +833,14 @@ export const useResetPassword = () => {
             if (typeAuth === _TypeAuthenticate.PHONE) {
               if (!/^[0-9]{9,12}$/.test(val)) {
                 ctx.addIssue({
-                  code: z.ZodIssueCode.custom,
+                  code: "custom",
                   message: t("auth.error.phone_invalid"),
                 });
               }
             } else if (typeAuth === _TypeAuthenticate.EMAIL) {
               if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)) {
                 ctx.addIssue({
-                  code: z.ZodIssueCode.custom,
+                  code: "custom",
                   message: t("auth.error.email_invalid"),
                 });
               }

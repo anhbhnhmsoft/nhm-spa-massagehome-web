@@ -119,6 +119,7 @@
     "total": "Tổng",
     "nickname": "Biệt danh",
     "prefix": "Tải về trên",
+    "load_more": "Tải thêm",
     "document": {
       "not_found": "Không tìm thấy tài liệu phù hợp"
     },

@@ -6,7 +6,10 @@ import { TFunction } from "i18next";
 import dayjs from "dayjs";
 import { CouponItem } from "@/features/service/types";
 import { FieldErrors } from "react-hook-form";
-import { ApplyTechnicalRequest } from "@/features/user/types";
+import {
+  ApplyAgencyRequest,
+  ApplyTechnicalRequest,
+} from "@/features/user/types";
 import { _PartnerFileType } from "@/features/user/const";
 
 export function cn(...inputs: ClassValue[]) {
@@ -193,7 +196,7 @@ export const calculateDiscountAmount = (
 };
 
 export const addOrUpdateFile = (
-  currentFiles: any[],
+  currentFiles: ApplyAgencyRequest["file_uploads"],
   type: _PartnerFileType,
   file: File,
   preview: string,
@@ -204,14 +207,14 @@ export const addOrUpdateFile = (
 };
 
 export const removeFileByType = (
-  currentFiles: any[],
+  currentFiles: ApplyAgencyRequest["file_uploads"],
   type: _PartnerFileType,
 ) => {
   return currentFiles.filter((f) => f.type_upload !== type);
 };
 
 export const appendFile = (
-  currentFiles: any[],
+  currentFiles: ApplyAgencyRequest["file_uploads"],
   type: _PartnerFileType,
   file: File,
   preview: string,
@@ -219,13 +222,16 @@ export const appendFile = (
   return [...currentFiles, { type_upload: type, file, preview }];
 };
 
-export const removeSpecificFile = (currentFiles: any[], itemToRemove: any) => {
+export const removeSpecificFile = (
+  currentFiles: ApplyAgencyRequest["file_uploads"],
+  itemToRemove: ApplyAgencyRequest["file_uploads"][0],
+) => {
   return currentFiles.filter((f) => f !== itemToRemove);
 };
 
 export const updateSpecificFile = (
-  currentFiles: any[],
-  itemToUpdate: any,
+  currentFiles: ApplyAgencyRequest["file_uploads"],
+  itemToUpdate: ApplyAgencyRequest["file_uploads"][0],
   file: File,
   preview: string,
 ) => {
@@ -238,6 +244,6 @@ export const getErrorsFileType = (
   errors: FieldErrors<ApplyTechnicalRequest>,
   type: _PartnerFileType,
 ) => {
-  const fileUploadErrors = errors.file_uploads as any;
+  const fileUploadErrors = errors.file_uploads;
   return fileUploadErrors?.[type]?.message as string | undefined;
 };

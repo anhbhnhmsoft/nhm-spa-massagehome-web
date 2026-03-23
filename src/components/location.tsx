@@ -18,13 +18,18 @@ import {
   useSearchLocation,
 } from "@/features/location/hooks";
 import { Controller } from "react-hook-form";
-import { DetailLocation } from "@/features/location/types";
+import {
+  AddressItem,
+  DetailLocation,
+  SearchLocation,
+  SelectAddress,
+} from "@/features/location/types";
 // Giả định hooks của bạn đã có phiên bản cho Web
 
 type ListLocationModalProps = {
   visible: boolean;
   onClose: () => void;
-  onSelect?: (location: any) => void;
+  onSelect?: (location: SelectAddress) => void;
 };
 
 export const ListLocationModal = ({
@@ -54,13 +59,12 @@ export const ListLocationModal = ({
       if (onSelect) {
         onSelect({
           address: location.address,
-          latitude: location.location?.coords.latitude.toString(),
-          longitude: location.location?.coords.longitude.toString(),
+          latitude: location.location?.coords.latitude.toString() || "",
+          longitude: location.location?.coords.longitude.toString() || "",
           desc: location.address,
         });
       }
     } else {
-      // Trên Web, hàm này sẽ gọi navigator.geolocation
       getCurrentLocation();
     }
   };
@@ -114,7 +118,7 @@ export const ListLocationModal = ({
         <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
           {data && data.length > 0 ? (
             <div className="space-y-3">
-              {data.map((item: any, index: number) => (
+              {data.map((item: AddressItem, index: number) => (
                 <div
                   key={`location-${item.id}-${index}`}
                   onClick={() =>
@@ -191,7 +195,7 @@ export const ListLocationModal = ({
               <p className="mb-8 text-gray-500">{t("location.description")}</p>
               <button
                 onClick={createHandler}
-                className="flex items-center gap-2 rounded-full bg-blue-600 px-6 py-3 font-bold text-white hover:bg-blue-700"
+                className="flex items-center gap-2 rounded-full bg-primary-color-2 px-6 py-3 font-bold text-white hover:bg-blue-700"
               >
                 <PlusCircle size={20} />
                 {t("location.add_new_address")}
@@ -264,7 +268,7 @@ export const SaveLocationModal = ({
                       ${
                         loadingSetLocation
                           ? "cursor-not-allowed bg-gray-200 text-gray-400"
-                          : "bg-blue-50 text-blue-600 hover:bg-blue-100"
+                          : "bg-blue-50 text-primary-color-2 hover:bg-blue-100"
                       }
                 `}
               >
@@ -286,7 +290,7 @@ export const SaveLocationModal = ({
               onClick={() => setShowSearch(true)}
               className="flex w-full items-center rounded-xl border border-gray-200 p-4 text-left hover:border-blue-300 transition-all"
             >
-              <div className="mr-3 rounded-full bg-blue-50 p-2 text-blue-600">
+              <div className="mr-3 rounded-full bg-blue-50 p-2 text-primary-color-2">
                 <MapPin size={20} />
               </div>
               <span
@@ -358,7 +362,7 @@ export const SaveLocationModal = ({
           <button
             onClick={handleSubmit(submit)}
             disabled={loading}
-            className="flex w-full items-center justify-center rounded-full bg-blue-600 py-4 text-lg font-bold text-white hover:bg-blue-700 disabled:opacity-50"
+            className="flex w-full items-center justify-center rounded-full bg-primary-color-2 py-4 text-lg font-bold text-white hover:bg-blue-700 disabled:opacity-50"
           >
             {loading ? (
               <Loader2 className="animate-spin" />
@@ -405,7 +409,6 @@ export const SearchLocationModal: FC<LocationSearchModalProps> = ({
     clearKeyword,
     handleSelect,
   } = useSearchLocation();
-
   if (!visible) return null;
 
   return (
@@ -451,7 +454,7 @@ export const SearchLocationModal: FC<LocationSearchModalProps> = ({
         ) : (
           <div className="flex flex-col">
             {results && results.length > 0
-              ? results.map((item: any) => (
+              ? results.map((item) => (
                   <button
                     key={item.place_id}
                     className="flex w-full flex-row items-center border-b border-gray-50 px-4 py-4 text-left transition-colors hover:bg-gray-50 active:bg-gray-100"

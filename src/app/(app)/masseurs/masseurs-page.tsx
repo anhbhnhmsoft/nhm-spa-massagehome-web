@@ -69,10 +69,10 @@ export default function MasseursPageComponent() {
         {/* --- TITLE & TOTAL --- */}
         <div className="mb-6 flex items-center justify-between gap-4">
           <div className="flex flex-row items-center gap-2">
-            <span className="text-xl font-bold text-blue-600 sm:text-2xl">
+            <span className="text-title font-bold text-blue-600 ">
               {pagination?.meta?.total || 0}
             </span>
-            <h1 className="text-lg font-semibold text-slate-700 sm:text-xl">
+            <h1 className="text-title font-semibold text-slate-700 ">
               {t("services.total_masseurs")}
             </h1>
           </div>
@@ -119,7 +119,7 @@ export default function MasseursPageComponent() {
                 <button
                   disabled={isFetchingNextPage}
                   onClick={() => fetchNextPage()}
-                  className="rounded-full bg-white px-8 py-2 text-sm font-medium text-blue-600 shadow-sm border border-blue-100 hover:bg-blue-50 disabled:opacity-50"
+                  className="rounded-full bg-white px-8 py-2 text-sm font-medium text-blue-600  shadow-sm border border-blue-100 hover:bg-blue-50 disabled:opacity-50"
                 >
                   {isFetchingNextPage
                     ? t("common.loading")
