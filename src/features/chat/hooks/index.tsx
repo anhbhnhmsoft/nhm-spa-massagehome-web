@@ -81,6 +81,7 @@ export const useChat = (useFor: "ktv" | "customer") => {
   const room = useChatStore((state) => state.room);
   const token = useAuthStore((state) => state.token);
   const user = useAuthStore((state) => state.user);
+
   const { mutate: sendMessage } = useMutationSendMessage();
   const [joinStatus, setJoinStatus] = useState<
     "pending" | "joining" | "joined" | "error"
@@ -88,6 +89,7 @@ export const useChat = (useFor: "ktv" | "customer") => {
   // Trạng thái trực tuyến của đối phương
   const [isPartnerOnline, setIsPartnerOnline] = useState(false);
 
+  // state dich
   const historyQuery = useInfiniteQueryListMessage(
     {
       filter: {},
@@ -104,41 +106,34 @@ export const useChat = (useFor: "ktv" | "customer") => {
 
   // Cập nhật cache tin nhắn khi nhận được tin nhắn mới
   const updateCache = useCallback(
-    (msg: PayloadNewMessage) => {
+    (msg: Partial<PayloadNewMessage> & { id: string; temp_id?: string }) => {
       if (!room?.id) return;
-
       queryClient.setQueriesData<InfiniteData<ListMessageResponse>>(
         { queryKey: ["chatApi-listMessages", room.id] },
-        (oldData) => {
-          return produce(oldData, (draft) => {
-            if (!draft?.pages?.length) return;
-            const firstPage = draft.pages[0];
-            const messages = firstPage.data?.data;
-            if (!messages) return;
-            // 1. Tìm tin nhắn: Ưu tiên tìm theo temp_id trước, sau đó mới tìm theo id thật
-            const index = messages.findIndex((m) => {
-              const matchTempId = !!(msg.temp_id && m.temp_id === msg.temp_id);
-              const matchRealId = !!(msg.id && m.id === msg.id);
-              return matchTempId || matchRealId;
-            });
+        (old) =>
+          produce(old, (draft) => {
+            const msgs = draft?.pages?.[0]?.data?.data;
+            if (!msgs) return;
 
-            // 2. Cập nhật tin nhắn nếu tìm thấy
-            if (index !== -1) {
-              messages[index] = {
-                ...messages[index],
+            const idx = msgs.findIndex(
+              (m) =>
+                (msg.temp_id && m.temp_id === msg.temp_id) ||
+                (msg.id && m.id === msg.id),
+            );
+
+            if (idx === -1) {
+              msgs.unshift({
                 ...msg,
-                id: msg.id || messages[index].id,
-                temp_id: msg.temp_id || messages[index].temp_id,
-                status_sent: msg.status_sent || "sent",
-              };
+                status_sent: msg.status_sent ?? "sent",
+              } as PayloadNewMessage);
             } else {
-              messages.unshift({
+              msgs[idx] = {
+                ...msgs[idx],
                 ...msg,
-                status_sent: msg.status_sent || "sent",
-              });
+                status_sent: msg.status_sent ?? msgs[idx].status_sent,
+              };
             }
-          });
-        },
+          }),
       );
     },
     [room],
@@ -172,7 +167,7 @@ export const useChat = (useFor: "ktv" | "customer") => {
           // Cập nhật tin Optimistic thành tin thật khi nhận phản hồi thành công
           updateCache({ ...tempMsg, status_sent: "sent" });
         },
-        onError: (error: any) => {
+        onError: () => {
           // Cập nhật tin Optimistic thành tin thất bại khi nhận phản hồi thất bại
           updateCache({ ...tempMsg, status_sent: "failed" });
         },

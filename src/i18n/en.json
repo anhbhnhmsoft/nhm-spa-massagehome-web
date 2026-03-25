@@ -82,6 +82,8 @@
     "expired": "Expired",
     "version": "Version",
     "currency": "VND",
+    "choose_method": "Choose your preferred login method",
+    "login_phone": "Phone Number",
     "auto_pay": "Auto-approve 24/7",
     "hold_payment": "Hold Payment",
     "save_image": "Save Image",
@@ -117,6 +119,7 @@
     "total": "Total",
     "nickname": "Nickname",
     "prefix": "Download on the",
+    "load_more": "Load more",
     "document": {
       "not_found": "No suitable document found"
     },
@@ -175,7 +178,8 @@
       "QR_BANKING": "QR Banking Transfer",
       "ZALO_PAY": "Zalo Pay",
       "MOMO_PAY": "Momo Pay",
-      "WECHAT_PAY": "WeChat Pay"
+      "WECHAT_PAY": "WeChat Pay",
+      "ALI_PAY": "Alipay Payment"
     },
     "transaction_type": {
       "DEPOSIT_QR_CODE": "Deposit via QR Banking",
@@ -189,7 +193,8 @@
       "RETRIEVE_PAYMENT_REFUND_KTV": "Retrieve Payment Refund KTV",
       "REFERRAL_KTV": "Referral KTV",
       "REFERRAL_INVITE_KTV_REWARD": "Referral Invite KTV Reward",
-      "DEPOSIT_WECHAT_PAY": "Deposit via Wechat Pay"
+      "DEPOSIT_WECHAT_PAY": "Deposit via Wechat Pay",
+      "DEPOSIT_ALI_PAY": "Deposit via Alipay"
     },
     "transaction_status": {
       "PENDING": "Pending",
@@ -282,7 +287,11 @@
     "auth_description": "The phone number is used to log in or register for the first time.",
     "placeholder_phone": "Enter phone number",
     "auth_verify_title": "Verify Phone Number",
+    "auth_verify_title_phone": "Verify Phone Number",
+    "auth_verify_title_email": "Verify Email",
     "auth_verify_description": "An OTP code has been sent to your phone number",
+    "auth_verify_description_phone": "An OTP code has been sent to your phone number",
+    "auth_verify_description_email": "An OTP code has been sent to your email",
     "placeholder_otp": "Enter OTP",
     "resend_otp": "Resend OTP",
     "register_title": "Register",
@@ -299,11 +308,25 @@
    "terms_and_conditions_register_technical": "Terms and conditions for technician registration",
     "terms_and_conditions_register_agency": "Terms and conditions for agency registration",
     "forgot_password": "Forgot Password?",
+    "auth_title_phone": "Enter Phone Number",
+    "auth_title_email": "Enter Your Email",
+    "auth_description_phone": "Phone number is used to log in or register for the first time.",
+    "auth_description_email": "Email is used to log in or register for the first time.",
+    "placeholder_email": "Enter your email",
+    "login_with_phone_desc": "Fast and secure",
+    "login_with_email_desc": "Easy access to your account",
+    "phone_format_hint": "Format: 0123456789",
+    "email_format_hint": "Format: example@email.com",
+    "use_different_method": "Do you want to",
     "error": {
+      "username_required": "Please enter phone number or email",
       "phone_required": "Please enter phone number",
       "phone_invalid": "Invalid phone number, please re-enter",
       "phone_min": "Phone number must be at least 9 digits",
       "phone_max": "Phone number max 12 digits",
+      "email_required": "Please enter email",
+      "email_invalid": "Invalid email, please re-enter",
+      "invalid_username_or_email": "Invalid phone number or email, please re-enter",
       "otp_required": "Please enter OTP code",
       "otp_invalid": "Invalid OTP code, please re-enter",
       "otp_min": "OTP code must be at least 6 digits",
@@ -320,7 +343,8 @@
       "verify_otp": "OTP verified successfully",
       "verify_register_otp": "OTP verified successfully",
       "register_success": "Registration successful, welcome to the app!",
-      "login_success": "Login successful, welcome to the app!"
+      "login_success": "Login successful, welcome to the app!",
+      "reset_password_success": "Password reset successful, you can now log in with your new password."
     }
   },
   "request_location": {
@@ -481,11 +505,11 @@
       "error_nickname_required": "Please enter display name.",
       "error_bio_required": "Please enter your bio (at least {{ min }} characters).",
       "error_invalid_nickname_length": "Display name must be between {{min}} and {{max}} characters.",
-"error_invalid_experience": "Experience must be between {{min}} and {{max}} years.",
-"error_invalid_dob": "Invalid date of birth.",
-"error_avatar_required": "Please select an avatar.",
-"error_missing_id_front": "Please upload the front side of your Citizen ID.",
-"error_missing_id_back": "Please upload the back side of your Citizen ID.",
+      "error_invalid_experience": "Experience must be between {{min}} and {{max}} years.",
+      "error_invalid_dob": "Invalid date of birth.",
+      "error_avatar_required": "Please select an avatar.",
+      "error_missing_id_front": "Please upload the front side of your Citizen ID.",
+      "error_missing_id_back": "Please upload the back side of your Citizen ID.",
       "error_file_invalid": "Please select an image, or the uploaded image is invalid.",
       "alert_images_display_message": "Please add at least {{ min }} images and up to {{ max }} images to display to customers.",
       "error_check_apply_partner": "An error occurred while checking partner application. Please try again later.",
@@ -570,6 +594,7 @@
     "note_important": "Please enter this note exactly as shown",
     "processing_transaction": "WeChat payment is being processed. This may take 15–30 minutes to complete",
     "exchange_rate_wechat_pay": "Converted to {{priceCny}} CNY",
+    "alipay_scan_instruction": "Use the Alipay app to scan the QR code and complete the payment",
     "withdraw": {
       "title_modal": "Select Withdrawal Account",
       "add_new_account": "Link New Account",
@@ -803,14 +828,22 @@
     "error_join_room": "Error joining chat room",
     "online": "Online",
     "offline": "Offline",
-    "placeholder": "Send a message..."
+    "placeholder": "Send a message...",
+    "view_translation": "View translation",
+    "translating": "Translating...",
+    "hide_translation": "Hide translation",
+    "change_language": "Change language"
   },
   "review": {
     "all_reviews": "All Reviews",
     "total_reviews": "Total {{ count }} comments",
     "no_reviews": "No reviews yet.",
     "hidden_user": "Anonymous User",
-    "no_comment": "No comment."
+    "no_comment": "No comment.",
+    "translate": "View translation",
+    "translating": "Translating...",
+    "hide_translation": "Hide translation",
+    "translation": "Translation"
   },
   "ktv": {
     "index": {

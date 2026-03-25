@@ -66,6 +66,8 @@
     "featured": "精选",
     "year": "年",
     "minute": "分钟",
+    "choose_method": "选择您要登录或创建新账户的方式",
+    "login_phone": "使用手机号登录",
     "review": "评价",
     "no_image": "无图片",
     "search_address": "搜索地址...",
@@ -117,6 +119,7 @@
     "total": "总计",
     "nickname": "昵称",
     "prefix": "立即下载",
+    "load_more": "加载更多",
     "document": {
       "not_found": "未找到合适的文档"
     },
@@ -175,7 +178,8 @@
       "QR_BANKING": "银行扫码转账",
       "ZALO_PAY": "Zalo Pay",
       "MOMO_PAY": "Momo Pay",
-      "WECHAT_PAY": "Wechat Pay"
+      "WECHAT_PAY": "Wechat Pay",
+      "ALI_PAY": "支付宝付款"
     },
     "transaction_type": {
       "DEPOSIT_QR_CODE": "二维码银行充值",
@@ -189,7 +193,8 @@
       "RETRIEVE_PAYMENT_REFUND_KTV": "提取退款",
       "REFERRAL_KTV": "推荐给技师",
       "REFERRAL_INVITE_KTV_REWARD": "技师注册推荐佣金",
-      "DEPOSIT_WECHAT_PAY": "Wechat Pay 充值"
+      "DEPOSIT_WECHAT_PAY": "Wechat Pay 充值",
+      "DEPOSIT_ALI_PAY": "通过支付宝充值"
     },
     "transaction_status": {
       "PENDING": "处理中",
@@ -282,7 +287,11 @@
     "auth_description": "手机号码用于登录或首次注册。",
     "placeholder_phone": "输入手机号码",
     "auth_verify_title": "验证手机号码",
+    "auth_verify_title_phone": "验证手机号码",
+    "auth_verify_title_email": "验证邮箱",
     "auth_verify_description": "OTP 验证码已发送至您的手机",
+    "auth_verify_description_phone": "OTP 验证码已发送至您的手机",
+    "auth_verify_description_email": "OTP 验证码已发送至您的邮箱",
     "placeholder_otp": "输入 OTP",
     "resend_otp": "重新发送 OTP",
     "register_title": "注册",
@@ -299,11 +308,25 @@
     "terms_and_conditions_register_technical": "技师注册条款和条件",
     "terms_and_conditions_register_agency": "代理注册条款和条件",
     "forgot_password": "忘记密码?",
+    "auth_title_phone": "输入手机号码",
+    "auth_title_email": "输入您的邮箱",
+    "auth_description_phone": "手机号码用于登录或首次注册。",
+    "auth_description_email": "邮箱用于登录或首次注册。",
+    "placeholder_email": "输入您的邮箱",
+    "login_with_phone_desc": "快速且安全",
+    "login_with_email_desc": "轻松访问您的账户",
+    "phone_format_hint": "格式：0123456789",
+    "email_format_hint": "格式：example@email.com",
+    "use_different_method": "您想",
     "error": {
+      "username_required": "请输入手机号码或邮箱",
       "phone_required": "请输入手机号码",
       "phone_invalid": "手机号码无效，请重新输入",
       "phone_min": "手机号码至少 9 位",
       "phone_max": "手机号码最多 12 位",
+      "email_required": "请输入邮箱",
+      "email_invalid": "邮箱无效，请重新输入",
+      "invalid_username_or_email": "手机号码或邮箱无效，请重新输入",
       "otp_required": "请输入 OTP 验证码",
       "otp_invalid": "OTP 验证码无效，请重新输入",
       "otp_min": "OTP 验证码至少 6 位",
@@ -320,7 +343,8 @@
       "verify_otp": "OTP 验证成功",
       "verify_register_otp": "OTP 验证成功",
       "register_success": "注册成功，欢迎使用本应用！",
-      "login_success": "登录成功，欢迎使用本应用！"
+      "login_success": "登录成功，欢迎使用本应用！",
+      "reset_password_success": "密码重置成功，您可以使用新密码登录。"
     }
   },
   "request_location": {
@@ -570,6 +594,7 @@
     "note_important": "请务必填写正确的转账备注",
     "processing_transaction": "微信支付正在处理中，系统确认可能需要 15–30 分钟",
     "exchange_rate_wechat_pay": "换算为 {{priceCny}} 人民币",
+    "alipay_scan_instruction": "请使用支付宝扫描二维码完成付款",
     "withdraw": {
       "title_modal": "选择提现账户",
       "add_new_account": "关联新账户",
@@ -803,14 +828,22 @@
     "error_join_room": "加入聊天室出错",
     "online": "在线",
     "offline": "离线",
-    "placeholder": "发送消息..."
+    "placeholder": "发送消息...",
+    "view_translation": "查看翻译",
+    "translating": "正在翻译...",
+    "hide_translation": "隐藏翻译",
+    "change_language": "更改语言"
   },
   "review": {
     "all_reviews": "所有评价",
     "total_reviews": "共 {{ count }} 条评论",
     "no_reviews": "暂无评价。",
     "hidden_user": "匿名用户",
-    "no_comment": "无评论。"
+    "no_comment": "无评论。",
+    "translate": "查看翻译",
+    "translating": "正在翻译...",
+    "hide_translation": "隐藏翻译",
+    "translation": "翻译"
   },
   "ktv": {
     "index": {

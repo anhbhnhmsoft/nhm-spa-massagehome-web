@@ -12,7 +12,7 @@ export function TabIcon({ focused, icon: Icon, label }: TabIconProps) {
       <div
         className={`relative p-1 rounded-xl transition-colors duration-300 ${
           focused
-            ? "bg-blue-50 text-blue-600"
+            ? "bg-blue-50 text-primary-color-2"
             : "text-gray-400 group-hover:text-gray-600"
         }`}
       >
@@ -24,7 +24,7 @@ export function TabIcon({ focused, icon: Icon, label }: TabIconProps) {
       </div>
       <span
         className={`text-[10px] mt-1 font-medium transition-colors duration-300 ${
-          focused ? "text-blue-600" : "text-gray-400"
+          focused ? "text-primary-color-2" : "text-gray-400"
         }`}
       >
         {label}

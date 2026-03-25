@@ -1,23 +1,28 @@
-import { BaseSearchRequest, Paginator, ResponseDataSuccessType } from '@/lib/types';
-
+import { _LanguageCode } from "@/lib/const";
+import {
+  BaseSearchRequest,
+  LanguageTranslations,
+  Paginator,
+  ResponseDataSuccessType,
+} from "@/lib/types";
 
 export type JoinRoomRequest = {
   user_id: string; // ID của người dùng định chat
-}
+};
 
 export type RoomItem = {
   id: string; // ID của phòng chat
   partner_id: string; // ID của đối tượng chat (như KTV)
   partner_name: string; // Tên đối tượng chat (như KTV)
-}
+};
 
-export type JoinRoomResponse = ResponseDataSuccessType<RoomItem>
+export type JoinRoomResponse = ResponseDataSuccessType<RoomItem>;
 
 export type SendMessageRequest = {
   room_id: string; // ID của phòng chat
   content: string; // Nội dung tin nhắn
   temp_id?: string; // ID của tin nhắn tạm thời (nếu có)
-}
+};
 
 // Payload khi nhận tin nhắn mới
 export type PayloadNewMessage = {
@@ -29,17 +34,21 @@ export type PayloadNewMessage = {
   sender_avatar?: string; // URL avatar người gửi (có thể null)
   created_at: string; // Thời gian tạo tin nhắn (ISO string)
   temp_id?: string; // ID tạm thời (nếu có)
-  status_sent?: 'pending' | 'sent' | 'failed'; // Trạng thái gửi (nếu là tin tạm thời) (ko có trong response)
+  status_sent?: "pending" | "sent" | "failed"; // Trạng thái gửi (nếu là tin tạm thời) (ko có trong response)
+  isTranslating?: boolean;
+
+  content_translated?: LanguageTranslations | undefined; // Bình luận đã dịch
+  translated_content?: string; // Bình luận đã dịch (cái này là thêm vào để hiển thị trên app)
+  target_lang_translated?: _LanguageCode; // Ngôn ngữ được dịch (cái này là thêm vào để hiển thị trên app)
 };
 
+export type ListMessageRequest = BaseSearchRequest<object>;
 
-export type ListMessageRequest = BaseSearchRequest<object>
+export type ListMessageResponse = ResponseDataSuccessType<
+  Paginator<PayloadNewMessage>
+>;
 
-export type ListMessageResponse = ResponseDataSuccessType<Paginator<PayloadNewMessage>>
-
-
-export type KTVConversationRequest = BaseSearchRequest<object>
-
+export type KTVConversationRequest = BaseSearchRequest<object>;
 
 export type KTVConversationItem = {
   id: string; // ID của phòng chat
@@ -54,6 +63,18 @@ export type KTVConversationItem = {
     content: string; // Nội dung tin nhắn mới nhất
     created_at: string; // Thời gian tạo tin nhắn mới nhất (ISO string)
   } | null; // Tin nhắn mới nhất (có thể null)
-}
+};
 
-export type KTVConversationResponse = ResponseDataSuccessType<Paginator<KTVConversationItem>>
+export type KTVConversationResponse = ResponseDataSuccessType<
+  Paginator<KTVConversationItem>
+>;
+
+// type dịch ngôn ngữ
+export type TranslateMessageRequest = {
+  message_id: string; // ID của tin nhắn cần dịch
+  lang: _LanguageCode; // Mã ngôn ngữ đích (ví dụ: 'en' cho tiếng Anh, 'vi' cho tiếng Việt)
+};
+
+export type TranslateMessageResponse = ResponseDataSuccessType<{
+  translate: string; // Nội dung đã được dịch
+}>;

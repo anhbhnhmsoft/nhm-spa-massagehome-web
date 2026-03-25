@@ -1,6 +1,6 @@
 "use client";
 import { useMemo, useState } from "react";
-import { ChevronLeft, ChevronRight, MessageCircle, Star } from "lucide-react"; // Bản cho Web
+import { ChevronLeft, ChevronRight, Star } from "lucide-react"; // Bản cho Web
 import dayjs from "dayjs";
 import isBetween from "dayjs/plugin/isBetween";
 import { useTranslation } from "react-i18next";
@@ -11,7 +11,6 @@ import {
   getCurrentDayKey,
 } from "@/lib/utils";
 import { _GenderMap } from "@/features/auth/const";
-import { useGetRoomChat } from "@/features/chat/hooks";
 import {
   AvatarKTV,
   ImageDisplayCustomer,
@@ -24,6 +23,7 @@ import ReviewListModal from "@/components/app/list-reviews";
 import { useRouter } from "next/navigation";
 import { useDetailKtv } from "@/features/user/hooks/use-detail-ktv";
 import ServicesModal from "@/components/app/services-bottom-sheet";
+import { KTVWorkSchedule } from "@/features/user/types";
 dayjs.extend(isBetween);
 
 const MasseurDetailScreen = () => {
@@ -32,8 +32,6 @@ const MasseurDetailScreen = () => {
 
   const {
     detail,
-    refreshPage,
-    loading,
     isServiceModalVisible,
     serviceData,
     handleOpenServiceSheet,
@@ -47,7 +45,6 @@ const MasseurDetailScreen = () => {
   const [showReviewList, setShowReviewList] = useState(false);
 
   const calculateDistance = useCalculateDistance();
-  const getRoomChat = useGetRoomChat();
 
   // Logic tính khoảng cách (Giữ nguyên)
   const distance = useMemo(() => {
@@ -76,7 +73,8 @@ const MasseurDetailScreen = () => {
   const isOnlineRealtime = useMemo(() => {
     if (!detail?.schedule?.is_working) return false;
     const todayConfig = detail.schedule?.schedule_time?.find(
-      (item: any) => item.day_key === currentDayKey,
+      (item: KTVWorkSchedule["schedule_time"][0]) =>
+        item.day_key === currentDayKey,
     );
     if (!todayConfig || !todayConfig.active) return false;
 
@@ -140,12 +138,6 @@ const MasseurDetailScreen = () => {
               className="bg-white/80 p-2 rounded-full"
             >
               <ChevronLeft size={20} className="text-[#your-primary-color]" />
-            </button>
-            <button
-              onClick={() => getRoomChat({ user_id: detail.id })}
-              className="bg-white/80 p-2 rounded-full"
-            >
-              <MessageCircle size={20} className="text-[#your-primary-color]" />
             </button>
           </div>
         </div>
@@ -284,16 +276,21 @@ const MasseurDetailScreen = () => {
               {t("masseurs_detail.review_disclaimer")}
             </p>
           </div>
+          {detail.recent_reviews.length > 0 ? (
+            detail.recent_reviews.map((item, index) => (
+              <ReviewFistItem key={item.id ?? `review-${index}`} item={item} />
+            ))
+          ) : (
+            <Empty />
+          )}
 
-          <ReviewFistItem item={detail.first_review} />
-
-          {detail.review_count > 1 && (
+          {detail.review_count > 0 && (
             <button
               onClick={() => setShowReviewList(true)}
               className="mt-4 w-full flex items-center justify-center gap-2 bg-gray-50 py-2.5 rounded-full text-xs text-gray-500 font-medium"
             >
               {t("masseurs_detail.see_all_reviews", {
-                count: detail.review_count - 1,
+                count: detail.review_count,
               })}
               <ChevronRight size={14} />
             </button>

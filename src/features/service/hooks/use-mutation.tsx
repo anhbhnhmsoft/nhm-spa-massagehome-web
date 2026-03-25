@@ -4,6 +4,7 @@ import {
   BookingServiceRequest,
   PrepareBookingRequest,
   SendReviewRequest,
+  TranslateReviewRequest,
 } from "@/features/service/types";
 
 /**
@@ -41,5 +42,15 @@ export const useMutationPrepareBooking = () => {
   return useMutation({
     mutationFn: (data: PrepareBookingRequest) =>
       serviceApi.prepareBooking(data),
+  });
+};
+
+/**
+ * Dich đánh giá dịch vụ
+ */
+export const useMutationTranslateReview = () => {
+  return useMutation({
+    mutationFn: (data: TranslateReviewRequest) =>
+      serviceApi.translateReview(data),
   });
 };

@@ -31,8 +31,8 @@ export default function PartnerRegisterTypePage() {
         </header>
 
         {/* --- CONTENT --- */}
-        <main className="flex-1 px-5 pt-6">
-          <h2 className="mb-8 font-bold text-2xl text-slate-900 leading-tight">
+        <main className="flex-1 px-5 pt-6 ">
+          <h2 className="mb-2 md:mb-4 text-title-lg text-slate-900 leading-tight ">
             {t("profile.partner_register.title")}
           </h2>
 
@@ -46,7 +46,7 @@ export default function PartnerRegisterTypePage() {
               className="w-full flex items-center justify-between rounded-2xl border border-gray-100 bg-white p-5 text-left shadow-sm hover:border-blue-200 hover:shadow-md transition-all active:scale-[0.98]"
             >
               <div className="flex-1 pr-4">
-                <h3 className="mb-1 font-bold text-lg text-slate-900">
+                <h3 className="mb-1 font-bold text-title text-slate-900">
                   {t("profile.partner_register.individual_title")}
                 </h3>
                 <p className="text-sm text-gray-500 leading-relaxed">
@@ -66,7 +66,7 @@ export default function PartnerRegisterTypePage() {
               className="w-full flex items-center justify-between rounded-2xl border border-gray-100 bg-white p-5 text-left shadow-sm hover:border-blue-200 hover:shadow-md transition-all active:scale-[0.98]"
             >
               <div className="flex-1 pr-4">
-                <h3 className="mb-1 font-bold text-lg text-slate-900">
+                <h3 className="mb-1 font-bold text-title text-slate-900">
                   {t("profile.partner_register.agency_title")}
                 </h3>
                 <p className="text-sm text-gray-500 leading-relaxed">

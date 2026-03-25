@@ -66,17 +66,17 @@ export type KTVDetail = ListKTVItem & {
     id: string;
     url: string;
   }[];
-  first_review: {
+  recent_reviews: {
     id: string;
     review_by: {
       id: string;
       name: string;
       avatar_url: string | null;
-    };
+    } | null;
     comment: string | null;
     rating: number;
     created_at: string;
-  } | null;
+  }[];
   price_transportation: number; // Giá vận chuyển
 };
 

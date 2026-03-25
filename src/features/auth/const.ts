@@ -20,3 +20,9 @@ export const _GenderMap = {
   [_Gender.MALE]: "enum.gender.MALE",
   [_Gender.FEMALE]: "enum.gender.FEMALE",
 } as const;
+
+export enum _TypeAuthenticate {
+  PHONE = "phone",
+  EMAIL = "email",
+  USERNAME = "username",
+}

@@ -42,6 +42,14 @@ export type AddressItem = {
   desc: string;
   is_primary: boolean;
 };
+
+export type SelectAddress = {
+  address: string;
+  latitude: string;
+  longitude: string;
+  desc: string;
+};
+
 export type ListAddressResponse = ResponseDataSuccessType<
   Paginator<AddressItem>
 >;

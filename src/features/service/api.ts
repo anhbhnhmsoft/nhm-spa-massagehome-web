@@ -16,6 +16,8 @@ import {
   ListReviewResponse,
   PrepareBookingRequest,
   PrepareBookingResponse,
+  TranslateReviewRequest,
+  TranslateReviewResponse,
 } from "@/features/service/types";
 import { ResponseSuccessType } from "@/lib/types";
 
@@ -83,6 +85,13 @@ const serviceApi = {
     data: PrepareBookingRequest,
   ): Promise<PrepareBookingResponse> => {
     const response = await client.post(`${defaultUri}/prepare-booking`, data);
+    return response.data;
+  },
+  // dich đánh giá
+  translateReview: async (
+    data: TranslateReviewRequest,
+  ): Promise<TranslateReviewResponse> => {
+    const response = await client.post(`${defaultUri}/translate-review`, data);
     return response.data;
   },
 };

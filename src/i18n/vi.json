@@ -40,6 +40,8 @@
     "loading_data": "Đang tải...",
     "no_data": "Không có dữ liệu",
     "welcome_back": "Chào mừng trở lại!",
+    "choose_method": "Chọn cách bạn muốn đăng nhập hoặc tạo tài khoản mới",
+    "login_phone": "Số điện thoại",
     "hi": "Xin chào, {{name}}!",
     "resend": "Gửi lại",
     "password_reset": "Đặt lại mật khẩu",
@@ -117,6 +119,7 @@
     "total": "Tổng",
     "nickname": "Biệt danh",
     "prefix": "Tải về trên",
+    "load_more": "Tải thêm",
     "document": {
       "not_found": "Không tìm thấy tài liệu phù hợp"
     },
@@ -175,7 +178,8 @@
       "QR_BANKING": "Chuyển khoản QR Banking",
       "ZALO_PAY": "Thanh toán Zalo Pay",
       "MOMO_PAY": "Thanh toán Momo Pay",
-      "WECHAT_PAY": "Thanh toán Wechat Pay"
+      "WECHAT_PAY": "Thanh toán Wechat Pay",
+      "ALI_PAY": "Thanh toán Alipay"
     },
     "transaction_type": {
       "DEPOSIT_QR_CODE": "Nạp tiền qua QR Banking",
@@ -189,7 +193,9 @@
       "RETRIEVE_PAYMENT_REFUND_KTV": "Thu hồi tiền thanh toán cho KTV khi hủy booking",
       "REFERRAL_KTV": "Hoa hồng từ kĩ thuật viên",
       "REFERRAL_INVITE_KTV_REWARD": "Hoa hồng từ kĩ thuật viên khi đăng ký",
-      "DEPOSIT_WECHAT_PAY": "Nạp tiền qua Wechat Pay"
+      "DEPOSIT_WECHAT_PAY": "Nạp tiền qua Wechat Pay",
+      "DEPOSIT_ALI_PAY": "Nạp tiền qua Alipay"
+
     },
     "transaction_status": {
       "PENDING": "Chờ xử lý",
@@ -282,7 +288,11 @@
     "auth_description": "Số điện thoại được sử dụng để đăng nhập hoặc đăng ký lần đầu tiên.",
     "placeholder_phone": "Nhập số điện thoại",
     "auth_verify_title": "Xác nhận số điện thoại",
+    "auth_verify_title_phone": "Xác nhận số điện thoại",
+    "auth_verify_title_email": "Xác nhận email",
     "auth_verify_description": "Mã xác nhận OTP đã được gửi đến số điện thoại",
+    "auth_verify_description_phone": "Mã xác nhận OTP đã được gửi đến số điện thoại",
+    "auth_verify_description_email": "Mã xác nhận OTP đã được gửi đến email",
     "placeholder_otp": "Nhập mã OTP",
     "resend_otp": "Gửi lại mã OTP",
     "register_title": "Đăng ký",
@@ -299,11 +309,25 @@
     "terms_and_conditions_register_technical": "Điều khoản đăng ký kĩ thuật viên",
     "terms_and_conditions_register_agency": "Điều khoản đăng ký đối tác",
     "forgot_password": "Quên mật khẩu?",
+    "auth_title_phone": "Nhập số điện thoại",
+    "auth_title_email": "Nhập email của bạn",
+    "auth_description_phone": "Số điện thoại được sử dụng để đăng nhập hoặc đăng ký lần đầu tiên.",
+    "auth_description_email": "Email được sử dụng để đăng nhập hoặc đăng ký lần đầu tiên.",
+    "placeholder_email": "Nhập email của bạn",
+    "login_with_phone_desc": "Nhanh chóng và an toàn",
+    "login_with_email_desc": "Dễ dàng truy cập tài khoản của bạn",
+    "phone_format_hint": "Định dạng: 0123456789",
+    "email_format_hint": "Định dạng: example@email.com",
+    "use_different_method": "Bạn muốn",
     "error": {
+      "username_required": "Vui lòng nhập số điện thoại hoặc email",
       "phone_required": "Vui lòng nhập số điện thoại",
       "phone_invalid": "Số điện thoại không hợp lệ, vui lòng nhập lại",
       "phone_min": "Số điện thoại phải từ 9 số trở lên",
       "phone_max": "Số điện thoại tối đa 12 số",
+      "email_required": "Vui lòng nhập email",
+      "email_invalid": "Email không hợp lệ, vui lòng nhập lại",
+      "invalid_username_or_email": "Số điện thoại hoặc email không hợp lệ, vui lòng nhập lại",
       "otp_required": "Vui lòng nhập mã OTP",
       "otp_invalid": "Mã OTP không hợp lệ, vui lòng nhập lại",
       "otp_min": "Mã OTP phải từ 6 số trở lên",
@@ -321,7 +345,8 @@
       "verify_otp": "Xác nhận mã OTP thành công",
       "verify_register_otp": "Xác nhận mã OTP thành công",
       "register_success": "Đăng ký thành công, chào mừng bạn đến với ứng dụng!",
-      "login_success": "Đăng nhập thành công, chào mừng bạn đến với ứng dụng!"
+      "login_success": "Đăng nhập thành công, chào mừng bạn đến với ứng dụng!",
+      "reset_password_success": "Đặt lại mật khẩu thành công, bạn có thể sử dụng mật khẩu mới để đăng nhập."
     }
   },
   "request_location": {
@@ -571,6 +596,7 @@
     "note_important": "Vui lòng nhập chính xác nội dung này",
     "processing_transaction": "Hệ thống đang xử lý thanh toán WeChat. Quá trình này có thể mất từ 15–30 phút",
     "exchange_rate_wechat_pay": "Quy đổi thành {{priceCny}} CNY",
+    "alipay_scan_instruction": "Dùng ứng dụng Alipay để quét mã QR và hoàn tất thanh toán",
     "withdraw": {
       "title_modal": "Chọn tài khoản rút tiền",
       "add_new_account": "Liên kết tài khoản mới",
@@ -804,14 +830,21 @@
     "error_join_room": "Lỗi khi tham gia phòng chat",
     "online": "Online",
     "offline": "Offline",
-    "placeholder": "Gửi tin nhắn..."
+    "placeholder": "Gửi tin nhắn...",
+    "view_translation": "Xem bản dịch",
+    "translating": "Đang dịch...",
+    "hide_translation": "Ẩn bản dịch"
   },
   "review": {
     "all_reviews": "Tất cả đánh giá",
     "total_reviews": "Tổng cộng {{ count }} nhận xét",
     "no_reviews": "Chưa có đánh giá nào.",
     "hidden_user": "Người dùng ẩn danh",
-    "no_comment": "Không có bình luận."
+    "no_comment": "Không có bình luận.",
+    "translate": "Xem bản dịch",
+    "translating": "Đang dịch...",
+    "hide_translation": "Ẩn bản dịch",
+    "translation": "Bản dịch"
   },
   "ktv": {
     "index": {

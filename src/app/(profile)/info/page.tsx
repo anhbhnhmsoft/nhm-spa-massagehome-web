@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
-import { Camera, User as UserIcon, ChevronLeft } from "lucide-react";
+import { Camera, User as UserIcon, ChevronLeft, X } from "lucide-react";
 import dayjs from "dayjs";
 import useAuthStore from "@/features/auth/store/auth-store";
 import { _Gender, _GenderMap } from "@/features/auth/const";
@@ -41,7 +41,7 @@ export default function UserProfilePage() {
             {/* Avatar Section */}
             <div className="flex flex-col items-center justify-center py-10">
               <div className="relative group">
-                <div className="h-32 w-32 relative rounded-full border-4 border-gray-50 shadow-md overflow-hidden bg-slate-100">
+                <div className="h-32 w-32 relative rounded-full border-2 border-primary-color-2  overflow-hidden bg-slate-100">
                   {user.profile.avatar_url && !imageError ? (
                     <Image
                       src={user.profile.avatar_url}
@@ -74,8 +74,8 @@ export default function UserProfilePage() {
                 value={user.name || t("common.unknown")}
               />
               <InfoItem
-                label={t("common.phone")}
-                value={user.phone || t("common.unknown")}
+                label={user.phone ? t("common.phone") : t("common.email")}
+                value={user.phone || user.email || t("common.unknown")}
               />
               <InfoItem
                 label={t("common.gender")}
@@ -108,7 +108,7 @@ export default function UserProfilePage() {
             <div className="mt-10 px-6">
               <button
                 onClick={() => router.push("/info/edit-info")}
-                className="w-full rounded-2xl bg-blue-50 py-4 text-center font-bold text-blue-600 hover:bg-blue-100 transition-colors active:scale-[0.99]"
+                className="w-full rounded-2xl bg-primary-color-2/10 py-4 text-center font-bold text-primary-color-2 hover:bg-blue-100 transition-colors active:scale-[0.99]"
               >
                 {t("profile.edit_info")}
               </button>
@@ -133,7 +133,7 @@ export default function UserProfilePage() {
                 onClick={() => setIsAvatarModalOpen(false)}
                 className="p-2 bg-gray-100 rounded-full"
               >
-                <ChevronLeft size={20} className="rotate-[-90deg]" />
+                <X size={20} />
               </button>
             </div>
             {/* Các option edit/delete avatar ở đây */}
@@ -171,10 +171,10 @@ export default function UserProfilePage() {
 function InfoItem({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex items-center justify-between border-b border-gray-100 py-5 group">
-      <span className="text-sm font-medium text-gray-400 uppercase tracking-wider">
+      <span className="text-sm font-medium text-primary-color-3 uppercase tracking-wider">
         {label}
       </span>
-      <span className="text-slate-700 font-semibold">{value}</span>
+      <span className="text-slate-600 font-semibold">{value}</span>
     </div>
   );
 }

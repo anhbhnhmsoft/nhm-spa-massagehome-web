@@ -57,7 +57,7 @@ const addFileError = (
   message: string,
 ) => {
   ctx.addIssue({
-    code: z.ZodIssueCode.custom,
+    code: "custom",
     path: ["file_uploads", type],
     message: message,
     params: { type_upload: type }, // Gắn thêm params nếu cần phân loại lỗi sau này

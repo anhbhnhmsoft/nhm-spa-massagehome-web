@@ -5,7 +5,6 @@ import { useTranslation } from "react-i18next";
 import {
   ChevronRight,
   MapPin,
-  X,
   RotateCw,
   AlertCircle,
   ArrowLeft,
@@ -19,9 +18,9 @@ import { CouponCardBooking } from "@/components/app/coupon-card";
 import { CouponItem } from "@/features/service/types";
 import dayjs from "dayjs";
 import { useBooking } from "@/features/booking/hooks/use-booking";
-import Image from "next/image";
 import { _BookingStatus } from "@/features/service/const";
 import HeaderBack from "@/components/header-back";
+import { AvatarKTV } from "@/components/app/masseurs-details";
 
 export default function ServiceBookingPage() {
   const { t } = useTranslation();
@@ -29,6 +28,7 @@ export default function ServiceBookingPage() {
 
   const { item, queryCoupon, form, dataPricing, error, handleBookingService } =
     useBooking();
+
   const {
     control,
     formState: { errors },
@@ -66,14 +66,9 @@ export default function ServiceBookingPage() {
           <div className="bg-white rounded-xl p-4 border border-slate-100 shadow-lg">
             {/* Header: THÔNG TIN KTV */}
             <div className="flex items-center">
-              <Image
-                src={item.ktv.image_url || "/images/ktv-placeholder.png"}
-                alt={item.ktv.name}
-                width={48}
-                height={48}
-                className="rounded-full mr-3"
-              />
-              <div className="flex-1">
+              <AvatarKTV source={item.ktv.image_url} />
+
+              <div className="flex-1 ml-4">
                 <p className="text-base font-bold">{item.ktv.name}</p>
                 <div className="flex items-center mt-1 gap-2">
                   <div className="flex items-center">
@@ -346,8 +341,8 @@ export default function ServiceBookingPage() {
               type="submit"
               disabled={!!error}
               className={cn(
-                "rounded-2xl px-6 py-3.5 flex items-center shadow-md shadow-blue-200",
-                !!error ? "bg-gray-400" : "bg-blue-600",
+                "rounded-2xl px-6 py-3.5 flex items-center ",
+                !!error ? "bg-gray-400" : "bg-primary-color-2",
               )}
             >
               <span className="text-white font-bold text-base mr-2">
@@ -362,7 +357,7 @@ export default function ServiceBookingPage() {
       <ListLocationModal
         visible={showLocationModal}
         onClose={() => setShowLocationModal(false)}
-        onSelect={(loc: any) => {
+        onSelect={(loc) => {
           setValue("address", loc.address, { shouldValidate: true });
           setValue("latitude", Number(loc.latitude));
           setValue("longitude", Number(loc.longitude));

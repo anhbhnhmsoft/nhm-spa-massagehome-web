@@ -1,7 +1,9 @@
+import { _LanguageCode } from "@/lib/const";
 import {
   BaseSearchRequest,
   ResponseDataSuccessType,
   Paginator,
+  LanguageTranslations,
 } from "@/lib/types";
 
 export type ServiceOption = {
@@ -150,8 +152,12 @@ export type ReviewItem = {
   service_booking_id: string; // ID dịch vụ
   rating: number; // Đánh giá
   comment?: string; // Bình luận
+  comment_translated: LanguageTranslations | undefined; // Bình luận đã dịch
+  translated_comment?: string; // Bình luận đã dịch (cái này là thêm vào để hiển thị trên app)
+  target_lang_translated?: _LanguageCode;
   hidden: boolean; // Có ẩn không
   review_at: string; // Thời gian đánh giá
+  isTranslating: boolean; // Đang dịch hay không
   reviewer: {
     id: string; // ID user đánh giá
     avatar: string | null; // Hình ảnh user đánh giá
@@ -192,3 +198,12 @@ export type PrepareBookingRequest = {
   service_id: string;
   option_id: string;
 };
+
+export type TranslateReviewRequest = {
+  review_id: string;
+  lang: _LanguageCode;
+};
+
+export type TranslateReviewResponse = ResponseDataSuccessType<{
+  translate: string;
+}>;

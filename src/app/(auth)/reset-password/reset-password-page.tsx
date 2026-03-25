@@ -1,10 +1,9 @@
 "use client";
 
-import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Controller } from "react-hook-form";
 import { useResetPassword } from "@/features/auth/hooks";
-import { Eye, EyeOff, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { FormInput } from "@/components/ui/form-input";
 

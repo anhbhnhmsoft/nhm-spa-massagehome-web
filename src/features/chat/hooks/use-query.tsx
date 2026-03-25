@@ -3,10 +3,9 @@ import {
   KTVConversationResponse,
   ListMessageRequest,
   ListMessageResponse,
-} from '@/features/chat/types';
-import { useInfiniteQuery } from '@tanstack/react-query';
-import chatApi from '@/features/chat/api';
-
+} from "@/features/chat/types";
+import { useInfiniteQuery } from "@tanstack/react-query";
+import chatApi from "@/features/chat/api";
 
 /**
  * Hook để lấy danh sách tin nhắn trong phòng chat
@@ -20,9 +19,9 @@ export const useInfiniteQueryListMessage = (
   enabled?: boolean,
 ) => {
   return useInfiniteQuery<ListMessageResponse>({
-    queryKey: ['chatApi-listMessages', roomId, params],
+    queryKey: ["chatApi-listMessages", roomId],
     queryFn: async ({ pageParam }) => {
-      return chatApi.listMessages(roomId!,{
+      return chatApi.listMessages(roomId!, {
         ...params,
         page: pageParam as number,
         per_page: params.per_page,
@@ -40,22 +39,21 @@ export const useInfiniteQueryListMessage = (
     initialPageParam: 1,
 
     // --- CẤU HÌNH KHÔNG CACHE ---
-    gcTime: 0,      // (Garbage Collection Time) = 0: Xóa khỏi bộ nhớ ngay khi component unmount
-    retry: 0,       // Check token lỗi thì fail luôn, đừng thử lại (để logout luôn)
+    gcTime: 0, // (Garbage Collection Time) = 0: Xóa khỏi bộ nhớ ngay khi component unmount
+    retry: 0, // Check token lỗi thì fail luôn, đừng thử lại (để logout luôn)
     // --- Đánh dấu để không lưu xuống AsyncStorage ---
     meta: {
       persist: false,
     },
   });
-}
-
+};
 
 export const useInfiniteQueryKTVConversations = (
   params: KTVConversationRequest,
   enabled?: boolean,
 ) => {
   return useInfiniteQuery<KTVConversationResponse>({
-    queryKey: ['chatApi-listKTVConversations', params],
+    queryKey: ["chatApi-listKTVConversations", params],
     queryFn: async ({ pageParam }) => {
       return chatApi.listKTVConversations({
         ...params,
@@ -74,11 +72,11 @@ export const useInfiniteQueryKTVConversations = (
     },
     initialPageParam: 1,
     // --- CẤU HÌNH KHÔNG CACHE ---
-    gcTime: 0,      // (Garbage Collection Time) = 0: Xóa khỏi bộ nhớ ngay khi component unmount
-    retry: 0,       // Check token lỗi thì fail luôn, đừng thử lại (để logout luôn)
+    gcTime: 0, // (Garbage Collection Time) = 0: Xóa khỏi bộ nhớ ngay khi component unmount
+    retry: 0, // Check token lỗi thì fail luôn, đừng thử lại (để logout luôn)
     // --- Đánh dấu để không lưu xuống AsyncStorage ---
     meta: {
       persist: false,
     },
   });
-}
+};

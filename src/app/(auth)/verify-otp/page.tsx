@@ -11,10 +11,11 @@ import {
 export default function VerifyOtp() {
   const { t } = useTranslation();
   const {
-    phone,
+    username,
     form,
     onSubmit,
     loading: loadingVerifyOTP,
+    typeAuthenticate,
   } = useHandleVerifyOtp();
 
   const {
@@ -63,16 +64,20 @@ export default function VerifyOtp() {
         <div className=" px-5 pt-6">
           {/* Title */}
           <h1 className="mb-3 text-center text-2xl font-bold text-gray-900">
-            {t("auth.auth_verify_title")}
+            {typeAuthenticate === "phone"
+              ? t("auth.auth_verify_title_phone")
+              : t("auth.auth_verify_title_email")}
           </h1>
 
           {/* Description */}
           <p className="mb-1 text-center text-gray-500">
-            {t("auth.auth_verify_description")}
+            {typeAuthenticate === "phone"
+              ? t("auth.auth_verify_description_phone")
+              : t("auth.auth_verify_description_email")}
           </p>
 
           <p className="mb-8 text-center font-bold text-primary-color-2">
-            {phone}
+            {username}
           </p>
 
           {/* OTP INPUT */}

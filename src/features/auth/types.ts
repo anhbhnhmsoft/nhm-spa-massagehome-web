@@ -1,11 +1,12 @@
-import { _Gender, _UserRole } from "@/features/auth/const";
+import { _Gender, _TypeAuthenticate, _UserRole } from "@/features/auth/const";
 import { _LanguageCode } from "@/lib/const";
 import { ResponseDataSuccessType } from "@/lib/types";
 
 export type User = {
   id: string;
   name: string;
-  phone: string;
+  phone?: string;
+  email?: string;
   disabled: boolean;
   role: _UserRole;
   referral_code: string;
@@ -40,7 +41,8 @@ export type AuthData = {
 };
 
 export type AuthenticateRequest = {
-  phone: string;
+  username: string;
+  type_authenticate: _TypeAuthenticate;
 };
 
 export type AuthenticateResponse = ResponseDataSuccessType<{
@@ -54,7 +56,8 @@ export type AuthenticateResponse = ResponseDataSuccessType<{
 }>;
 
 export type ForgotPasswordRequest = {
-  phone: string;
+  username: string;
+  type_authenticate: _TypeAuthenticate;
 };
 
 export type ForgotPasswordResponse = ResponseDataSuccessType<{
@@ -69,7 +72,8 @@ export type ResendOTPResponse = ResponseDataSuccessType<{
 }>;
 
 export type VerifyOTPRequest = {
-  phone: string;
+  username: string;
+  type_authenticate: _TypeAuthenticate;
   otp: string;
 };
 
@@ -78,7 +82,8 @@ export type ResendRegisterOTPResponse = ResponseDataSuccessType<{
 }>;
 
 export type VerifyRegisterOTPRequest = {
-  phone: string;
+  username: string;
+  type_authenticate: _TypeAuthenticate;
   otp: string;
 };
 
@@ -87,7 +92,8 @@ export type VerifyRegisterOTPResponse = ResponseDataSuccessType<{
 }>;
 
 export type RegisterRequest = {
-  phone: string;
+  username: string;
+  type_authenticate: _TypeAuthenticate;
   name: string;
   password: string;
   referral_code?: string | null;
@@ -98,7 +104,8 @@ export type RegisterRequest = {
 export type RegisterResponse = ResponseDataSuccessType<AuthData>;
 
 export type LoginRequest = {
-  phone: string;
+  username: string;
+  type_authenticate: _TypeAuthenticate;
   password: string;
 };
 
@@ -129,6 +136,7 @@ export type EditProfileRequest = {
 };
 
 export type ResetPasswordRequest = {
-  phone: string;
+  username: string;
+  type_authenticate: _TypeAuthenticate;
   password: string;
 };

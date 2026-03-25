@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useState } from "react";
 import {
   Controller,
   Control,
@@ -9,7 +9,6 @@ import {
 import { MapPin, Loader2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { ListLocationModal } from "@/components/location";
-import { AddressItem } from "@/features/location/types";
 import { useGetLocation } from "@/features/app/hooks/use-location";
 
 type LocationSelectorProps<T extends FieldValues> = {
@@ -103,7 +102,7 @@ export function LocationSelector<T extends FieldValues>({
             <ListLocationModal
               visible={showLocationModal}
               onClose={() => setShowLocationModal(false)}
-              onSelect={(location: AddressItem) => {
+              onSelect={(location) => {
                 onChange(location.address);
 
                 if (location.latitude) {

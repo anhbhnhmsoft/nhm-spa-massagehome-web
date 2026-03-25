@@ -1,4 +1,4 @@
-import { _LanguageCode } from '@/lib/const';
+import { _LanguageCode } from "@/lib/const";
 
 export interface IValidationErrors {
   [field: string]: string[];
@@ -21,7 +21,7 @@ export default class ErrorAPIServer implements IErrorAPIServer {
     statusCode: number,
     message: string,
     rawError: any,
-    validateError: IValidationErrors | null = null
+    validateError: IValidationErrors | null = null,
   ) {
     this.statusCode = statusCode;
     this.message = message;
@@ -35,7 +35,6 @@ export type ResponseDataSuccessType<T> = {
   data: T;
 };
 
-
 export type ResponseSuccessType = {
   message: string;
 };
@@ -43,7 +42,7 @@ export type ResponseSuccessType = {
 export type BaseSearchRequest<TFilter> = {
   filter: TFilter;
   sort_by?: string;
-  direction?: 'asc' | 'desc';
+  direction?: "asc" | "desc";
   page?: number;
   per_page?: number;
 };
@@ -69,11 +68,11 @@ export type Paginator<T> = {
     per_page: number;
     to: number;
     total: number;
-  }
-}
+  };
+};
 
 export interface IDeviceInfo {
-  platform: 'ios' | 'android';
+  platform: "ios" | "android";
   deviceId: string;
   deviceName: string;
 }
@@ -82,6 +81,8 @@ export interface IMultiLangField {
   [_LanguageCode.VI]: string;
   [_LanguageCode.EN]?: string;
   [_LanguageCode.CN]?: string;
+  [_LanguageCode.JP]?: string;
+  [_LanguageCode.KR]?: string;
 }
 
 export interface IFileUpload {
@@ -89,3 +90,13 @@ export interface IFileUpload {
   type: string; // vd: 'image/jpeg'
   name: string; // vd: 'photo.jpg'
 }
+
+export type LanguageTranslations = Record<_LanguageCode, string>;
+
+export const _DEFAULT_TRANSLATIONS: LanguageTranslations = {
+  [_LanguageCode.EN]: "",
+  [_LanguageCode.VI]: "",
+  [_LanguageCode.CN]: "",
+  [_LanguageCode.JP]: "",
+  [_LanguageCode.KR]: "",
+};

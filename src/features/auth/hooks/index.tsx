@@ -1,8 +1,8 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect } from "react";
 import useAuthStore from "../store/auth-store";
-import { _AuthStatus, _Gender, _UserRole } from "../const";
+import { _AuthStatus, _Gender, _TypeAuthenticate, _UserRole } from "../const";
 import { useRouter } from "next/navigation";
 import {
   useAuthenticateMutation,
@@ -15,11 +15,8 @@ import {
   useMutationEditProfile,
   useProfileMutation,
   useRegisterMutation,
-  useResendRegisterOTPMutation,
   useResetPasswordMutation,
   useSetLanguageMutation,
-  useVerifyForgotPasswordOTPMutation,
-  useVerifyRegisterOTPMutation,
 } from "@/features/auth/hooks/use-mutation";
 import useToast from "@/features/app/hooks/use-toast";
 import { useTranslation } from "react-i18next";
@@ -57,16 +54,39 @@ export const useHandleAuthenticate = () => {
   const form = useForm<AuthenticateRequest>({
     resolver: zodResolver(
       z.object({
-        phone: z
+        username: z
           .string()
-          .min(1, { error: t("auth.error.phone_required") })
-          .regex(/^[0-9]+$/, { error: t("auth.error.phone_invalid") })
-          .min(9, { error: t("auth.error.phone_min") })
-          .max(12, { error: t("auth.error.phone_max") }),
+          .min(1, { message: t("auth.error.username_required") })
+          .superRefine((val, ctx) => {
+            const typeAuth = form.getValues("type_authenticate");
+
+            if (typeAuth === _TypeAuthenticate.PHONE) {
+              if (!/^[0-9]{9,12}$/.test(val)) {
+                ctx.addIssue({
+                  code: "custom",
+                  message: t("auth.error.phone_invalid"),
+                });
+              }
+            } else if (typeAuth === _TypeAuthenticate.EMAIL) {
+              if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)) {
+                ctx.addIssue({
+                  code: "custom",
+                  message: t("auth.error.email_invalid"),
+                });
+              }
+            } else {
+              ctx.addIssue({
+                code: "custom",
+                message: t("auth.error.invalid_username_or_email"),
+              });
+            }
+          }),
+        type_authenticate: z.enum(_TypeAuthenticate),
       }),
     ),
     defaultValues: {
-      phone: "",
+      username: "",
+      type_authenticate: _TypeAuthenticate.PHONE,
     },
   });
   // handle submit form
@@ -76,9 +96,10 @@ export const useHandleAuthenticate = () => {
         onSuccess: (res) => {
           const dataResponse = res.data;
           const caseHandle = dataResponse.case;
-          // Lưu phone_authenticate vào auth store khi submit form
+          // Lưu username_authenticate và type_authenticate vào auth store khi submit form
           updateStateForm({
-            phone_authenticate: data.phone,
+            username_authenticate: data.username,
+            type_authenticate: data.type_authenticate,
           });
           // case need_login: redirect về màn hình login
           if (caseHandle === "need_login") {
@@ -130,9 +151,10 @@ export const useHandleLogin = () => {
   const router = useRouter();
   // handle error toast khi gọi API thất bại
   const handleError = useErrorToast();
-  // set phone_authen vào auth store khi submit form
+  // lấy username_authenticate và type_authenticate từ auth store
+  const username = useFormAuthStore((state) => state.username_authenticate);
+  const typeAuthenticate = useFormAuthStore((state) => state.type_authenticate);
 
-  const phone = useFormAuthStore((state) => state.phone_authenticate);
   // handle success toast khi gọi API thành công
   const { success, error } = useToast();
   // set login vào auth store khi submit form
@@ -147,12 +169,29 @@ export const useHandleLogin = () => {
   const form = useForm<LoginRequest>({
     resolver: zodResolver(
       z.object({
-        phone: z
+        username: z
           .string()
-          .min(1, { error: t("auth.error.phone_required") })
-          .regex(/^[0-9]+$/, { error: t("auth.error.phone_invalid") })
-          .min(9, { error: t("auth.error.phone_min") })
-          .max(12, { error: t("auth.error.phone_max") }),
+          .min(1, { message: t("auth.error.username_required") })
+          .superRefine((val, ctx) => {
+            const typeAuth = form.getValues("type_authenticate");
+
+            if (typeAuth === _TypeAuthenticate.PHONE) {
+              if (!/^[0-9]{9,12}$/.test(val)) {
+                ctx.addIssue({
+                  code: "custom",
+                  message: t("auth.error.phone_invalid"),
+                });
+              }
+            } else if (typeAuth === _TypeAuthenticate.EMAIL) {
+              if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)) {
+                ctx.addIssue({
+                  code: "custom",
+                  message: t("auth.error.email_invalid"),
+                });
+              }
+            }
+          }),
+        type_authenticate: z.enum(_TypeAuthenticate),
         password: z
           .string()
           .min(1, { message: t("auth.error.password_invalid") })
@@ -163,7 +202,8 @@ export const useHandleLogin = () => {
       }),
     ),
     defaultValues: {
-      phone: phone || "",
+      username: username || "",
+      type_authenticate: typeAuthenticate,
       password: "",
     },
   });
@@ -204,12 +244,12 @@ export const useHandleLogin = () => {
   );
 
   const onForgotPassword = useCallback(() => {
-    if (!phone) {
+    if (!username) {
       error({ message: t("auth.error.phone_required") });
       return;
     }
     mutateForgotPassword(
-      { phone },
+      { username, type_authenticate: typeAuthenticate },
       {
         onSuccess: (res) => {
           const dataResponse = res.data;
@@ -245,7 +285,8 @@ export const useHandleLogin = () => {
   }, [
     handleError,
     mutateForgotPassword,
-    phone,
+    username,
+    typeAuthenticate,
     router,
     t,
     updateStateForm,
@@ -273,20 +314,39 @@ export const useHandleRegister = () => {
   );
   const { success, error } = useToast();
 
-  const phone = useFormAuthStore((state) => state.phone_authenticate);
+  const username = useFormAuthStore((state) => state.username_authenticate);
+  const typeAuthenticate = useFormAuthStore((state) => state.type_authenticate);
 
   const resetState = useFormAuthStore((state) => state.resetState);
 
   const login = useAuthStore((state) => state.login);
 
-  // mutate function để gọi API đăng ký user
   const mutationRegister = useRegisterMutation();
 
   // form hook để validate và submit form
   const form = useForm<RegisterRequest>({
     resolver: zodResolver(
       z.object({
-        phone: z.string().min(1),
+        username: z
+          .string()
+          .min(1)
+          .superRefine((val, ctx) => {
+            if (/^[0-9]{1,}$/.test(val) && !/^[0-9]{9,12}$/.test(val)) {
+              ctx.addIssue({
+                code: "custom",
+                message: t("auth.error.phone_invalid"),
+              });
+            } else if (
+              !/^[0-9]{9,12}$/.test(val) &&
+              !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)
+            ) {
+              ctx.addIssue({
+                code: "custom",
+                message: t("auth.error.invalid_username_or_email"),
+              });
+            }
+          }),
+        type_authenticate: z.enum(_TypeAuthenticate),
         name: z.string().min(1, { error: t("auth.error.name_required") }),
         password: z
           .string()
@@ -296,16 +356,13 @@ export const useHandleRegister = () => {
           .regex(/[A-Z]/, { message: t("auth.error.password_invalid") })
           .regex(/[0-9]/, { message: t("auth.error.password_invalid") }),
         referral_code: z.string().optional().nullable(),
-        gender: z.enum(_Gender, {
-          error: t("auth.error.gender_invalid"),
-        }),
-        language: z.enum(_LanguageCode, {
-          error: t("auth.error.language_invalid"),
-        }),
+        gender: z.enum(_Gender),
+        language: z.enum(_LanguageCode),
       }),
     ),
     defaultValues: {
-      phone: phone || "",
+      username: username || "",
+      type_authenticate: typeAuthenticate,
       name: "",
       password: "",
       gender: _Gender.MALE,
@@ -475,14 +532,6 @@ export const useSetLanguageUser = (onClose?: () => void) => {
   };
 };
 
-// /**
-//  * Hook để kiểm tra xem user có đang hoạt động hay không
-//  */
-// export const useHeartbeat = () => {
-//   const status = useAuthStore((state) => state.status);
-//   useHeartbeatQuery(status === _AuthStatus.AUTHORIZED);
-// };
-
 /**
  * Xử lý thay đổi avatar
  */
@@ -523,7 +572,7 @@ export const useChangeAvatar = () => {
   // 2. Xử lý xóa ảnh
   const deleteAvatar = useCallback(() => {
     if (confirm(t("profile.delete_avatar_desc"))) {
-      editAvatar(undefined, false, true);
+      editAvatar(undefined, true);
     }
   }, [editAvatar, t]);
 
@@ -545,11 +594,7 @@ export const useEditAvatar = () => {
   const setLoading = useApplicationStore((state) => state.setLoading);
 
   return useCallback(
-    (
-      data: FormData | undefined,
-      routerBack: boolean = true,
-      isDelete: boolean = false,
-    ) => {
+    (data: FormData | undefined, isDelete: boolean = false) => {
       setLoading(true);
       // Xử lý khi xóa avatar
       if (isDelete) {
@@ -667,7 +712,7 @@ export const useEditProfile = () => {
       gender: user?.profile.gender || undefined,
       bio: user?.profile.bio || undefined,
     });
-  }, [user]);
+  }, [user, form]);
 
   // handle submit form
   const onSubmit = useCallback(
@@ -770,15 +815,38 @@ export const useResetPassword = () => {
   const handleError = useErrorToast();
   const { success } = useToast();
 
-  // Get phone from auth store (should be set during forgot password flow)
-  const phone = useFormAuthStore((state) => state.phone_authenticate);
+  // Get username_authenticate và type_authenticate từ auth store (should be set during forgot password flow)
+  const username = useFormAuthStore((state) => state.username_authenticate);
+  const typeAuthenticate = useFormAuthStore((state) => state.type_authenticate);
 
   const resetState = useFormAuthStore((state) => state.resetState);
 
   const form = useForm<ResetPasswordRequest>({
     resolver: zodResolver(
       z.object({
-        phone: z.string().min(1, { error: t("auth.error.phone_required") }),
+        username: z
+          .string()
+          .min(1, { message: t("auth.error.username_required") })
+          .superRefine((val, ctx) => {
+            const typeAuth = form.getValues("type_authenticate");
+
+            if (typeAuth === _TypeAuthenticate.PHONE) {
+              if (!/^[0-9]{9,12}$/.test(val)) {
+                ctx.addIssue({
+                  code: "custom",
+                  message: t("auth.error.phone_invalid"),
+                });
+              }
+            } else if (typeAuth === _TypeAuthenticate.EMAIL) {
+              if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)) {
+                ctx.addIssue({
+                  code: "custom",
+                  message: t("auth.error.email_invalid"),
+                });
+              }
+            }
+          }),
+        type_authenticate: z.nativeEnum(_TypeAuthenticate),
         password: z
           .string()
           .min(1, { message: t("auth.error.password_invalid") })
@@ -789,7 +857,8 @@ export const useResetPassword = () => {
       }),
     ),
     defaultValues: {
-      phone: phone || "",
+      username: username || "",
+      type_authenticate: typeAuthenticate,
       password: "",
     },
   });

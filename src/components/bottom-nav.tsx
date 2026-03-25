@@ -54,7 +54,7 @@ export default function BottomNav() {
                 <TabIcon focused={isFocused} icon={tab.icon} label={tab.name} />
 
                 {isFocused && (
-                  <div className="absolute bottom-1 w-1 h-1 bg-blue-600 rounded-full" />
+                  <div className="absolute bottom-1 w-1 h-1 bg-primary-color-2 rounded-full" />
                 )}
               </Link>
             );

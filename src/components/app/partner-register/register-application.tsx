@@ -189,6 +189,16 @@ const ModalApplication = ({
                     key: _LanguageCode.CN,
                     color: "border-slate-300",
                   },
+                  {
+                    label: "日本語",
+                    key: _LanguageCode.JP,
+                    color: "border-slate-300",
+                  },
+                  {
+                    label: "한국어",
+                    key: _LanguageCode.KR,
+                    color: "border-slate-300",
+                  },
                 ].map((lang) => (
                   <div
                     key={lang.key}
